@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Dashboard Template for Bootstrap</title>
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{asserts/css/bootstrap.min.css}" rel="stylesheet">
+
+    <link th:href="@{asserts/css/dashboard.css}" rel="stylesheet">
+
+    <link th:href="@{asserts/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css}" rel="stylesheet">
+
+    <style type="text/css">
+        /* Chart.js */
+        @-webkit-keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+
+        .middleCenter {
+            text-align: center;
+            vertical-align: center;
+        }
+
+        th {
+            text-align: center;
+            vertical-align: center;
+        }
+
+        tr {
+            text-align: center;
+            vertical-align: center;
+        }
+
+        td {
+            text-align: center;
+            /*vertical-align:middle;*/
+            vertical-align: middle !important;
+        }
+
+    </style>
+</head>
+<body>
+<!--顶部   模板引擎， 页面路径 :: id模板名 -->
+<header th:replace="home/public :: #publicTop"></header>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+            <div class="sidebar-sticky">
+
+                <div th:replace="home/public :: #publicNav(nav='list')"></div>
+
+            </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+
+            <form class="form-inline" style="margin-bottom: 10px;float: left">
+                <div class="form-group mb-2">
+                    <label for="startMacAddressInput" class="sr-only">起始mac地址</label>
+                    <input type="text" class="form-control" id="startMacAddressInput" name="startMacAddressInput" autocomplete="off"
+                           placeholder="起始mac地址">
+                </div>
+                <div class="form-group mx-sm-3 mb-2">
+                    <label for="macCreatDate" class="sr-only">创建时间</label>
+                    <input type="text" class="form-control" id="macCreatDate" name="createDate" placeholder="创建时间" autocomplete="off">
+                </div>
+                <button type="submit" class="btn btn-primary mb-2">搜索</button>
+            </form>
+
+            <div style="float: left;margin-left: 15px;">
+                <!-- 按钮触发模态框 -->
+                <button class="btn btn-primary mb-2" data-toggle="modal" data-target="#myModal">
+                    新增mac地址段
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered table-hover" id="tableId">
+                    <thead>
+                    <tr>
+                        <th>主键</th>
+                        <th>mac标识</th>
+                        <th>mac起始地址</th>
+                        <th>mac结束地址</th>
+                        <th>创建时间</th>
+                        <th>创建人</th>
+                        <th>修改时间</th>
+                        <th>是否显示</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="mac:${pageInfo.list}">
+                        <td>[[${mac.id}]]</td>
+                        <td th:text="${mac.signs}"></td>
+                        <td th:text="${mac.startMacAddress}"></td>
+                        <td>[[${mac.endMacAddress}]]</td>
+                        <td th:text="${#dates.format(mac.getCreatedate(),'yyyy-MM-dd HH:mm:ss')}"></td>
+                        <td>[[${mac.creator}]]</td>
+                        <td th:text="${#dates.format(mac.getUpdatedate(),'yyyy-MM-dd HH:mm:ss')}"></td>
+                        <td>[[${mac.status}]]</td>
+                        <td>
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-sm btn-info" data-toggle="modal"
+                                    data-target="#myModalDetail" onclick="showDetail(this)">
+                                详情
+                            </button>
+                            <button class="btn btn-sm btn-primary">编辑</button>
+                            <!--<button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                    data-target="#myModalDel" th:onclick="'valuess('+${mac.id} + ');'">
+                                删除
+                            </button>-->
+
+                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                    data-target="#myModalDel" onclick="showDeleteModal(this)">
+                                删除
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <footer class="footer navbar-fixed-bottom ">
+                <div class="container">
+                    <!-- 分页信息 -->
+                    <div class="row mx-auto">
+                        <!-- 分页文字信息 -->
+                        <div class="col-md-3">
+                            <p th:text="'当前第' + ${pageInfo.pageNum}+'页,总'+${pageInfo.pages}+'页,共'+${pageInfo.total}+'条记录'"/>
+                        </div>
+                        <!-- 分页条信息 -->
+                        <div class="col-md-9">
+
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    <!--首页-->
+                                    <li class="page-item">
+                                        <a class="page-link" href="/list?pageNum=1">首页</a>
+
+                                    </li>
+                                    <!--上一页《 -->
+                                    <li th:if="${pageInfo.hasPreviousPage}">
+                                        <a class="page-link" th:href="@{'/list?pageNum='+${pageInfo.pageNum-1 }}"
+                                           aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+
+                                    <!--动态添加样式-->
+                                    <li class="page-item"
+                                        th:classappend="${PageNum == pageInfo.pageNum} ? 'active' : '' "
+                                        th:each="PageNum : ${pageInfo.navigatepageNums}">
+                                        <a th:href="@{'/list?pageNum='+${PageNum}}" class="page-link"
+                                           th:text="${PageNum}"></a>
+                                    </li>
+
+                                    <!--页码判断-->
+                                    <!--<li class="page-item active" th:each="PageNum : ${pageInfo.navigatepageNums}" th:if="${PageNum==pageInfo.pageNum}">
+                                        <a th:href="@{'/list?pageNum='+${PageNum}}" class="page-link" th:text="${PageNum}"></a>
+                                    </li>
+                                    <li class="page-item"  th:each="PageNum : ${pageInfo.navigatepageNums}" th:if="${PageNum!=pageInfo.pageNum}">
+                                        <a th:href="@{'/list?pageNum='+${PageNum}}" class="page-link" th:text="${PageNum}"></a>
+                                    </li>-->
+
+                                    <!--下一页 》-->
+                                    <li th:if="${pageInfo.hasNextPage}" class="page-item">
+                                        <a th:href="@{'/list?pageNum='+${pageInfo.pageNum+1 }}" aria-label="Next"
+                                           class="page-link">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+
+                                    <!--尾页-->
+                                    <li class="page-item" th:if="${pageInfo.hasNextPage}">
+                                        <a th:href="@{'/list?pageNum='+${pageInfo.pages}}" class="page-link">最后一页</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <div>
+        <!-- 新增模态框（Modal） -->
+        <div class="modal fade bs-example-modal-lg" id="myModal" tabindex="-1" role="dialog"
+             aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content" style="width:800px;height: 400px;">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">新增mac地址库存</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form role="form" th:action="@{/addMacAddress}" method="post"
+                              id="macForm">
+                            <div class="form-group row">
+                                <label for="startMacAddress"
+                                       class="col-sm-2 col-form-label font-weight-bold">Mac起始地址</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="startMacAddress" name="startMacAddress"
+                                           placeholder="请输入16进制Mac起始地址">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="endMacAddress"
+                                       class="col-sm-2 col-form-label font-weight-bold">Mac结束地址</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="endMacAddress" name="endMacAddress"
+                                           placeholder="请输入16进制Mac结束地址">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" onclick="addMac()">提交</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
+
+        <!--详情模态框-->
+        <div class="modal fade bs-example-modal-lg" id="myModalDetail" tabindex="-1" role="dialog"
+             aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content" style="width:800px;height: 400px;">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalDetailLabel">Mac地址段详情</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form role="form" id="macDetailForm">
+                            <div class="form-group row">
+                                <label for="startMacAddress"
+                                       class="col-sm-2 col-form-label font-weight-bold">Mac起始地址</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="startMacAddressDetail"
+                                           name="startMacAddress">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="endMacAddress"
+                                       class="col-sm-2 col-form-label font-weight-bold">Mac结束地址</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="endMacAddressDetail"
+                                           name="endMacAddress">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
+
+
+        <!--删除提示模态框-->
+        <div class="modal" tabindex="-1" role="dialog" id="myModalDel">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">提醒</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>您确认要删除该条信息吗？</p>
+                        <!--设置一个隐藏元素来填充传值-->
+                        <input type="hidden" name="macIdDel" id="macIdDel">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" onclick="delMacAddress()">确认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!--<script type="text/javascript" th:src="@{asserts/js/jquery-3.2.1.slim.min.js}"></script>-->
+<script type="text/javascript" th:src="@{asserts/js/jquery-3.5.1.min.js}"></script>
+
+<script type="text/javascript" th:src="@{asserts/js/popper.min.js}"></script>
+
+<script type="text/javascript" th:src="@{asserts/js/bootstrap.min.js}"></script>
+
+<!-- Icons -->
+<script type="text/javascript" th:src="@{asserts/js/feather.min.js}"></script>
+
+<script src="https://cdn.bootcss.com/moment.js/2.24.0/moment-with-locales.js"></script>
+<!--日期选择插件-->
+<script type="text/javascript"
+        th:src="@{asserts/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js}"></script>
+<script th:inline="javascript">
+    feather.replace();
+
+    function addMac() {
+        $('#macForm').submit();
+        $('#myModal').modal('hide');  //手动关闭
+        window.location.href('home/list.html');
+    }
+
+    $(function () {
+        $('#macCreatDate').datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: moment.locale('zh-cn')
+        });
+    });
+
+    function showDetail(obj) {
+        var macTd = $(obj).parent().parent().find("td");
+        var startMac = macTd.eq(1).text();
+        var endMac = macTd.eq(2).text();
+        $('#startMacAddressDetail').val(startMac);
+        $('#endMacAddressDetail').val(endMac);
+    }
+
+    let delTr;
+    function showDeleteModal(obj) {
+        var delTableTr = obj.parentNode.parentNode;
+        // console.log(delTableTr);
+        // tr.parentNode.removeChild(tr);
+        delTr=delTableTr;
+    }
+
+    function delMacAddress() {
+        let macIdTd =$(delTr).find("td:eq(0)").text();
+        $.ajax({
+            url:"/mac/"+macIdTd,
+            type:"post",
+            method:"post",
+            success:function(result){
+                $('#myModalDel').modal('hide');  //手动关闭
+                window.location.href='/list';
+            },
+            error : function() {
+                $('#myModalDel').modal('hide');  //手动关闭
+                alert("请求失败");
+            }
+        });
+    }
+</script>
+</body>
+
+</html>

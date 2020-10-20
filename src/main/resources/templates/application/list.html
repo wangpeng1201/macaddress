@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Dashboard Template for Bootstrap</title>
+    <!-- Bootstrap core CSS -->
+    <!--<link th:href="@{asserts/css/bootstrap.min.css}" rel="stylesheet">-->
+    <link th:href="@{bootstrap-4.5.0-dist/css/bootstrap.min.css}" rel="stylesheet">
+
+    <link th:href="@{asserts/css/dashboard.css}" rel="stylesheet">
+    <link th:href="@{asserts/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css}" rel="stylesheet">
+
+
+    <style type="text/css">
+        /* Chart.js */
+        @-webkit-keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+
+        .middleCenter {
+            text-align: center;
+            vertical-align: center;
+        }
+
+        th {
+            text-align: center;
+            vertical-align: center;
+        }
+
+        tr {
+            text-align: center;
+            vertical-align: center;
+        }
+
+        td {
+            text-align: center;
+            /*vertical-align:middle;*/
+            vertical-align: middle !important;
+        }
+
+    </style>
+</head>
+<body>
+<!--顶部   模板引擎， 页面路径 :: id模板名 -->
+<header th:replace="home/public :: #publicTop"></header>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+            <div class="sidebar-sticky">
+
+                <div th:replace="home/public :: #publicNav(nav='applications')"></div>
+
+            </div>
+        </nav>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <!-- 按钮触发模态框 -->
+            <button class="btn btn-primary" data-toggle="modal" data-target="#myModal" style="margin-bottom: 10px;">
+                新增
+            </button>
+
+            <div class="table-responsive">
+                <table class="table table-striped table-sm table-bordered">
+                    <thead>
+                    <tr>
+                        <th>主键</th>
+                        <th>客户</th>
+                        <th>mac起始地址</th>
+                        <th>mac结束地址</th>
+                        <th>申请人</th>
+                        <th>申请单位</th>
+                        <th>申请数量</th>
+                        <th>申请日期</th>
+                        <th>发放日期</th>
+                        <th>费用转嫁承办人工号</th>
+                        <th>费用转嫁单号</th>
+                        <th>转嫁费用金额</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="app:${pageInfo.list}">
+                        <td>[[${app.id}]]</td>
+                        <td>[[${app.customer}]]</td>
+                        <td th:text="${app.startMacAddress}"></td>
+                        <td th:text="${app.endMacAddress}"></td>
+                        <td>[[${app.applicant}]]</td>
+                        <td>[[${app.applicationDepartment}]]</td>
+                        <td>[[${app.amount}]]</td>
+                        <td th:text="${#dates.format(app.applicationDate,'yyyy-MM-dd HH:mm:ss')}"></td>
+                        <td th:text="${#dates.format(app.releaseDate,'yyyy-MM-dd HH:mm:ss')}"></td>
+                        <td>[[${app.director}]]</td>
+                        <td>[[${app.shiftCostNo}]]</td>
+                        <td>[[${app.shiftCost}]]</td>
+                        <td>
+                            <button class="btn btn-sm btn-info">详情</button>
+                            <button class="btn btn-sm btn-primary">编辑</button>
+                            <button class="btn btn-sm btn-danger">删除</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <footer class="footer navbar-fixed-bottom ">
+                <div class="container">
+                    <!-- 分页信息 -->
+                    <div class="row">
+                        <!-- 分页文字信息 -->
+                        <div class="col-md-3">
+                            <p th:text="'当前第' + ${pageInfo.pageNum}+'页,总'+${pageInfo.pages}+'页,共'+${pageInfo.total}+'条记录'"/>
+                        </div>
+                        <!-- 分页条信息 -->
+                        <div class="col-md-9">
+                            <nav aria-label="Page navigation example">
+                                <ul class="pagination">
+                                    <!--首页-->
+                                    <li class="page-item">
+                                        <a class="page-link" href="/applications?pageNum=1">首页</a>
+
+                                    </li>
+                                    <!--上一页《 -->
+                                    <li th:if="${pageInfo.hasPreviousPage}">
+                                        <a class="page-link"
+                                           th:href="@{'/applications?pageNum='+${pageInfo.pageNum-1 }}"
+                                           aria-label="Previous">
+                                            <span aria-hidden="true">&laquo;</span>
+                                        </a>
+                                    </li>
+
+                                    <!--动态添加样式-->
+                                    <li class="page-item"
+                                        th:classappend="${PageNum == pageInfo.pageNum} ? 'active' : '' "
+                                        th:each="PageNum : ${pageInfo.navigatepageNums}">
+                                        <a th:href="@{'/applications?pageNum='+${PageNum}}" class="page-link"
+                                           th:text="${PageNum}"></a>
+                                    </li>
+
+                                    <!--页码判断-->
+                                    <!--<li class="page-item active" th:each="PageNum : ${pageInfo.navigatepageNums}" th:if="${PageNum==pageInfo.pageNum}">
+                                        <a th:href="@{'/list?pageNum='+${PageNum}}" class="page-link" th:text="${PageNum}"></a>
+                                    </li>
+                                    <li class="page-item"  th:each="PageNum : ${pageInfo.navigatepageNums}" th:if="${PageNum!=pageInfo.pageNum}">
+                                        <a th:href="@{'/list?pageNum='+${PageNum}}" class="page-link" th:text="${PageNum}"></a>
+                                    </li>-->
+
+                                    <!--下一页 》-->
+                                    <li th:if="${pageInfo.hasNextPage}" class="page-item">
+                                        <a th:href="@{'/applications?pageNum='+${pageInfo.pageNum+1 }}"
+                                           aria-label="Next" class="page-link">
+                                            <span aria-hidden="true">&raquo;</span>
+                                        </a>
+                                    </li>
+
+                                    <!--尾页-->
+                                    <li class="page-item" th:if="${pageInfo.hasNextPage}">
+                                        <a th:href="@{'/applications?pageNum='+${pageInfo.pages}}" class="page-link">最后一页</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <div>
+
+        <!-- 模态框（Modal） -->
+        <div class="modal fade bs-example-modal-lg" id="myModal" tabindex="-1" role="dialog"
+             aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content" style="width:1000px;height: 800px;">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalLabel">申请Mac地址</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form role="form" th:action="@{/applications}" method="post"
+                              id="applicationForm">
+                            <!--客户-->
+                            <div class="form-group row">
+                                <label for="startingInventory"
+                                       class="col-sm-2 col-form-label font-weight-bold">客户</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control input-sm" id="customer"
+                                           name="customer" placeholder="">
+                                </div>
+                            </div>
+
+                            <!--Mac起始地址-->
+                            <div class="form-group row">
+                                <label for="startMacAddress"
+                                       class="col-sm-2 col-form-label font-weight-bold">Mac起始地址</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control input-sm" id="startMacAddress"
+                                           name="startMacAddress"
+                                           placeholder="请输入16进制Mac起始地址">
+                                </div>
+                            </div>
+
+                            <!--Mac结束地址-->
+                            <div class="form-group row">
+                                <label for="endMacAddress"
+                                       class="col-sm-2 col-form-label font-weight-bold">Mac结束地址</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control input-sm" id="endMacAddress"
+                                           name="endMacAddress"
+                                           placeholder="请输入16进制Mac结束地址">
+                                </div>
+                            </div>
+
+                            <!--申请人-->
+                            <div class="form-group row">
+                                <label for="startingInventory"
+                                       class="col-sm-2 col-form-label font-weight-bold">申请人</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control input-sm" id="applicant"
+                                           name="applicant" placeholder="">
+                                </div>
+                            </div>
+
+                            <!--申请人部门-->
+                            <div class="form-group row">
+                                <label for="startingInventory"
+                                       class="col-sm-2 col-form-label font-weight-bold">申请人部门</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control input-sm" id="startingInventory"
+                                           name="startingInventory" placeholder="">
+                                </div>
+                            </div>
+
+                            <!--申请数量-->
+                            <div class="form-group row">
+                                <label for="startingInventory"
+                                       class="col-sm-2 col-form-label font-weight-bold">申请数量</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control input-sm" id="amount"
+                                           name="amount" placeholder="">
+                                </div>
+                            </div>
+
+                            <!--申请日期-->
+                            <div class="form-group row">
+                                <label for="startingInventory"
+                                       class="col-sm-2 col-form-label font-weight-bold">申请日期</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control input-sm" id="applicationDate"
+                                           name="applicationDate" placeholder="">
+                                </div>
+                            </div>
+
+                            <!--发放日期-->
+                            <div class="form-group row">
+                                <label for="startingInventory"
+                                       class="col-sm-2 col-form-label font-weight-bold">发放日期</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control input-sm" id="releaseDate"
+                                           name="releaseDate" placeholder="">
+                                </div>
+                            </div>
+
+                            <!--费用转嫁承办人工号-->
+                            <div class="form-group row">
+                                <label for="startingInventory" class="col-sm-2 col-form-label font-weight-bold">费用转嫁承办人工号</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control input-sm" id="director"
+                                           name="director" placeholder="">
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!--费用转嫁单号-->
+                            <div class="form-group row">
+                                <label for="startingInventory"
+                                       class="col-sm-2 col-form-label font-weight-bold">费用转嫁单号</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control" input-sm id="shiftCostNo"
+                                           name="shiftCostNo" placeholder="">
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!--转嫁费用金额-->
+                            <div class="form-group row">
+                                <label for="startingInventory"
+                                       class="col-sm-2 col-form-label font-weight-bold">转嫁费用金额</label>
+                                <div class="col-sm-10">
+                                    <input type="text" class="form-control input-sm" id="shiftCost"
+                                           name="shiftCost" placeholder="">
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" onclick="addApplication()">提交</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{asserts/js/jquery-3.2.1.slim.min.js}"></script>
+<script type="text/javascript" th:src="@{asserts/js/popper.min.js}"></script>
+
+<!--<script type="text/javascript" th:src="@{asserts/js/bootstrap.min.js}"></script>-->
+<script type="text/javascript" th:src="@{bootstrap-4.5.0-dist/js/bootstrap.min.js}"></script>
+
+<!-- Icons -->
+<script type="text/javascript" th:src="@{asserts/js/feather.min.js}"></script>
+
+<script src="https://cdn.bootcss.com/moment.js/2.24.0/moment-with-locales.js"></script>
+<!--日期选择插件-->
+<script type="text/javascript" th:src="@{asserts/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js}"></script>
+
+<script>
+    feather.replace();
+
+    /*提交表单*/
+    function addApplication() {
+        $('#applicationForm').submit();
+        $('#myModal').modal('hide');  //手动关闭
+        window.location.href('home/list.html');
+    }
+
+    /*点击日期控件*/
+    $(function () {
+        $('#applicationDate').datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: moment.locale('zh-cn')
+        });
+
+        $('#releaseDate').datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: moment.locale('zh-cn')
+        });
+    });
+
+</script>
+</body>
+</html>
