@@ -1,7 +1,14 @@
 package com.foxconn.sw.macaddress.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.foxconn.sw.macaddress.common.Result;
+import com.foxconn.sw.macaddress.common.RetResponse;
 import com.foxconn.sw.macaddress.dao.ApplicationDao;
+import com.foxconn.sw.macaddress.dao.DeliveryRecordDao;
+import com.foxconn.sw.macaddress.dao.MacaddressDao;
 import com.foxconn.sw.macaddress.entity.Application;
+import com.foxconn.sw.macaddress.entity.DeliveryRecord;
+import com.foxconn.sw.macaddress.entity.Macaddress;
 import com.foxconn.sw.macaddress.service.ApplicationService;
 import com.foxconn.sw.macaddress.vo.ApplicationVO;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
@@ -16,6 +24,8 @@ import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * mac地址申请单(Application)表服务实现类
@@ -28,6 +38,12 @@ import java.util.List;
 public class ApplicationServiceImpl implements ApplicationService {
     @Resource
     private ApplicationDao applicationDao;
+
+    @Resource
+    private MacaddressDao macaddressDao;
+
+    @Resource
+    private DeliveryRecordDao deliveryRecordDao;
 
     @Autowired
     private HttpSession httpSession;
@@ -135,12 +151,15 @@ public class ApplicationServiceImpl implements ApplicationService {
 
     @Override
     @Transactional
-    public Boolean addApplication(ApplicationVO applicationVO) {
+    public Result addApplication(ApplicationVO applicationVO) {
         if (ObjectUtils.isEmpty(applicationVO)) {
             System.out.println("macAddressVO = " + applicationVO);
             log.error("参数{}为空", applicationVO);
-            return false;
+            return RetResponse.error("参数为空");
         }
+
+
+
         Application application = new Application();
         BeanUtils.copyProperties(applicationVO, application);
         application.setCreateDate(new Date());
@@ -152,8 +171,31 @@ public class ApplicationServiceImpl implements ApplicationService {
             applicationDao.insert(application);
         } catch (Exception e) {
             log.error("新增mac地址申请失败,原因{}", e.getMessage());
-            return false;
+            return RetResponse.error("新增mac地址申请失败,原因" + e.getMessage());
         }
-        return true;
+        return RetResponse.makeOKRsp();
+    }
+
+    /**
+     * 根据申请数量分配mac地址段给申请人
+     * @param amount
+     */
+    private void assignMac(Integer amount,Integer macId) {
+        //查询库存量
+        List<Macaddress> macaddresses = macaddressDao.queryAll(null);
+        if (CollectionUtils.isEmpty(macaddresses)) {
+            log.error("mac地址数据为空，请检查数据");
+            throw new RuntimeException("mac地址数据为空，请检查数据");
+        }
+        //(id,可用数量)拼成一个map
+        //(id,总数)拼一个map
+        Map<Integer, Integer> startMap = macaddresses.stream().collect(Collectors.toMap(Macaddress::getId, Macaddress::getStartingInventory));
+
+        DeliveryRecord deliveryRecord=new DeliveryRecord();
+        deliveryRecord.setMacId(macId);
+        //查询出macid对应的使用量
+        List<DeliveryRecord> deliveryRecords = deliveryRecordDao.queryAll(deliveryRecord);
+        Integer usedMacAddressSum = deliveryRecords.stream().collect(Collectors.summingInt(d -> d.getAmount()));
+
     }
 }

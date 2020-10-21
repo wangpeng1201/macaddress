@@ -1,5 +1,9 @@
 package com.foxconn.sw.macaddress.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.foxconn.sw.macaddress.common.Result;
+import com.foxconn.sw.macaddress.common.RetResponse;
+import com.foxconn.sw.macaddress.entity.Application;
 import com.foxconn.sw.macaddress.service.ApplicationService;
 import com.foxconn.sw.macaddress.vo.ApplicationVO;
 import com.github.pagehelper.PageHelper;
@@ -9,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -37,11 +42,11 @@ public class ApplicationController {
             pageNum = 1;
         }
 
-        PageHelper.startPage(pageNum, 5);
+        PageHelper.startPage(pageNum, 15);
         try {
-            List<ApplicationVO> applications = applicationService.getAll();
+            List<Application> applications = applicationService.queryAll();
             //使用PageInfo包装查询后的结果,5是连续显示的条数,结果list类型是Page<E>
-            PageInfo<ApplicationVO> pageInfo = new PageInfo<ApplicationVO>(applications, 5);
+            PageInfo<Application> pageInfo = new PageInfo<Application>(applications, 5);
             //使用model/map/modelandview等带回前端
             model.addAttribute("pageInfo", pageInfo);
         } finally {
@@ -51,8 +56,10 @@ public class ApplicationController {
     }
 
     @PostMapping("/applications")
-    public String addApplication(ApplicationVO applicationVO) {
+    @ResponseBody
+    public Result addApplication(ApplicationVO applicationVO) {
         applicationService.addApplication(applicationVO);
-        return "redirect:/applications";
+        return RetResponse.makeOKRsp();
+//        return "redirect:/applications";
     }
 }

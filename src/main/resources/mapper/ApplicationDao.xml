@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.foxconn.sw.macaddress.dao.ApplicationDao">
+
+    <resultMap type="com.foxconn.sw.macaddress.entity.Application" id="ApplicationMap">
+        <result property="id" column="id" jdbcType="INTEGER"/>
+        <result property="startMacAddress" column="start_mac_address" jdbcType="VARCHAR"/>
+        <result property="endMacAddress" column="end_mac_address" jdbcType="VARCHAR"/>
+        <result property="applicationDepartment" column="application_department" jdbcType="VARCHAR"/>
+        <result property="customer" column="customer" jdbcType="VARCHAR"/>
+        <result property="amount" column="amount" jdbcType="INTEGER"/>
+        <result property="applicant" column="applicant" jdbcType="VARCHAR"/>
+        <result property="applicationDate" column="application_date" jdbcType="TIMESTAMP"/>
+        <result property="releaseDate" column="release_date" jdbcType="TIMESTAMP"/>
+        <result property="director" column="director" jdbcType="VARCHAR"/>
+        <result property="shiftCostNo" column="shift_cost_no" jdbcType="VARCHAR"/>
+        <result property="shiftCost" column="shift_cost" jdbcType="NUMERIC"/>
+        <result property="creator" column="creator" jdbcType="VARCHAR"/>
+        <result property="createDate" column="create_date" jdbcType="TIMESTAMP"/>
+        <result property="updateDate" column="update_date" jdbcType="TIMESTAMP"/>
+        <result property="updator" column="updator" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!--查询单个-->
+    <select id="queryById" resultMap="ApplicationMap">
+        select
+          id, start_mac_address, end_mac_address, application_department, customer, amount, applicant, application_date, release_date, director, shift_cost_no, shift_cost, creator, create_date, update_date, updator, status
+        from bill.application
+        where id = #{id}
+    </select>
+
+    <!--查询指定行数据-->
+    <select id="queryAllByLimit" resultMap="ApplicationMap">
+        select
+          id, start_mac_address, end_mac_address, application_department, customer, amount, applicant, application_date, release_date, director, shift_cost_no, shift_cost, creator, create_date, update_date, updator, status
+        from bill.application
+        limit #{offset}, #{limit}
+    </select>
+
+    <!--通过实体作为筛选条件查询-->
+    <select id="queryAll" resultMap="ApplicationMap">
+        select
+        id, start_mac_address, end_mac_address, application_department, customer, amount, applicant, application_date,
+        release_date, director, shift_cost_no, shift_cost, creator, create_date, update_date, updator, status
+        from bill.application
+        <where>
+            <if test="id != null">
+                and id = #{id}
+            </if>
+            <if test="startMacAddress != null and startMacAddress != ''">
+                and start_mac_address = #{startMacAddress}
+            </if>
+            <if test="endMacAddress != null and endMacAddress != ''">
+                and end_mac_address = #{endMacAddress}
+            </if>
+            <if test="applicationDepartment != null and applicationDepartment != ''">
+                and application_department = #{applicationDepartment}
+            </if>
+            <if test="customer != null and customer != ''">
+                and customer = #{customer}
+            </if>
+            <if test="amount != null">
+                and amount = #{amount}
+            </if>
+            <if test="applicant != null and applicant != ''">
+                and applicant = #{applicant}
+            </if>
+            <if test="applicationDate != null">
+                and application_date = #{applicationDate}
+            </if>
+            <if test="releaseDate != null">
+                and release_date = #{releaseDate}
+            </if>
+            <if test="director != null and director != ''">
+                and director = #{director}
+            </if>
+            <if test="shiftCostNo != null and shiftCostNo != ''">
+                and shift_cost_no = #{shiftCostNo}
+            </if>
+            <if test="shiftCost != null">
+                and shift_cost = #{shiftCost}
+            </if>
+            <if test="creator != null and creator != ''">
+                and creator = #{creator}
+            </if>
+            <if test="createDate != null">
+                and create_date = #{createDate}
+            </if>
+            <if test="updateDate != null">
+                and update_date = #{updateDate}
+            </if>
+            <if test="updator != null and updator != ''">
+                and updator = #{updator}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+    </select>
+
+    <!--新增所有列-->
+    <insert id="insert" keyProperty="id" useGeneratedKeys="true">
+        insert into bill.application(start_mac_address, end_mac_address, application_department, customer, amount, applicant, application_date, release_date, director, shift_cost_no, shift_cost, creator, create_date, update_date, updator, status)
+        values (#{startMacAddress}, #{endMacAddress}, #{applicationDepartment}, #{customer}, #{amount}, #{applicant}, #{applicationDate}, #{releaseDate}, #{director}, #{shiftCostNo}, #{shiftCost}, #{creator}, #{createDate}, #{updateDate}, #{updator}, #{status})
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into bill.application(start_mac_address, end_mac_address, application_department, customer, amount,
+        applicant, application_date, release_date, director, shift_cost_no, shift_cost, creator, create_date,
+        update_date, updator, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.startMacAddress}, #{entity.endMacAddress}, #{entity.applicationDepartment}, #{entity.customer},
+            #{entity.amount}, #{entity.applicant}, #{entity.applicationDate}, #{entity.releaseDate}, #{entity.director},
+            #{entity.shiftCostNo}, #{entity.shiftCost}, #{entity.creator}, #{entity.createDate}, #{entity.updateDate},
+            #{entity.updator}, #{entity.status})
+        </foreach>
+    </insert>
+
+    <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
+        insert into bill.application(start_mac_address, end_mac_address, application_department, customer, amount,
+        applicant, application_date, release_date, director, shift_cost_no, shift_cost, creator, create_date,
+        update_date, updator, status)
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            (#{entity.startMacAddress}, #{entity.endMacAddress}, #{entity.applicationDepartment}, #{entity.customer},
+            #{entity.amount}, #{entity.applicant}, #{entity.applicationDate}, #{entity.releaseDate}, #{entity.director},
+            #{entity.shiftCostNo}, #{entity.shiftCost}, #{entity.creator}, #{entity.createDate}, #{entity.updateDate},
+            #{entity.updator}, #{entity.status})
+        </foreach>
+        on duplicate key update
+        start_mac_address = values(start_mac_address) , end_mac_address = values(end_mac_address) ,
+        application_department = values(application_department) , customer = values(customer) , amount = values(amount)
+        , applicant = values(applicant) , application_date = values(application_date) , release_date =
+        values(release_date) , director = values(director) , shift_cost_no = values(shift_cost_no) , shift_cost =
+        values(shift_cost) , creator = values(creator) , create_date = values(create_date) , update_date =
+        values(update_date) , updator = values(updator) , status = values(status)
+    </insert>
+
+    <!--通过主键修改数据-->
+    <update id="update">
+        update bill.application
+        <set>
+            <if test="startMacAddress != null and startMacAddress != ''">
+                start_mac_address = #{startMacAddress},
+            </if>
+            <if test="endMacAddress != null and endMacAddress != ''">
+                end_mac_address = #{endMacAddress},
+            </if>
+            <if test="applicationDepartment != null and applicationDepartment != ''">
+                application_department = #{applicationDepartment},
+            </if>
+            <if test="customer != null and customer != ''">
+                customer = #{customer},
+            </if>
+            <if test="amount != null">
+                amount = #{amount},
+            </if>
+            <if test="applicant != null and applicant != ''">
+                applicant = #{applicant},
+            </if>
+            <if test="applicationDate != null">
+                application_date = #{applicationDate},
+            </if>
+            <if test="releaseDate != null">
+                release_date = #{releaseDate},
+            </if>
+            <if test="director != null and director != ''">
+                director = #{director},
+            </if>
+            <if test="shiftCostNo != null and shiftCostNo != ''">
+                shift_cost_no = #{shiftCostNo},
+            </if>
+            <if test="shiftCost != null">
+                shift_cost = #{shiftCost},
+            </if>
+            <if test="creator != null and creator != ''">
+                creator = #{creator},
+            </if>
+            <if test="createDate != null">
+                create_date = #{createDate},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate},
+            </if>
+            <if test="updator != null and updator != ''">
+                updator = #{updator},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--通过主键删除-->
+    <delete id="deleteById">
+        delete from bill.application where id = #{id}
+    </delete>
+
+</mapper>

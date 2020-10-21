@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Dashboard Template for Bootstrap</title>
+    <title>Mac后台管理系统</title>
     <!-- Bootstrap core CSS -->
     <link th:href="@{asserts/css/bootstrap.min.css}" rel="stylesheet">
 
@@ -198,7 +198,7 @@
 
                                     <!--尾页-->
                                     <li class="page-item" th:if="${pageInfo.hasNextPage}">
-                                        <a th:href="@{'/list?pageNum='+${pageInfo.pages}}" class="page-link">最后一页</a>
+                                        <a th:href="@{'/list?pageNum='+${pageInfo.pages}}" class="page-link">尾页</a>
                                     </li>
                                 </ul>
                             </nav>
@@ -310,14 +310,11 @@
     </div>
 </div>
 
-
 <!--<script type="text/javascript" th:src="@{asserts/js/jquery-3.2.1.slim.min.js}"></script>-->
+<!--bootstrap官网推荐slim.min.js但该版本不带$.ajax功能，故使用min.js-->
 <script type="text/javascript" th:src="@{asserts/js/jquery-3.5.1.min.js}"></script>
-
 <script type="text/javascript" th:src="@{asserts/js/popper.min.js}"></script>
-
 <script type="text/javascript" th:src="@{asserts/js/bootstrap.min.js}"></script>
-
 <!-- Icons -->
 <script type="text/javascript" th:src="@{asserts/js/feather.min.js}"></script>
 <script type="text/javascript" th:src="@{asserts/js/message.js}"></script>
@@ -344,8 +341,8 @@
 
     function showDetail(obj) {
         var macTd = $(obj).parent().parent().find("td");
-        var startMac = macTd.eq(1).text();
-        var endMac = macTd.eq(2).text();
+        var startMac = macTd.eq(2).text();
+        var endMac = macTd.eq(3).text();
         $('#startMacAddressDetail').val(startMac);
         $('#endMacAddressDetail').val(endMac);
     }

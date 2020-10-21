@@ -1,5 +1,6 @@
 package com.foxconn.sw.macaddress.service;
 
+import com.foxconn.sw.macaddress.common.Result;
 import com.foxconn.sw.macaddress.entity.Application;
 import com.foxconn.sw.macaddress.vo.ApplicationVO;
 
@@ -71,5 +72,5 @@ public interface ApplicationService {
      * @param applicationVO
      * @return
      */
-    Boolean addApplication(ApplicationVO applicationVO);
+    Result addApplication(ApplicationVO applicationVO);
 }

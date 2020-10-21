@@ -94,6 +94,7 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.62</version>
         </dependency>
+
     </dependencies>
 
     <build>
@@ -102,6 +103,13 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <plugin>
+                <!-- https://mvnrepository.com/artifact/org.mybatis.generator/mybatis-generator-maven-plugin -->
+                    <groupId>org.mybatis.generator</groupId>
+                    <artifactId>mybatis-generator-maven-plugin</artifactId>
+                    <version>1.4.0</version>
+            </plugin>
+
         </plugins>
     </build>
 
