@@ -36,7 +36,6 @@ public class ApplicationController {
         if (pageNum <= 0) {
             pageNum = 1;
         }
-        System.out.println("当前页是：" + pageNum + ",显示条数是：" + 10);
 
         PageHelper.startPage(pageNum, 5);
         try {

@@ -1,7 +1,5 @@
 package com.foxconn.sw.macaddress.entity;
 
-import lombok.Data;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -9,19 +7,22 @@ import java.util.Date;
  * mac地址申请单(Application)实体类
  *
  * @author makejava
- * @since 2020-10-16 13:59:48
+ * @since 2020-10-20 17:04:58
  */
-@Data
 public class Application implements Serializable {
-    private static final long serialVersionUID = 691869192854831794L;
+    private static final long serialVersionUID = -36133207705207917L;
     /**
      * 主键
      */
     private Integer id;
     /**
-     * mac表id(关联macaddress表，包含起始mac地址和结束mac地址)
+     * 起始mac地址
      */
-    private Integer macId;
+    private String startMacAddress;
+    /**
+     * 结束mac地址
+     */
+    private String endMacAddress;
     /**
      * 申请单位
      */
@@ -74,4 +75,145 @@ public class Application implements Serializable {
      * 修改人
      */
     private String updator;
+    /**
+     * 是否显示(0:不显示，1:显示)
+     */
+    private Integer status;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getStartMacAddress() {
+        return startMacAddress;
+    }
+
+    public void setStartMacAddress(String startMacAddress) {
+        this.startMacAddress = startMacAddress;
+    }
+
+    public String getEndMacAddress() {
+        return endMacAddress;
+    }
+
+    public void setEndMacAddress(String endMacAddress) {
+        this.endMacAddress = endMacAddress;
+    }
+
+    public String getApplicationDepartment() {
+        return applicationDepartment;
+    }
+
+    public void setApplicationDepartment(String applicationDepartment) {
+        this.applicationDepartment = applicationDepartment;
+    }
+
+    public String getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(String customer) {
+        this.customer = customer;
+    }
+
+    public Integer getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Integer amount) {
+        this.amount = amount;
+    }
+
+    public String getApplicant() {
+        return applicant;
+    }
+
+    public void setApplicant(String applicant) {
+        this.applicant = applicant;
+    }
+
+    public Date getApplicationDate() {
+        return applicationDate;
+    }
+
+    public void setApplicationDate(Date applicationDate) {
+        this.applicationDate = applicationDate;
+    }
+
+    public Date getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(Date releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public String getDirector() {
+        return director;
+    }
+
+    public void setDirector(String director) {
+        this.director = director;
+    }
+
+    public String getShiftCostNo() {
+        return shiftCostNo;
+    }
+
+    public void setShiftCostNo(String shiftCostNo) {
+        this.shiftCostNo = shiftCostNo;
+    }
+
+    public Double getShiftCost() {
+        return shiftCost;
+    }
+
+    public void setShiftCost(Double shiftCost) {
+        this.shiftCost = shiftCost;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
+
+    public Date getCreateDate() {
+        return createDate;
+    }
+
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
+
+    public Date getUpdateDate() {
+        return updateDate;
+    }
+
+    public void setUpdateDate(Date updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    public String getUpdator() {
+        return updator;
+    }
+
+    public void setUpdator(String updator) {
+        this.updator = updator;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
 }

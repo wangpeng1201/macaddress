@@ -142,9 +142,11 @@ public class ApplicationServiceImpl implements ApplicationService {
             return false;
         }
         Application application = new Application();
+        BeanUtils.copyProperties(applicationVO, application);
         application.setCreateDate(new Date());
         application.setCreator(httpSession.getAttribute("LoginState").toString());
         application.setUpdateDate(new Date());
+        application.setStatus(1);
         BeanUtils.copyProperties(applicationVO, application);
         try {
             applicationDao.insert(application);

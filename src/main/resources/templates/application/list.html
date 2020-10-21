@@ -85,7 +85,7 @@
             </button>
 
             <div class="table-responsive">
-                <table class="table table-striped table-sm table-bordered">
+                <table class="table table-sm table-bordered table-hover">
                     <thead>
                     <tr>
                         <th>主键</th>
@@ -97,8 +97,8 @@
                         <th>申请数量</th>
                         <th>申请日期</th>
                         <th>发放日期</th>
-                        <th>费用转嫁承办人工号</th>
-                        <th>费用转嫁单号</th>
+                        <!--<th>费用转嫁承办人工号</th>
+                        <th>费用转嫁单号</th>-->
                         <th>转嫁费用金额</th>
                         <th>操作</th>
                     </tr>
@@ -114,8 +114,8 @@
                         <td>[[${app.amount}]]</td>
                         <td th:text="${#dates.format(app.applicationDate,'yyyy-MM-dd HH:mm:ss')}"></td>
                         <td th:text="${#dates.format(app.releaseDate,'yyyy-MM-dd HH:mm:ss')}"></td>
-                        <td>[[${app.director}]]</td>
-                        <td>[[${app.shiftCostNo}]]</td>
+                        <!--<td>[[${app.director}]]</td>
+                        <td>[[${app.shiftCostNo}]]</td>-->
                         <td>[[${app.shiftCost}]]</td>
                         <td>
                             <button class="btn btn-sm btn-info">详情</button>
@@ -240,7 +240,7 @@
 
                             <!--申请人-->
                             <div class="form-group row">
-                                <label for="startingInventory"
+                                <label for="applicant"
                                        class="col-sm-2 col-form-label font-weight-bold">申请人</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control input-sm" id="applicant"
@@ -250,17 +250,17 @@
 
                             <!--申请人部门-->
                             <div class="form-group row">
-                                <label for="startingInventory"
+                                <label for="applicationDepartment"
                                        class="col-sm-2 col-form-label font-weight-bold">申请人部门</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control input-sm" id="startingInventory"
-                                           name="startingInventory" placeholder="">
+                                    <input type="text" class="form-control input-sm" id="applicationDepartment"
+                                           name="applicationDepartment" placeholder="">
                                 </div>
                             </div>
 
                             <!--申请数量-->
                             <div class="form-group row">
-                                <label for="startingInventory"
+                                <label for="amount"
                                        class="col-sm-2 col-form-label font-weight-bold">申请数量</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control input-sm" id="amount"
@@ -270,7 +270,7 @@
 
                             <!--申请日期-->
                             <div class="form-group row">
-                                <label for="startingInventory"
+                                <label for="applicationDate"
                                        class="col-sm-2 col-form-label font-weight-bold">申请日期</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control input-sm" id="applicationDate"
@@ -280,7 +280,7 @@
 
                             <!--发放日期-->
                             <div class="form-group row">
-                                <label for="startingInventory"
+                                <label for="releaseDate"
                                        class="col-sm-2 col-form-label font-weight-bold">发放日期</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control input-sm" id="releaseDate"
@@ -290,7 +290,7 @@
 
                             <!--费用转嫁承办人工号-->
                             <div class="form-group row">
-                                <label for="startingInventory" class="col-sm-2 col-form-label font-weight-bold">费用转嫁承办人工号</label>
+                                <label for="director" class="col-sm-2 col-form-label font-weight-bold">费用转嫁承办人工号</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control input-sm" id="director"
                                            name="director" placeholder="">
@@ -302,7 +302,7 @@
 
                             <!--费用转嫁单号-->
                             <div class="form-group row">
-                                <label for="startingInventory"
+                                <label for="shiftCostNo"
                                        class="col-sm-2 col-form-label font-weight-bold">费用转嫁单号</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control" input-sm id="shiftCostNo"
@@ -315,7 +315,7 @@
 
                             <!--转嫁费用金额-->
                             <div class="form-group row">
-                                <label for="startingInventory"
+                                <label for="shiftCost"
                                        class="col-sm-2 col-form-label font-weight-bold">转嫁费用金额</label>
                                 <div class="col-sm-10">
                                     <input type="text" class="form-control input-sm" id="shiftCost"
