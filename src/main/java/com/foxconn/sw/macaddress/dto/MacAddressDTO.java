@@ -11,7 +11,5 @@ public class MacAddressDTO implements Serializable {
     //起始mac地址
     private String startMacAddress;
     //创建时间
-    private Date createDate;
-    //当前页码
-    private Integer pageNum;
+    private Date createdate;
 }

@@ -9,7 +9,6 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -42,18 +41,10 @@ public class MacaddressController {
         return this.macaddressService.queryById(id);
     }
 
-    //    @GetMapping("list")
-    public String getAll(Model model, HttpServletRequest request) {
-        List<Macaddress> macAddressList = macaddressService.queryAll();
-        model.addAttribute("macAddressList", macAddressList);
-        model.addAttribute("PROJECT_PATH", request.getContextPath());
-        return "home/list";
-    }
-
     @PostMapping("/addMacAddress")
     public String addMacAddressPage(MacAddressVO macAddressVo) {
         macaddressService.insertMacAddress(macAddressVo);
-        return "redirect:/list";
+        return "redirect:/mac/list";
     }
 
     /**
@@ -63,7 +54,7 @@ public class MacaddressController {
      */
     //分页查询数据
     @GetMapping("/list")
-    public String usermanage(Model model,
+    public String usermanage(Model model, HttpServletRequest request,
                              @RequestParam(required = false, defaultValue = "1", value = "pageNum") Integer pageNum) {
         //为了程序的严谨性，判断非空
         if (pageNum == null) {
@@ -83,9 +74,12 @@ public class MacaddressController {
             PageInfo<Macaddress> pageInfo = new PageInfo<Macaddress>(macAddressList, 5);
             //4.使用model/map/modelandview等带回前端
             model.addAttribute("pageInfo", pageInfo);
+            model.addAttribute("url", "mac/list");
+            model.addAttribute("APP_PATH",request.getServletContext());
         } finally {
             PageHelper.clearPage(); //清理 ThreadLocal 存储的分页参数,保证线程安全
         }
+        System.err.println("APP_PATH = " + request.getServletContext());
         //5.设置返回的jsp/html等前端页面
         // thymeleaf默认就会拼串classpath:/templates/xxxx.html
         return "home/list";
@@ -95,21 +89,28 @@ public class MacaddressController {
      * 条件查询
      *
      * @param model
-     * @param macAddressDTO
+     * @param
      * @return
      */
     @PostMapping("/condition")
-    public String findByCondition(Model model, @RequestParam MacAddressDTO macAddressDTO) {
-        if (ObjectUtils.isEmpty(macAddressDTO)) {
-            log.error("参数{}为空", macAddressDTO);
-            throw new RuntimeException("参数为空");
-        }
-        Date createDate = macAddressDTO.getCreateDate();
-        String startMacAddress = macAddressDTO.getStartMacAddress();
-        Integer pageNum = macAddressDTO.getPageNum();
+    public String findByCondition(Model model,
+                                  @RequestParam(required = false, defaultValue = "1", value = "pageNum") Integer pageNum,
+                                  @RequestParam String startMacAddress, @RequestParam Date createdate) {
+//        if (ObjectUtils.isEmpty(macAddressDTO)) {
+//            log.error("参数{}为空", macAddressDTO);
+//            throw new RuntimeException("参数为空");
+//        }
+        log.debug("条件查询参数:",startMacAddress,createdate);
+//        Date createDate = macAddressDTO.getCreateDate();
+//        String startMacAddress = macAddressDTO.getStartMacAddress();
         PageHelper.startPage(pageNum, 5);
+        MacAddressDTO macAddressDTO=new MacAddressDTO();
+        macAddressDTO.setStartMacAddress(startMacAddress);
+        macAddressDTO.setCreatedate(createdate);
         List<Macaddress> macAddressList = macaddressService.findByStartMacAddressAndCreateDate(macAddressDTO);
-        model.addAttribute("macAddressList", macAddressList);
+        PageInfo<Macaddress> pageInfo = new PageInfo<Macaddress>(macAddressList, 5);
+        //4.使用model/map/modelandview等带回前端
+        model.addAttribute("pageInfo", pageInfo);
         return "home/list";
     }
 

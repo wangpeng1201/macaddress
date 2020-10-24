@@ -146,12 +146,13 @@ public class MacaddressServiceImpl implements MacaddressService {
             throw new RuntimeException("参数为空");
         }
         List<Macaddress> macaddresses;
-        try {
-            macaddresses = macaddressDao.queryByCreateDateAndStartMacAddress(macAddressDTO);
-        } catch (Exception e) {
-            log.error("根据创建时间和起始mac地址查询失败", e.getMessage());
-            throw new RuntimeException("根据创建时间和起始mac地址查询失败");
-        }
+        macaddresses = macaddressDao.queryByCreateDateAndStartMacAddress(macAddressDTO);
+//        try {
+//            macaddresses = macaddressDao.queryByCreateDateAndStartMacAddress(macAddressDTO);
+//        } catch (Exception e) {
+//            log.error("根据创建时间和起始mac地址查询失败", e.getMessage());
+//            throw new RuntimeException("根据创建时间和起始mac地址查询失败");
+//        }
         return macaddresses;
     }
 }

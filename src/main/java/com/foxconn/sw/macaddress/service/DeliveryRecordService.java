@@ -1,6 +1,8 @@
 package com.foxconn.sw.macaddress.service;
 
+import com.foxconn.sw.macaddress.common.Result;
 import com.foxconn.sw.macaddress.entity.DeliveryRecord;
+import com.foxconn.sw.macaddress.vo.ApplicationVO;
 
 import java.util.List;
 
@@ -53,4 +55,7 @@ public interface DeliveryRecordService {
      */
     boolean deleteById(Integer id);
 
+    Result assignMac(ApplicationVO applicationVO);
+
+    Result queryAll();
 }

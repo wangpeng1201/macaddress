@@ -78,15 +78,14 @@
         select
         id, signs, start_mac_address, end_mac_address, createDate, creator, updateDate, updator, status
         from bill.macaddress
-        <where>
+        where 1=1
             <if test="startMacAddress != null and startMacAddress != ''">
                 and start_mac_address = #{startMacAddress}
             </if>
 
             <if test="createdate != null">
-                and createDate = #{createdate}
+                and date(createDate)=#{createdate}
             </if>
-        </where>
         order by updateDate
     </select>
 

@@ -1,6 +1,5 @@
 package com.foxconn.sw.macaddress.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.foxconn.sw.macaddress.common.Result;
 import com.foxconn.sw.macaddress.common.RetResponse;
 import com.foxconn.sw.macaddress.entity.Application;
@@ -49,6 +48,7 @@ public class ApplicationController {
             PageInfo<Application> pageInfo = new PageInfo<Application>(applications, 5);
             //使用model/map/modelandview等带回前端
             model.addAttribute("pageInfo", pageInfo);
+            model.addAttribute("url", "application/list");
         } finally {
             PageHelper.clearPage(); //清理 ThreadLocal 存储的分页参数,保证线程安全
         }
@@ -58,7 +58,7 @@ public class ApplicationController {
     @PostMapping("/applications")
     @ResponseBody
     public Result addApplication(ApplicationVO applicationVO) {
-        applicationService.addApplication(applicationVO);
+        applicationService.insertApplication(applicationVO);
         return RetResponse.makeOKRsp();
 //        return "redirect:/applications";
     }

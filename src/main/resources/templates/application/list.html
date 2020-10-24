@@ -6,63 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
     <meta name="author" content="">
-
     <title>Mac后台管理系统</title>
-    <!-- Bootstrap core CSS -->
-    <!--<link th:href="@{asserts/css/bootstrap.min.css}" rel="stylesheet">-->
-    <link th:href="@{bootstrap-4.5.0-dist/css/bootstrap.min.css}" rel="stylesheet">
-
-    <link th:href="@{asserts/css/dashboard.css}" rel="stylesheet">
-    <link th:href="@{asserts/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css}" rel="stylesheet">
-
-
-    <style type="text/css">
-        /* Chart.js */
-        @-webkit-keyframes chartjs-render-animation {
-            from {
-                opacity: 0.99
-            }
-            to {
-                opacity: 1
-            }
-        }
-
-        @keyframes chartjs-render-animation {
-            from {
-                opacity: 0.99
-            }
-            to {
-                opacity: 1
-            }
-        }
-
-        .chartjs-render-monitor {
-            -webkit-animation: chartjs-render-animation 0.001s;
-            animation: chartjs-render-animation 0.001s;
-        }
-
-        .middleCenter {
-            text-align: center;
-            vertical-align: center;
-        }
-
-        th {
-            text-align: center;
-            vertical-align: center;
-        }
-
-        tr {
-            text-align: center;
-            vertical-align: center;
-        }
-
-        td {
-            text-align: center;
-            /*vertical-align:middle;*/
-            vertical-align: middle !important;
-        }
-
-    </style>
+    <!--页面相似度高，引入统一的css，js-->
+    <div th:replace="~{home/common.html}"/>
 </head>
 <body>
 <!--顶部   模板引擎， 页面路径 :: id模板名 -->
@@ -78,13 +24,9 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <!-- 按钮触发模态框 -->
-            <button class="btn btn-primary" data-toggle="modal" data-target="#myModal" style="margin-bottom: 10px;">
-                新增
-            </button>
-
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#assignMacModal"
+            <button class="btn btn-primary" data-toggle="modal" data-target="#addApplicationModal"
                     style="margin-bottom: 10px;">
-                分配mac地址
+                新增
             </button>
 
             <div class="table-responsive">
@@ -93,16 +35,17 @@
                     <tr>
                         <th>主键</th>
                         <th>客户</th>
-                        <th>mac起始地址</th>
-                        <th>mac结束地址</th>
+                        <!--<th>mac起始地址</th>
+                        <th>mac结束地址</th>-->
                         <th>申请人</th>
                         <th>申请单位</th>
                         <th>申请数量</th>
                         <th>申请日期</th>
-                        <th>发放日期</th>
+                        <!--<th>发放日期</th>-->
                         <!--<th>费用转嫁承办人工号</th>
                         <th>费用转嫁单号</th>-->
-                        <th>转嫁费用金额</th>
+                        <!--<th>转嫁费用金额</th>-->
+                        <th>申请状态</th>
                         <th>操作</th>
                     </tr>
                     </thead>
@@ -110,213 +53,40 @@
                     <tr th:each="app:${pageInfo.list}">
                         <td>[[${app.id}]]</td>
                         <td>[[${app.customer}]]</td>
-                        <td th:text="${app.startMacAddress}"></td>
-                        <td th:text="${app.endMacAddress}"></td>
+                        <!--<td th:text="${app.startMacAddress}"></td>
+                        <td th:text="${app.endMacAddress}"></td>-->
                         <td>[[${app.applicant}]]</td>
                         <td>[[${app.applicationDepartment}]]</td>
                         <td>[[${app.amount}]]</td>
                         <td th:text="${#dates.format(app.applicationDate,'yyyy-MM-dd HH:mm:ss')}"></td>
-                        <td th:text="${#dates.format(app.releaseDate,'yyyy-MM-dd HH:mm:ss')}"></td>
+                        <!--<td th:text="${#dates.format(app.releaseDate,'yyyy-MM-dd HH:mm:ss')}"></td>-->
                         <!--<td>[[${app.director}]]</td>
                         <td>[[${app.shiftCostNo}]]</td>-->
-                        <td>[[${app.shiftCost}]]</td>
+                        <!--<td>[[${app.shiftCost}]]</td>-->
+                        <td th:if="${app.status}==1" th:class="text-info">新建</td>
+                        <td th:if="${app.status}==2" th:class="text-success">分发成功</td>
+                        <td th:if="${app.status}==3" th:class="text-danger">分发失败</td>
+                        <td th:if="${app.status}==0" th:class="text-muted">不显示</td>
                         <td>
                             <button class="btn btn-sm btn-info">详情</button>
                             <button class="btn btn-sm btn-primary">编辑</button>
                             <button class="btn btn-sm btn-danger">删除</button>
+                            <button type="button" th:if="${app.status} ne 2" class="btn btn-sm btn-success" onclick="assign(this)">分发</button>
+                            <button type="button" th:if="${app.status} eq 2" disabled class="btn btn-sm btn-success" onclick="assign(this)">分发</button>
                         </td>
                     </tr>
                     </tbody>
                 </table>
             </div>
 
-            <footer class="footer navbar-fixed-bottom " th:if="${pageInfo.list!=null}">
-                <div class="container">
-                    <!-- 分页信息 -->
-                    <div class="row">
-                        <!-- 分页文字信息 -->
-                        <div class="col-md-3" style="padding-top: 5px;padding-left: 0">
-                            <p th:text="'当前第' + ${pageInfo.pageNum}+'页,总'+${pageInfo.pages}+'页,共'+${pageInfo.total}+'条记录'"/>
-                        </div>
-                        <!-- 分页条信息 -->
-                        <div class="col-md-9" style="padding-left: 20%;">
-                            <nav aria-label="Page navigation example">
-                                <ul class="pagination">
-                                    <!--首页-->
-                                    <li class="page-item">
-                                        <a class="page-link" href="/applications?pageNum=1">首页</a>
-
-                                    </li>
-                                    <!--上一页《 -->
-                                    <li th:if="${pageInfo.hasPreviousPage}">
-                                        <a class="page-link"
-                                           th:href="@{'/applications?pageNum='+${pageInfo.pageNum-1 }}"
-                                           aria-label="Previous">
-                                            <span aria-hidden="true">&laquo;</span>
-                                        </a>
-                                    </li>
-
-                                    <!--动态添加样式-->
-                                    <li class="page-item"
-                                        th:classappend="${PageNum == pageInfo.pageNum} ? 'active' : '' "
-                                        th:each="PageNum : ${pageInfo.navigatepageNums}">
-                                        <a th:href="@{'/applications?pageNum='+${PageNum}}" class="page-link"
-                                           th:text="${PageNum}"></a>
-                                    </li>
-
-                                    <!--页码判断-->
-                                    <!--<li class="page-item active" th:each="PageNum : ${pageInfo.navigatepageNums}" th:if="${PageNum==pageInfo.pageNum}">
-                                        <a th:href="@{'/list?pageNum='+${PageNum}}" class="page-link" th:text="${PageNum}"></a>
-                                    </li>
-                                    <li class="page-item"  th:each="PageNum : ${pageInfo.navigatepageNums}" th:if="${PageNum!=pageInfo.pageNum}">
-                                        <a th:href="@{'/list?pageNum='+${PageNum}}" class="page-link" th:text="${PageNum}"></a>
-                                    </li>-->
-
-                                    <!--下一页 》-->
-                                    <li th:if="${pageInfo.hasNextPage}" class="page-item">
-                                        <a th:href="@{'/applications?pageNum='+${pageInfo.pageNum+1 }}"
-                                           aria-label="Next" class="page-link">
-                                            <span aria-hidden="true">&raquo;</span>
-                                        </a>
-                                    </li>
-
-                                    <!--尾页-->
-                                    <li class="page-item" th:if="${pageInfo.hasNextPage}">
-                                        <a th:href="@{'/applications?pageNum='+${pageInfo.pages}}" class="page-link">尾页</a>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-            </footer>
+            <!--分页条-->
+            <div th:replace="~{home/pageBar.html}"/>
         </main>
     </div>
 
     <div>
-
-        <!-- 模态框（Modal） -->
-        <div class="modal fade bs-example-modal-lg" id="myModal" tabindex="-1" role="dialog"
-             aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content" style="width:1000px;height: 800px;">
-                    <div class="modal-header">
-                        <h4 class="modal-title" id="myModalLabel">申请Mac地址</h4>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    </div>
-                    <div class="modal-body">
-
-                        <form role="form" th:action="@{/applications}" method="post"
-                              id="applicationForm">
-                            <!--客户-->
-                            <div class="form-group row">
-                                <label for="customer"
-                                       class="col-sm-2 col-form-label font-weight-bold">客户</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control input-sm" id="customer"
-                                           name="customer" placeholder="">
-                                </div>
-                            </div>
-
-                            <!--申请人-->
-                            <div class="form-group row">
-                                <label for="applicant"
-                                       class="col-sm-2 col-form-label font-weight-bold">申请人</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control input-sm" id="applicant"
-                                           name="applicant" placeholder="">
-                                </div>
-                            </div>
-
-                            <!--申请人部门-->
-                            <div class="form-group row">
-                                <label for="applicationDepartment"
-                                       class="col-sm-2 col-form-label font-weight-bold">申请人部门</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control input-sm" id="applicationDepartment"
-                                           name="applicationDepartment" placeholder="">
-                                </div>
-                            </div>
-
-                            <!--申请数量-->
-                            <div class="form-group row">
-                                <label for="amount"
-                                       class="col-sm-2 col-form-label font-weight-bold">申请数量</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control input-sm" id="amount"
-                                           name="amount" placeholder="">
-                                </div>
-                            </div>
-
-                            <!--申请日期-->
-                            <div class="form-group row">
-                                <label for="applicationDate"
-                                       class="col-sm-2 col-form-label font-weight-bold">申请日期</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control input-sm" id="applicationDate"
-                                           name="applicationDate" placeholder="">
-                                </div>
-                            </div>
-
-                            <!--发放日期-->
-                            <div class="form-group row">
-                                <label for="releaseDate"
-                                       class="col-sm-2 col-form-label font-weight-bold">发放日期</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control input-sm" id="releaseDate"
-                                           name="releaseDate" placeholder="">
-                                </div>
-                            </div>
-
-                            <!--费用转嫁承办人工号-->
-                            <div class="form-group row">
-                                <label for="director" class="col-sm-2 col-form-label font-weight-bold">费用转嫁承办人工号</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control input-sm" id="director"
-                                           name="director" placeholder="">
-                                    <span class="input-group-addon">
-                                        <span class="glyphicon glyphicon-calendar"></span>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!--费用转嫁单号-->
-                            <div class="form-group row">
-                                <label for="shiftCostNo"
-                                       class="col-sm-2 col-form-label font-weight-bold">费用转嫁单号</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control" input-sm id="shiftCostNo"
-                                           name="shiftCostNo" placeholder="">
-                                    <span class="input-group-addon">
-                                        <span class="glyphicon glyphicon-calendar"></span>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!--转嫁费用金额-->
-                            <div class="form-group row">
-                                <label for="shiftCost"
-                                       class="col-sm-2 col-form-label font-weight-bold">转嫁费用金额</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control input-sm" id="shiftCost"
-                                           name="shiftCost" placeholder="">
-                                    <span class="input-group-addon">
-                                        <span class="glyphicon glyphicon-calendar"></span>
-                                    </span>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                        <button type="button" class="btn btn-primary" onclick="addApplication()">提交</button>
-                    </div>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal -->
-        </div>
-
         <!--分配mac模态框-->
-        <div class="modal" tabindex="-1" role="dialog" id="assignMacModal">
+        <div class="modal" tabindex="-1" role="dialog" id="addApplicationModal">
             <div class="modal-dialog">
                 <div class="modal-content" style="width:650px;height: auto;">
                     <div class="modal-header">
@@ -386,21 +156,6 @@
     </div>
 </div>
 
-<!--<script type="text/javascript" th:src="@{asserts/js/jquery-3.2.1.slim.min.js}"></script>-->
-<script type="text/javascript" th:src="@{asserts/js/jquery-3.5.1.min.js}"></script>
-<script type="text/javascript" th:src="@{asserts/js/popper.min.js}"></script>
-
-<!--<script type="text/javascript" th:src="@{asserts/js/bootstrap.min.js}"></script>-->
-<script type="text/javascript" th:src="@{bootstrap-4.5.0-dist/js/bootstrap.min.js}"></script>
-
-<!-- Icons -->
-<script type="text/javascript" th:src="@{asserts/js/feather.min.js}"></script>
-<script type="text/javascript" th:src="@{asserts/js/message.js}"></script>
-
-<script src="https://cdn.bootcss.com/moment.js/2.24.0/moment-with-locales.js"></script>
-<!--日期选择插件-->
-<script type="text/javascript" th:src="@{asserts/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js}"></script>
-
 <script>
     feather.replace();
 
@@ -408,7 +163,8 @@
     function addApplication() {
         $('#applicationForm').submit();
         $('#myModal').modal('hide');  //手动关闭
-        window.location.href('home/list.html');
+        // window.location.href('home/list.html');
+        window.location.href('/applications?pageNum=1');
     }
 
     /*点击日期控件*/
@@ -429,9 +185,9 @@
         });
     });
 
-    /*分配mac地址*/
+    /*新增mac地址申请*/
     function submitApplication() {
-        $('#assignMacModal').modal('hide');  //手动关闭
+        $('#addApplicationModal').modal('hide');  //手动关闭
         let customerAssignInput = $('#customerAssign').val();
         let applicantAssignInput = $('#applicantAssign').val();
         let applicationDepartmentAssignInput = $('#applicationDepartmentAssign').val();
@@ -439,25 +195,61 @@
         let applicationDateAssignInput = $('#applicationDateAssign').val();
         $.ajax({
             //请求的url地址
-            url:"/applications",
+            url: "/applications",
             //请求是否异步，默认为异步，这也是ajax重要特性
-            async:true,
+            async: true,
             //参数值
-            data:{
+            data: {
                 "customer": customerAssignInput,
                 "applicant": applicantAssignInput,
                 "applicationDepartment": applicationDepartmentAssignInput,
                 "amount": amountAssignInput,
                 "applicationDate": applicationDateAssignInput
             },
-            type:"POST",   //请求方式
-            method:"POST",
-            success:function(req){
+            type: "POST",   //请求方式
+            method: "POST",
+            success: function (req) {
                 //请求成功时处理
                 ShowSuccess("添加申请成功!");
-                window.location.href="/applications?pageNum=1";
+                window.location.href = "/applications?pageNum=1";
             },
-            error:function(){
+            error: function () {
+                //请求出错处理
+                ShowFailure("添加申请失败");
+            }
+        });
+    }
+
+    function assign(obj) {
+        var applicationTd = $(obj).parent().parent().find("td");
+        let macTdTdText = applicationTd.eq(0).text();
+        let customerTdText = applicationTd.eq(1).text();
+        let applicantTdText = applicationTd.eq(2).text();
+        let applicationDepartmentTdText = applicationTd.eq(3).text();
+        let applicationAmountTdText = applicationTd.eq(4).text();
+        let applicationDateTdText = applicationTd.eq(5).text();
+        $.ajax({
+            //请求的url地址
+            url: "/assignMac",
+            //请求是否异步，默认为异步，这也是ajax重要特性
+            async: true,
+            //参数值
+            data: {
+                "id":macTdTdText,
+                "customer": customerTdText,
+                "applicant": applicantTdText,
+                "applicationDepartment": applicationDepartmentTdText,
+                "amount": applicationAmountTdText,
+                "applicationDate": applicationDateTdText
+            },
+            type: "POST",   //请求方式
+            method: "POST",
+            success: function (req) {
+                //请求成功时处理
+                ShowSuccess("添加申请成功!");
+                window.location.href = "/deliveryRecords?pageNum=1";
+            },
+            error: function () {
                 //请求出错处理
                 ShowFailure("添加申请失败");
             }

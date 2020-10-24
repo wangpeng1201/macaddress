@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.foxconn.sw.macaddress.dao.DeliveryRecordDao">
+<mapper namespace="com.foxconn.sw.macaddress.dao.MacaddressDao">
 
-    <resultMap type="com.foxconn.sw.macaddress.entity.DeliveryRecord" id="DeliveryRecordMap">
+    <resultMap type="com.foxconn.sw.macaddress.entity.Macaddress" id="MacaddressMap">
         <result property="id" column="id" jdbcType="INTEGER"/>
-        <result property="macId" column="mac_id" jdbcType="INTEGER"/>
+        <result property="signs" column="signs" jdbcType="VARCHAR"/>
         <result property="startMacAddress" column="start_mac_address" jdbcType="VARCHAR"/>
         <result property="endMacAddress" column="end_mac_address" jdbcType="VARCHAR"/>
-        <result property="applicationId" column="application_id" jdbcType="INTEGER"/>
-        <result property="amount" column="amount" jdbcType="INTEGER"/>
+        <result property="startingInventory" column="starting_inventory" jdbcType="INTEGER"/>
+        <result property="currentInventory" column="current_inventory" jdbcType="INTEGER"/>
         <result property="createdate" column="createDate" jdbcType="TIMESTAMP"/>
         <result property="creator" column="creator" jdbcType="VARCHAR"/>
         <result property="updatedate" column="updateDate" jdbcType="TIMESTAMP"/>
@@ -17,33 +17,33 @@
     </resultMap>
 
     <!--查询单个-->
-    <select id="queryById" resultMap="DeliveryRecordMap">
+    <select id="queryById" resultMap="MacaddressMap">
         select
-          id, mac_id, start_mac_address, end_mac_address, application_id, amount, createDate, creator, updateDate, updator, status
-        from bill.delivery_record
+          id, signs, start_mac_address, end_mac_address, starting_inventory, current_inventory, createDate, creator, updateDate, updator, status
+        from bill.macaddress
         where id = #{id}
     </select>
 
     <!--查询指定行数据-->
-    <select id="queryAllByLimit" resultMap="DeliveryRecordMap">
+    <select id="queryAllByLimit" resultMap="MacaddressMap">
         select
-          id, mac_id, start_mac_address, end_mac_address, application_id, amount, createDate, creator, updateDate, updator, status
-        from bill.delivery_record
+          id, signs, start_mac_address, end_mac_address, starting_inventory, current_inventory, createDate, creator, updateDate, updator, status
+        from bill.macaddress
         limit #{offset}, #{limit}
     </select>
 
     <!--通过实体作为筛选条件查询-->
-    <select id="queryAll" resultMap="DeliveryRecordMap">
+    <select id="queryAll" resultMap="MacaddressMap">
         select
-        id, mac_id, start_mac_address, end_mac_address, application_id, amount, createDate, creator, updateDate,
-        updator, status
-        from bill.delivery_record
+        id, signs, start_mac_address, end_mac_address, starting_inventory, current_inventory, createDate, creator,
+        updateDate, updator, status
+        from bill.macaddress
         <where>
             <if test="id != null">
                 and id = #{id}
             </if>
-            <if test="macId != null">
-                and mac_id = #{macId}
+            <if test="signs != null and signs != ''">
+                and signs = #{signs}
             </if>
             <if test="startMacAddress != null and startMacAddress != ''">
                 and start_mac_address = #{startMacAddress}
@@ -51,11 +51,11 @@
             <if test="endMacAddress != null and endMacAddress != ''">
                 and end_mac_address = #{endMacAddress}
             </if>
-            <if test="applicationId != null">
-                and application_id = #{applicationId}
+            <if test="startingInventory != null">
+                and starting_inventory = #{startingInventory}
             </if>
-            <if test="amount != null">
-                and amount = #{amount}
+            <if test="currentInventory != null">
+                and current_inventory = #{currentInventory}
             </if>
             <if test="createdate != null">
                 and createDate = #{createdate}
@@ -75,52 +75,45 @@
         </where>
     </select>
 
-    <!--根据mac id查询已用库存-->
-    <select id="findByGroupById" resultType="com.foxconn.sw.macaddress.dto.DeliveryRecordDTO">
-        select
-        mac_id as macId, sum(amount) as amountSum
-        from bill.delivery_record group by mac_id
-    </select>
-
     <!--新增所有列-->
     <insert id="insert" keyProperty="id" useGeneratedKeys="true">
-        insert into bill.delivery_record(mac_id, start_mac_address, end_mac_address, application_id, amount, createDate, creator, updateDate, updator, status)
-        values (#{macId}, #{startMacAddress}, #{endMacAddress}, #{applicationId}, #{amount}, #{createdate}, #{creator}, #{updatedate}, #{updator}, #{status})
+        insert into bill.macaddress(signs, start_mac_address, end_mac_address, starting_inventory, current_inventory, createDate, creator, updateDate, updator, status)
+        values (#{signs}, #{startMacAddress}, #{endMacAddress}, #{startingInventory}, #{currentInventory}, #{createdate}, #{creator}, #{updatedate}, #{updator}, #{status})
     </insert>
 
     <insert id="insertBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into bill.delivery_record(mac_id, start_mac_address, end_mac_address, application_id, amount, createDate,
-        creator, updateDate, updator, status)
+        insert into bill.macaddress(signs, start_mac_address, end_mac_address, starting_inventory, current_inventory,
+        createDate, creator, updateDate, updator, status)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.macId}, #{entity.startMacAddress}, #{entity.endMacAddress}, #{entity.applicationId},
-            #{entity.amount}, #{entity.createdate}, #{entity.creator}, #{entity.updatedate}, #{entity.updator},
-            #{entity.status})
+            (#{entity.signs}, #{entity.startMacAddress}, #{entity.endMacAddress}, #{entity.startingInventory},
+            #{entity.currentInventory}, #{entity.createdate}, #{entity.creator}, #{entity.updatedate},
+            #{entity.updator}, #{entity.status})
         </foreach>
     </insert>
 
     <insert id="insertOrUpdateBatch" keyProperty="id" useGeneratedKeys="true">
-        insert into bill.delivery_record(mac_id, start_mac_address, end_mac_address, application_id, amount, createDate,
-        creator, updateDate, updator, status)
+        insert into bill.macaddress(signs, start_mac_address, end_mac_address, starting_inventory, current_inventory,
+        createDate, creator, updateDate, updator, status)
         values
         <foreach collection="entities" item="entity" separator=",">
-            (#{entity.macId}, #{entity.startMacAddress}, #{entity.endMacAddress}, #{entity.applicationId},
-            #{entity.amount}, #{entity.createdate}, #{entity.creator}, #{entity.updatedate}, #{entity.updator},
-            #{entity.status})
+            (#{entity.signs}, #{entity.startMacAddress}, #{entity.endMacAddress}, #{entity.startingInventory},
+            #{entity.currentInventory}, #{entity.createdate}, #{entity.creator}, #{entity.updatedate},
+            #{entity.updator}, #{entity.status})
         </foreach>
         on duplicate key update
-        mac_id = values(mac_id) , start_mac_address = values(start_mac_address) , end_mac_address =
-        values(end_mac_address) , application_id = values(application_id) , amount = values(amount) , createDate =
-        values(createDate) , creator = values(creator) , updateDate = values(updateDate) , updator = values(updator) ,
-        status = values(status)
+        signs = values(signs) , start_mac_address = values(start_mac_address) , end_mac_address =
+        values(end_mac_address) , starting_inventory = values(starting_inventory) , current_inventory =
+        values(current_inventory) , createDate = values(createDate) , creator = values(creator) , updateDate =
+        values(updateDate) , updator = values(updator) , status = values(status)
     </insert>
 
     <!--通过主键修改数据-->
     <update id="update">
-        update bill.delivery_record
+        update bill.macaddress
         <set>
-            <if test="macId != null">
-                mac_id = #{macId},
+            <if test="signs != null and signs != ''">
+                signs = #{signs},
             </if>
             <if test="startMacAddress != null and startMacAddress != ''">
                 start_mac_address = #{startMacAddress},
@@ -128,11 +121,11 @@
             <if test="endMacAddress != null and endMacAddress != ''">
                 end_mac_address = #{endMacAddress},
             </if>
-            <if test="applicationId != null">
-                application_id = #{applicationId},
+            <if test="startingInventory != null">
+                starting_inventory = #{startingInventory},
             </if>
-            <if test="amount != null">
-                amount = #{amount},
+            <if test="currentInventory != null">
+                current_inventory = #{currentInventory},
             </if>
             <if test="createdate != null">
                 createDate = #{createdate},
@@ -155,7 +148,7 @@
 
     <!--通过主键删除-->
     <delete id="deleteById">
-        delete from bill.delivery_record where id = #{id}
+        delete from bill.macaddress where id = #{id}
     </delete>
 
 </mapper>

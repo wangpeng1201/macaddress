@@ -76,7 +76,7 @@ public class Application implements Serializable {
      */
     private String updator;
     /**
-     * 是否显示(0:不显示，1:显示)
+     * 申请状态(0:不显示，1：新建申请，2：分发mac地址成功，3：分发mac地址失败）
      */
     private Integer status;
 
