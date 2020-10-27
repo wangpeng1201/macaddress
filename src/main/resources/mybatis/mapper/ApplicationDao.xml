@@ -38,6 +38,25 @@
         limit #{offset}, #{limit}
     </select>
 
+    <!--条件查询-->
+    <select id="findByCondition" resultMap="ApplicationMap" parameterType="com.foxconn.sw.macaddress.dto.ApplicationDTO">
+        select
+          id, start_mac_address, end_mac_address, application_department, customer, amount, applicant, application_date, release_date, director, shift_cost_no, shift_cost, creator, create_date, update_date, updator, status
+        from bill.application
+        where 1=1
+        <if test="customer != null and customer != ''">
+            and customer = #{customer}
+        </if>
+
+        <if test="applicant != null and applicant != ''">
+            and applicant = #{applicant}
+        </if>
+        <if test="applicationDate != null and applicationDate != ''">
+            and date(application_date)=#{applicationDate}
+        </if>
+        order by update_date desc
+    </select>
+
     <!--通过实体作为筛选条件查询-->
     <select id="queryAll" resultMap="ApplicationMap">
         select
@@ -93,6 +112,7 @@
             <if test="updator != null and updator != ''">
                 and updator = #{updator}
             </if>
+            status &lt;&gt; 0
             <if test="status != null">
                 and status = #{status}
             </if>

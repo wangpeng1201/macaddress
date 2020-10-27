@@ -76,17 +76,17 @@
     <!--按起始mac地址和创建时间查询-->
     <select id="queryByCreateDateAndStartMacAddress" resultMap="MacaddressMap" parameterType="com.foxconn.sw.macaddress.dto.MacAddressDTO">
         select
-        id, signs, start_mac_address, end_mac_address, createDate, creator, updateDate, updator, status
+        id, signs, start_mac_address, end_mac_address,starting_inventory, createDate, creator, updateDate, updator, status
         from bill.macaddress
         where 1=1
             <if test="startMacAddress != null and startMacAddress != ''">
                 and start_mac_address = #{startMacAddress}
             </if>
 
-            <if test="createdate != null">
+            <if test="createdate != null and createdate != ''">
                 and date(createDate)=#{createdate}
             </if>
-        order by updateDate
+        order by updateDate desc
     </select>
 
     <!--新增所有列-->

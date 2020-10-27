@@ -27,15 +27,17 @@
         <!--右边main主体开始-->
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <!--查询组件-->
-            <form class="form-inline" style="margin-bottom: 10px;float: left">
+            <form class="form-inline" style="margin-bottom: 10px;float: left" th:action="@{/deliveryRecordByCondition}" method="post">
                 <div class="form-group mb-2">
                     <label for="startMacAddressInput" class="sr-only">起始mac地址</label>
-                    <input type="text" class="form-control" id="startMacAddressInput" name="startMacAddressInput" autocomplete="off"
-                           placeholder="起始mac地址">
+                    <input type="text" class="form-control" id="startMacAddressInput" name="startMacAddress"
+                           autocomplete="off"
+                           placeholder="起始mac地址" th:value="${macAddressDTO!=null?macAddressDTO.startMacAddress:''}">
                 </div>
                 <div class="form-group mx-sm-3 mb-2">
                     <label for="macCreatDate" class="sr-only">创建时间</label>
-                    <input type="text" class="form-control" id="macCreatDate" name="createDate" placeholder="创建时间" autocomplete="off">
+                    <input type="text" class="form-control" id="macCreatDate" name="createdate" placeholder="创建时间"
+                           autocomplete="off" th:value="${macAddressDTO!=null?macAddressDTO.createdate:''}">
                 </div>
                 <button type="submit" class="btn btn-primary mb-2">搜索</button>
             </form>
@@ -48,6 +50,7 @@
                         <th>主键</th>
                         <th>mac起始地址</th>
                         <th>mac结束地址</th>
+                        <th>分发总数</th>
                         <th>创建时间</th>
                         <th>创建人</th>
                         <th>修改时间</th>
@@ -59,6 +62,7 @@
                         <td th:text="${deliveryRecord.id}"></td>
                         <td th:text="${deliveryRecord.startMacAddress}"></td>
                         <td th:text="${deliveryRecord.endMacAddress}"></td>
+                        <td th:text="${deliveryRecord.amount}"></td>
                         <td th:text="${#dates.format(deliveryRecord.getCreatedate(),'yyyy-MM-dd HH:mm:ss')}"></td>
                         <td th:text="${deliveryRecord.creator}"></td>
                         <td th:text="${#dates.format(deliveryRecord.getUpdatedate(),'yyyy-MM-dd HH:mm:ss')}"></td>
@@ -153,11 +157,11 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="startingInventoryDetail"
-                                       class="col-sm-2 col-form-label font-weight-bold">Mac段总数</label>
+                                <label for="amountDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">分发总数</label>
                                 <div class="col-sm-6">
-                                    <input type="text" class="form-control" id="startingInventoryDetail"
-                                           name="startingInventory">
+                                    <input type="text" class="form-control" id="amountDetail"
+                                           name="amountDetail">
                                 </div>
                             </div>
                         </form>
@@ -169,28 +173,8 @@
             </div><!-- /.modal -->
         </div>
 
-        <!--删除提示模态框-->
-        <div class="modal" tabindex="-1" role="dialog" id="myModalDel">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">提醒</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>您确认要删除该条信息吗？</p>
-                        <!--设置一个隐藏元素来填充传值-->
-                        <input type="hidden" name="macIdDel" id="macIdDel">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                        <button type="button" class="btn btn-primary" onclick="delMacAddress()">确认</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!--删除模态框-->
+        <div th:replace="~{home/deleteModal.html}"/>
     </div>
     <!--模态框组结束-->
 </div>
@@ -213,31 +197,39 @@
 
     function showDetail(obj) {
         var macTd = $(obj).parent().parent().find("td");
-        var startMac = macTd.eq(2).text();
-        var endMac = macTd.eq(3).text();
-        var startingInventorySum = macTd.eq(4).text();
+        var startMac = macTd.eq(1).text();
+        var endMac = macTd.eq(2).text();
+        var amount = macTd.eq(3).text();
         $('#startMacAddressDetail').val(startMac);
         $('#endMacAddressDetail').val(endMac);
-        $('#startingInventoryDetail').val(startingInventorySum);
+        $('#amountDetail').val(amount);
     }
 
+    /*点击确认删除*/
+    // function delConfirm() {
+    //     delAjax("deliveryRecord","/deliveryRecords");
+    // }
+
+    /*点击删除按钮，显示删除确认模态框*/
     let delTr;
     function showDeleteModal(obj) {
         var delTableTr = obj.parentNode.parentNode;
-        // console.log(delTableTr);
+        console.log(delTableTr);
         // tr.parentNode.removeChild(tr);
-        delTr=delTableTr;
+        delTr = delTableTr;
+        return delTr;
     }
 
-    function delMacAddress() {
-        let macIdTd =$(delTr).find("td:eq(0)").text();
+    function delConfirm() {
+        let deliveryRecordIdTd =$(delTr).find("td:eq(0)").text();
+        console.log("deliveryRecordIdTd:"+deliveryRecordIdTd);
         $.ajax({
-            url:"/mac/"+macIdTd,
+            url:"/deliveryRecord/"+deliveryRecordIdTd,
             type:"post",
             method:"post",
             success:function(result){
                 $('#myModalDel').modal('hide');  //手动关闭
-                window.location.href='/list';
+                window.location.href='/deliveryRecords';
             },
             error : function() {
                 $('#myModalDel').modal('hide');  //手动关闭

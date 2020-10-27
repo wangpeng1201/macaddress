@@ -2,20 +2,23 @@ package com.foxconn.sw.macaddress.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.foxconn.sw.macaddress.common.Result;
+import com.foxconn.sw.macaddress.dto.MacAddressDTO;
 import com.foxconn.sw.macaddress.entity.DeliveryRecord;
 import com.foxconn.sw.macaddress.service.DeliveryRecordService;
 import com.foxconn.sw.macaddress.vo.ApplicationVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -24,6 +27,7 @@ import java.util.List;
  * @author makejava
  * @since 2020-10-21 17:24:25
  */
+@Log4j2
 @Controller
 public class DeliveryRecordController {
     /**
@@ -31,6 +35,9 @@ public class DeliveryRecordController {
      */
     @Resource
     private DeliveryRecordService deliveryRecordService;
+
+    @Autowired
+    private HttpSession httpSession;
 
     /**
      * 通过主键查询单条数据
@@ -79,10 +86,58 @@ public class DeliveryRecordController {
         return "deliveryRecord/list";
     }
 
+    /**
+     * 条件查询
+     * @param model
+     * @param macAddressDTO
+     * @return
+     */
+    @PostMapping(value = "/deliveryRecordByCondition")
+    public String findByCondition(Model model, MacAddressDTO macAddressDTO) {
+        if (ObjectUtils.isEmpty(macAddressDTO)) {
+            log.error("参数{}为空", macAddressDTO);
+            throw new RuntimeException("参数为空");
+        }
+        String createDate = macAddressDTO.getCreatedate();
+        String startMacAddress = macAddressDTO.getStartMacAddress();
+        Integer pageNum = macAddressDTO.getPageNum();
+        if (ObjectUtils.isEmpty(pageNum)) {
+            pageNum=1;
+        }
+        PageHelper.startPage(pageNum, 5);
+
+        List<DeliveryRecord> macAddressList = deliveryRecordService.findByCondition(macAddressDTO);
+        PageInfo<DeliveryRecord> pageInfo = new PageInfo<DeliveryRecord>(macAddressList, 5);
+        //4.使用model/map/modelandview等带回前端
+        model.addAttribute("pageInfo", pageInfo);
+        model.addAttribute("macAddressDTO", macAddressDTO);
+        return "deliveryRecord/list";
+    }
+
+
     @PostMapping("/assignMac")
     @ResponseBody
     public Result assignMac(ApplicationVO applicationVO) {
         Result result = deliveryRecordService.assignMac(applicationVO);
         return result;
+    }
+
+    @RequestMapping(value = "/deliveryRecord/{id}", method = RequestMethod.POST)
+    @ResponseBody
+    public Boolean delMacAddress(@PathVariable("id") Integer id) {
+        DeliveryRecord deliveryRecord = new DeliveryRecord();
+        deliveryRecord.setId(id);
+        //逻辑删除
+        deliveryRecord.setStatus(0);
+        deliveryRecord.setUpdatedate(new Date());
+        deliveryRecord.setUpdator(httpSession.getAttribute("LoginState").toString());
+
+        try {
+            deliveryRecordService.update(deliveryRecord);
+        } catch (Exception e) {
+            log.error("根据主键逻辑删除失败");
+            throw new RuntimeException("根据主键逻辑删除失败");
+        }
+        return true;
     }
 }

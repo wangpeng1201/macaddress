@@ -1,0 +1,22 @@
+<!--删除提示模态框-->
+<div class="modal" tabindex="-1" role="dialog" id="myModalDel">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">提醒</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>您确认要删除该条信息吗？</p>
+                <!--设置一个隐藏元素来填充传值-->
+                <input type="hidden" name="macIdDel" id="macIdDel">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="delConfirm()">确认</button>
+            </div>
+        </div>
+    </div>
+</div>

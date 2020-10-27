@@ -1,6 +1,7 @@
 package com.foxconn.sw.macaddress.service;
 
 import com.foxconn.sw.macaddress.common.Result;
+import com.foxconn.sw.macaddress.dto.MacAddressDTO;
 import com.foxconn.sw.macaddress.entity.DeliveryRecord;
 import com.foxconn.sw.macaddress.vo.ApplicationVO;
 
@@ -58,4 +59,11 @@ public interface DeliveryRecordService {
     Result assignMac(ApplicationVO applicationVO);
 
     Result queryAll();
+
+    /**
+     * 条件查询
+     * @param macAddressDTO
+     * @return
+     */
+    List<DeliveryRecord> findByCondition(MacAddressDTO macAddressDTO);
 }

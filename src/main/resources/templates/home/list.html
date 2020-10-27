@@ -13,8 +13,8 @@
 
     <link th:href="@{asserts/css/dashboard.css}" rel="stylesheet">
 
-    <link th:href="@{asserts/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css}" rel="stylesheet">
-
+<!--    <link th:href="@{asserts/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css}" rel="stylesheet">-->
+    <link th:href="@{asserts/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css}" rel="stylesheet">
     <style type="text/css">
         /* Chart.js */
         @-webkit-keyframes chartjs-render-animation {
@@ -82,15 +82,14 @@
             <form class="form-inline" style="margin-bottom: 10px;float: left" th:action="@{/condition}" method="post">
                 <div class="form-group mb-2">
                     <label for="startMacAddressInput" class="sr-only">起始mac地址</label>
-                    <label>起始mac地址：</label>
                     <input type="text" class="form-control" id="startMacAddressInput" name="startMacAddress" autocomplete="off"
-                           placeholder="起始mac地址">
+                           placeholder="起始mac地址" th:value="${macAddressDTO!=null?macAddressDTO.startMacAddress:''}">
                 </div>
                 <div class="form-group mx-sm-3 mb-2">
                     <label for="macCreatDate" class="sr-only">创建时间</label>
-                    <input type="text" class="form-control" id="macCreatDate" name="createdate" placeholder="创建时间" autocomplete="off">
+                    <input type="text" class="form-control" id="macCreatDate" name="createdate" placeholder="创建时间" autocomplete="off" th:value="${macAddressDTO!=null?macAddressDTO.createdate:''}">
                 </div>
-                <button type="submit" class="btn btn-primary mb-2">搜索</button>
+                <button type="submit" class="btn btn-primary mb-2" id="searchBtn">搜索</button>
             </form>
 
             <div style="float: left;margin-left: 15px;">
@@ -112,7 +111,6 @@
                         <th>创建时间</th>
                         <th>创建人</th>
                         <th>修改时间</th>
-                        <th>是否显示</th>
                         <th>操作</th>
                     </tr>
                     </thead>
@@ -126,19 +124,13 @@
                         <td th:text="${#dates.format(mac.getCreatedate(),'yyyy-MM-dd HH:mm:ss')}"></td>
                         <td>[[${mac.creator}]]</td>
                         <td th:text="${#dates.format(mac.getUpdatedate(),'yyyy-MM-dd HH:mm:ss')}"></td>
-                        <td>[[${mac.status}]]</td>
                         <td>
                             <!-- Button trigger modal -->
                             <button type="button" class="btn btn-sm btn-info" data-toggle="modal"
                                     data-target="#myModalDetail" onclick="showDetail(this)">
                                 详情
                             </button>
-                            <button class="btn btn-sm btn-primary">编辑</button>
-                            <!--<button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
-                                    data-target="#myModalDel" th:onclick="'valuess('+${mac.id} + ');'">
-                                删除
-                            </button>-->
-
+                            <!--<button class="btn btn-sm btn-primary">编辑</button>-->
                             <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
                                     data-target="#myModalDel" onclick="showDeleteModal(this)">
                                 删除
@@ -287,6 +279,15 @@
                                            name="startingInventory">
                                 </div>
                             </div>
+
+                            <div class="form-group row">
+                                <label for="remainingInventory"
+                                       class="col-sm-2 col-form-label font-weight-bold">剩余库存</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="remainingInventory"
+                                           name="remainingInventory">
+                                </div>
+                            </div>
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -334,8 +335,9 @@
 <!--<script src="https://cdn.bootcss.com/moment.js/2.24.0/moment-with-locales.js"></script>-->
 <script type="text/javascript" th:src="@{asserts/js/moment-with-locales.js}"></script>
 <!--日期选择插件-->
-<script type="text/javascript"
-        th:src="@{asserts/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js}"></script>
+<!--<script type="text/javascript" th:src="@{asserts/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js}"></script>-->
+<script type="text/javascript" th:src="@{asserts/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js}"></script>
+<script type="text/javascript" th:src="@{asserts/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js}"></script>
 <script th:inline="javascript">
     var ctxPath=[[${#httpServletRequest.getContextPath()}]]
     feather.replace();
@@ -348,19 +350,36 @@
 
     $(function () {
         $('#macCreatDate').datetimepicker({
-            format: 'YYYY-MM-DD',
-            locale: moment.locale('zh-cn')
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true,
+            todayBtn: true,
+            // locale: moment.locale('zh-cn'),
+            language: "zh-CN"
         });
     });
 
     function showDetail(obj) {
         var macTd = $(obj).parent().parent().find("td");
+        var macIdTd = macTd.eq(0).text();
         var startMac = macTd.eq(2).text();
         var endMac = macTd.eq(3).text();
         var startingInventorySum = macTd.eq(4).text();
         $('#startMacAddressDetail').val(startMac);
         $('#endMacAddressDetail').val(endMac);
         $('#startingInventoryDetail').val(startingInventorySum);
+        $.ajax({
+            url:"/getRemainingStock/"+macIdTd,
+            type:"GET",
+            method:"GET",
+            success:function(result){
+                $('#remainingInventory').val(result.data.remainingInventory);
+            },
+            error : function() {
+                $('#myModalDel').modal('hide');  //手动关闭
+                ShowFailure("请求失败");
+            }
+        });
     }
 
     let delTr;
@@ -379,24 +398,6 @@
             method:"post",
             success:function(result){
                 $('#myModalDel').modal('hide');  //手动关闭
-                window.location.href='/list';
-            },
-            error : function() {
-                $('#myModalDel').modal('hide');  //手动关闭
-                ShowFailure("请求失败");
-            }
-        });
-    }
-
-    function queryByCondition(){
-        let startMacAddressInput = $("#startMacAddressInput").val();
-        let macCreatDate = $("#macCreatDate").val();
-        $.ajax({
-            url:"/condition",
-            type:"post",
-            method:"post",
-            success:function(result){
-
                 window.location.href='/list';
             },
             error : function() {

@@ -1,5 +1,7 @@
 package com.foxconn.sw.macaddress.service;
 
+import com.foxconn.sw.macaddress.common.Result;
+import com.foxconn.sw.macaddress.dto.ApplicationDTO;
 import com.foxconn.sw.macaddress.entity.Application;
 import com.foxconn.sw.macaddress.vo.ApplicationVO;
 
@@ -19,7 +21,7 @@ public interface ApplicationService {
      * @param id 主键
      * @return 实例对象
      */
-    Application queryById(Integer id);
+    Result queryById(Integer id);
 
     /**
      * 查询多条数据
@@ -64,6 +66,13 @@ public interface ApplicationService {
     Boolean insertApplication(ApplicationVO applicationVO);
 
     List<ApplicationVO> getAll();
+
+    /**
+     * 条件查询
+     * @param applicationDTO
+     * @return
+     */
+    List<Application> findByCondition(ApplicationDTO applicationDTO);
 
     /**
      * 新增mac地址申请

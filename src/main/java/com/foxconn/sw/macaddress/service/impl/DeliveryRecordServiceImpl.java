@@ -9,13 +9,19 @@ import com.foxconn.sw.macaddress.dao.ApplicationDao;
 import com.foxconn.sw.macaddress.dao.DeliveryRecordDao;
 import com.foxconn.sw.macaddress.dao.MacaddressDao;
 import com.foxconn.sw.macaddress.dto.DeliveryRecordDTO;
+import com.foxconn.sw.macaddress.dto.MacAddressDTO;
 import com.foxconn.sw.macaddress.entity.Application;
 import com.foxconn.sw.macaddress.entity.DeliveryRecord;
 import com.foxconn.sw.macaddress.entity.Macaddress;
 import com.foxconn.sw.macaddress.service.DeliveryRecordService;
+import com.foxconn.sw.macaddress.service.MacaddressService;
+import com.foxconn.sw.macaddress.util.ByteUtil;
 import com.foxconn.sw.macaddress.vo.ApplicationVO;
+import com.foxconn.sw.macaddress.vo.MacAddressDetailVO;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -47,6 +53,9 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
 
     @Resource
     HttpSession httpSession;
+
+    @Resource
+    private MacaddressService macaddressService;
 
     /**
      * 通过ID查询单条数据
@@ -164,7 +173,8 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
         int shengyuStockSum = ListUtil.sumList(surplusStockList, surplusStockList.size());
         if (amount > shengyuStockSum) {
             log.error("总库存不足");
-            return RetResponse.error("总库存不足");
+            throw new RuntimeException("总库存不足");
+//            return RetResponse.error("总库存不足");
         }
         ArrayList<Integer> valueList = new ArrayList<>();
         ArrayList<Integer> valueSumList = new ArrayList<>();
@@ -198,14 +208,38 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
             kuaDuanTail = amount;
         }
 
+        String startMacAddress = "";
+        String endMacAddress = "";
+        Integer remainingInventoryNum = 0;
         //[1,2,25,26,27,28]
         for (int i = importantIndex; i >= 0; i--) {
             Integer mac = macIdList.get(i);
             DeliveryRecord deliveryRecord = new DeliveryRecord();
             deliveryRecord.setMacId(mac);
             //TODO 待计算
-            deliveryRecord.setStartMacAddress("");
-            deliveryRecord.setEndMacAddress("");
+            Result remainingStock = macaddressService.getRemainingStock(mac);
+
+            if (String.valueOf(HttpStatus.OK.value()).equals(remainingStock.getCode().toString())) {
+                MacAddressDetailVO macAddressDetailVO = (MacAddressDetailVO) remainingStock.getData();
+                startMacAddress = macAddressDetailVO.getStartMacAddress();
+                endMacAddress = macAddressDetailVO.getEndMacAddress();
+                //剩余库存
+                remainingInventoryNum = macAddressDetailVO.getRemainingInventory();
+            }
+            //TODO 此处需要添加else判断，未取到值时的错误处理
+            //未使用库存起始端16进制mac地址
+            String startHex = StringUtils.leftPad(Long.toHexString(Long.parseLong(endMacAddress, 16) - remainingInventoryNum + 1).toUpperCase(), 12, '0');
+            String endHex = "";
+            if (remainingInventoryNum > amount) {
+                Long avalue=Long.parseLong(startHex,16) + amount - 1;
+                endHex=StringUtils.leftPad(Long.toHexString(avalue).toUpperCase(), 12, '0');
+//                endHex = Long.toHexString(Long.parseLong(startHex) + amount - 1);
+            } else {
+                endHex = endMacAddress;
+            }
+
+            deliveryRecord.setStartMacAddress(startHex);
+            deliveryRecord.setEndMacAddress(endHex);
             deliveryRecord.setApplicationId(applicationVO.getId());
             if (i == importantIndex) {
                 deliveryRecord.setAmount(kuaDuanTail);
@@ -239,8 +273,8 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
         }
         System.out.println("调整后的剩余库存为 = " + JSON.toJSONString(surplusStockMap));
         //修改申请状态
-        Application application=new Application();
-        BeanUtils.copyProperties(applicationVO,application);
+        Application application = new Application();
+        BeanUtils.copyProperties(applicationVO, application);
         try {
             application.setStatus(Constant.ASSIGNSUCCESS);
             applicationDao.update(application);
@@ -257,6 +291,11 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
     public Result queryAll() {
         List<DeliveryRecord> deliveryRecords = deliveryRecordDao.queryAll(null);
         return RetResponse.success(deliveryRecords);
+    }
+
+    @Override
+    public List<DeliveryRecord> findByCondition(MacAddressDTO macAddressDTO) {
+        return deliveryRecordDao.findByCondition(macAddressDTO);
     }
 
     private Map<Integer, Integer> getUsedMacAddressMap() {

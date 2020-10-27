@@ -1,5 +1,6 @@
 package com.foxconn.sw.macaddress.service;
 
+import com.foxconn.sw.macaddress.common.Result;
 import com.foxconn.sw.macaddress.dto.MacAddressDTO;
 import com.foxconn.sw.macaddress.entity.Macaddress;
 import com.foxconn.sw.macaddress.vo.MacAddressVO;
@@ -75,4 +76,11 @@ public interface MacaddressService {
      * @return
      */
     List<Macaddress> findByStartMacAddressAndCreateDate(MacAddressDTO macAddressDTO);
+
+    /**
+     * 根据当前mac id查询对应的剩余库存
+     * @param macId
+     * @return
+     */
+    Result getRemainingStock(Integer macId);
 }

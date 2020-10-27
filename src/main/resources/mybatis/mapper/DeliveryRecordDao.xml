@@ -69,10 +69,12 @@
             <if test="updator != null and updator != ''">
                 and updator = #{updator}
             </if>
+            status =1
             <if test="status != null">
                 and status = #{status}
             </if>
         </where>
+        order by updateDate desc
     </select>
 
     <!--根据mac id查询已用库存-->
@@ -80,6 +82,23 @@
         select
         mac_id as macId, sum(amount) as amountSum
         from bill.delivery_record group by mac_id
+    </select>
+
+    <!--条件查询-->
+    <select id="findByCondition" resultMap="DeliveryRecordMap" parameterType="com.foxconn.sw.macaddress.dto.MacAddressDTO">
+        select
+        id, mac_id, start_mac_address, end_mac_address, application_id, amount, createDate, creator, updateDate,
+        updator, status
+        from bill.delivery_record
+        where 1=1
+        <if test="startMacAddress != null and startMacAddress != ''">
+            and start_mac_address = #{startMacAddress}
+        </if>
+
+        <if test="createdate != null and createdate != ''">
+            and date(createDate)=#{createdate}
+        </if>
+        order by updateDate desc
     </select>
 
     <!--新增所有列-->

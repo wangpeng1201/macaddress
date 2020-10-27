@@ -23,9 +23,32 @@
         </nav>
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+
+            <!--条件查询组件-->
+            <form class="form-inline" style="margin-bottom: 10px;float: left" th:action="@{/applicationBycondition}"
+                  method="post">
+                <div class="form-group mb-2">
+                    <label for="customerInput" class="sr-only">客户</label>
+                    <input type="text" class="form-control" id="customerInput" name="customer" autocomplete="off"
+                           placeholder="请输入客户姓名" th:value="${applicationDTO!=null?applicationDTO.customer:''}">
+                </div>
+                <div class="form-group mb-2" style="margin-left: 15px;">
+                    <label for="applicantInput" class="sr-only">申请人</label>
+                    <input type="text" class="form-control" id="applicantInput" name="applicant" autocomplete="off"
+                           placeholder="请输入申请人姓名" th:value="${applicationDTO!=null?applicationDTO.applicant:''}">
+                </div>
+                <div class="form-group mx-sm-3 mb-2">
+                    <label for="applicationDateInput" class="sr-only">申请时间</label>
+                    <input type="text" class="form-control" id="applicationDateInput" name="applicationDate"
+                           placeholder="请选择申请时间" autocomplete="off"
+                           th:value="${applicationDTO!=null?applicationDTO.applicationDate:''}">
+                </div>
+                <button type="submit" class="btn btn-primary mb-2" id="searchBtn">搜索</button>
+            </form>
+
             <!-- 按钮触发模态框 -->
             <button class="btn btn-primary" data-toggle="modal" data-target="#addApplicationModal"
-                    style="margin-bottom: 10px;">
+                    style="margin-bottom: 10px;margin-left: 15px;">
                 新增
             </button>
 
@@ -68,11 +91,21 @@
                         <td th:if="${app.status}==3" th:class="text-danger">分发失败</td>
                         <td th:if="${app.status}==0" th:class="text-muted">不显示</td>
                         <td>
-                            <button class="btn btn-sm btn-info">详情</button>
+                            <button type="button" class="btn btn-sm btn-info" data-toggle="modal"
+                                    data-target="#myModalDetail" onclick="showDetail(this)">
+                                详情
+                            </button>
                             <button class="btn btn-sm btn-primary">编辑</button>
-                            <button class="btn btn-sm btn-danger">删除</button>
-                            <button type="button" th:if="${app.status} ne 2" class="btn btn-sm btn-success" onclick="assign(this)">分发</button>
-                            <button type="button" th:if="${app.status} eq 2" disabled class="btn btn-sm btn-success" onclick="assign(this)">分发</button>
+                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
+                                    data-target="#myModalDel" onclick="showDeleteModal(this)">
+                                删除
+                            </button>
+                            <button type="button" th:if="${app.status} ne 2" class="btn btn-sm btn-warning"
+                                    onclick="assign(this)">分发
+                            </button>
+                            <button type="button" th:if="${app.status} eq 2" disabled class="btn btn-sm btn-success"
+                                    onclick="assign(this)">分发
+                            </button>
                         </td>
                     </tr>
                     </tbody>
@@ -85,12 +118,12 @@
     </div>
 
     <div>
-        <!--分配mac模态框-->
+        <!--新增申请模态框-->
         <div class="modal" tabindex="-1" role="dialog" id="addApplicationModal">
             <div class="modal-dialog">
                 <div class="modal-content" style="width:650px;height: auto;">
                     <div class="modal-header">
-                        <h5 class="modal-title">mac地址分配单</h5>
+                        <h5 class="modal-title">新增mac地址申请</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -153,6 +186,118 @@
                 </div>
             </div>
         </div>
+
+
+        <!--详情模态框-->
+        <div class="modal fade bs-example-modal-lg" id="myModalDetail" tabindex="-1" role="dialog"
+             aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable" style="height: 600px;">
+                <div class="modal-content" style="width:800px;height: 750px;">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalDetailLabel">申请详情</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form role="form" id="macDetailForm">
+                            <div class="form-group row">
+                                <label for="customerDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">客户</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="customerDetail"
+                                           name="customerDetail">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="applicantDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">申请人</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="applicantDetail"
+                                           name="applicantDetail">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="applicationDepartmentDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">申请单位</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="applicationDepartmentDetail"
+                                           name="applicationDepartmentDetail">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="amountDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">申请数量</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="amountDetail"
+                                           name="amountDetail">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="applicationDateDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">申请日期</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="applicationDateDetail"
+                                           name="applicationDateDetail">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="releaseDateDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">发放日期</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="releaseDateDetail"
+                                           name="releaseDateDetail">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="directorDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">费用转嫁承办人工号</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="directorDetail"
+                                           name="directorDetail">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="shiftCostNoDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">费用转嫁单号</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="shiftCostNoDetail"
+                                           name="shiftCostNoDetail">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="shiftCostDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">转嫁费用金额</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="shiftCostDetail"
+                                           name="shiftCostDetail">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="statusDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">申请状态</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="statusDetail"
+                                           name="statusDetail">
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
+
+        <!--删除模态框-->
+        <div th:replace="~{home/deleteModal.html}"/>
     </div>
 </div>
 
@@ -169,19 +314,32 @@
 
     /*点击日期控件*/
     $(function () {
-        $('#applicationDate').datetimepicker({
-            format: 'YYYY-MM-DD',
-            locale: moment.locale('zh-cn')
+        //搜索框日期插件
+        // $('#applicationDateInput').datetimepicker({
+        //     format: "YYYY-MM-DD hh:ii:ss",
+        //     todayBtn: true,
+        //     language: 'zh',
+        //     // locale: moment.locale('zh-cn'),
+        //     autoclose: true
+        // });
+
+        $("#applicationDateInput").datetimepicker({
+            language: 'zh-CN',
+            todayBtn: 1,  //是否显示今天按钮，0为不显示
+            autoclose: 1, //选完时间后是否自动关闭
+            todayHighlight: 1,  //高亮显示当天日期
+            forceParse: 0, //强制解析,你输入的可能不正规，但是它胡强制尽量解析成你规定的格式（format）
+            format: 'yyyy-mm-dd'// 格式,注意ii才是分，mm或MM都是月
         });
 
-        $('#releaseDate').datetimepicker({
-            format: 'YYYY-MM-DD',
-            locale: moment.locale('zh-cn')
-        });
-
+        /*以下为新增模态框日期插件*/
         $('#applicationDateAssign').datetimepicker({
-            format: 'YYYY-MM-DD',
-            locale: moment.locale('zh-cn')
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true,
+            todayBtn: true,
+            // locale: moment.locale('zh-cn'),
+            language: "zh-CN"
         });
     });
 
@@ -235,7 +393,7 @@
             async: true,
             //参数值
             data: {
-                "id":macTdTdText,
+                "id": macTdTdText,
                 "customer": customerTdText,
                 "applicant": applicantTdText,
                 "applicationDepartment": applicationDepartmentTdText,
@@ -246,12 +404,108 @@
             method: "POST",
             success: function (req) {
                 //请求成功时处理
-                ShowSuccess("添加申请成功!");
+                ShowSuccess("客户下方mac地址成功!");
                 window.location.href = "/deliveryRecords?pageNum=1";
             },
-            error: function () {
-                //请求出错处理
-                ShowFailure("添加申请失败");
+            error: function (xhr, textStatus, errorThrown) {
+                var responseText = JSON.parse(xhr.responseText);
+                let msgTip = responseText.message;
+                ShowFailure("下方mac地址失败！"+msgTip);
+            }
+        });
+    }
+
+    /*点击删除按钮，显示删除确认模态框*/
+    let delTr;
+    function showDeleteModal(obj) {
+        var delTableTr = obj.parentNode.parentNode;
+        console.log(delTableTr);
+        // tr.parentNode.removeChild(tr);
+        delTr = delTableTr;
+        return delTr;
+    }
+
+    function delConfirm() {
+        let applicationIdTd =$(delTr).find("td:eq(0)").text();
+        console.log("applicationIdTd:"+applicationIdTd);
+        $.ajax({
+            url:"/application/"+applicationIdTd,
+            type:"post",
+            method:"post",
+            success:function(result){
+                $('#myModalDel').modal('hide');  //手动关闭
+                window.location.href='/applications';
+            },
+            error : function() {
+                $('#myModalDel').modal('hide');  //手动关闭
+                ShowFailure("删除失败");
+            }
+        });
+    }
+
+    function showDetail(obj) {
+        var applicationTd = $(obj).parent().parent().find("td");
+        var applicationIdTd = applicationTd.eq(0).text();
+        $.ajax({
+            url:"/selectOne/"+applicationIdTd,
+            type:"GET",
+            method:"GET",
+            success:function(result){
+                if (result.code==200) {
+                    /*客户*/
+                    let customer = result.data.customer;
+                    $('#customerDetail').val(customer);
+                    /*申请人*/
+                    let applicant = result.data.applicant;
+                    $('#applicantDetail').val(applicant);
+                    /*申请单位*/
+                    let applicationDepartment = result.data.applicationDepartment;
+                    $('#applicationDepartmentDetail').val(applicationDepartment);
+                    /*申请数量*/
+                    let amount = result.data.amount;
+                    $('#amountDetail').val(amount);
+                    /*申请日期*/
+                    let applicationDate = result.data.applicationDate;
+
+                    var applicationDateDate = new Date(applicationDate);
+                    var applicationDateFormat=applicationDateDate.getFullYear() + '-' + (applicationDateDate.getMonth() + 1) + '-' + applicationDateDate.getDate();
+                    $('#applicationDateDetail').val(applicationDateFormat);
+                    /*发放日期*/
+                    let releaseDate = result.data.releaseDate;
+                    var releaseDateDate = new Date(releaseDate);
+                    var releaseDateDetailFormat=releaseDateDate.getFullYear() + '-' + (releaseDateDate.getMonth() + 1) + '-' + releaseDateDate.getDate() + ' ' + releaseDateDate.getHours() + ':' + releaseDateDate.getMinutes() + ':' + releaseDateDate.getSeconds();
+                    $('#releaseDateDetail').val(releaseDateDetailFormat);
+
+                    /*费用转嫁承办人工号*/
+                    let director = result.data.director;
+                    $('#directorDetail').val(director);
+                    /*费用转嫁单号*/
+                    let shiftCostNo = result.data.shiftCostNo;
+                    $('#shiftCostNoDetail').val(shiftCostNo);
+                    /*转嫁费用金额*/
+                    let shiftCost = result.data.shiftCost;
+                    $('#shiftCostDetail').val(shiftCost);
+                    let status = result.data.status;
+                    switch (status) {
+                        case 1:
+                            status = "新建";
+                            break;
+                        case 2:
+                            status = "分发成功";
+                            break;
+                        case 3:
+                            status = "分发失败";
+                            break;
+                        case 0:
+                            status = "已删除";
+                            break;
+                    }
+                    $('#statusDetail').val(status);
+                }
+            },
+            error : function() {
+                $('#myModalDetail').modal('hide');  //手动关闭
+                ShowFailure("查看详情失败");
             }
         });
     }

@@ -1,6 +1,7 @@
 package com.foxconn.sw.macaddress.dao;
 
 import com.foxconn.sw.macaddress.dto.DeliveryRecordDTO;
+import com.foxconn.sw.macaddress.dto.MacAddressDTO;
 import com.foxconn.sw.macaddress.entity.DeliveryRecord;
 import org.apache.ibatis.annotations.Param;
 
@@ -80,4 +81,6 @@ public interface DeliveryRecordDao {
     int deleteById(Integer id);
 
     List<DeliveryRecordDTO> findByGroupById();
+
+    List<DeliveryRecord> findByCondition(MacAddressDTO macAddressDTO);
 }

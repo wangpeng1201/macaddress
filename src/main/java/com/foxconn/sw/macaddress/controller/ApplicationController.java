@@ -2,19 +2,23 @@ package com.foxconn.sw.macaddress.controller;
 
 import com.foxconn.sw.macaddress.common.Result;
 import com.foxconn.sw.macaddress.common.RetResponse;
+import com.foxconn.sw.macaddress.dto.ApplicationDTO;
 import com.foxconn.sw.macaddress.entity.Application;
+import com.foxconn.sw.macaddress.entity.Macaddress;
 import com.foxconn.sw.macaddress.service.ApplicationService;
 import com.foxconn.sw.macaddress.vo.ApplicationVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,6 +27,7 @@ import java.util.List;
  * @author makejava
  * @since 2020-10-16 14:06:29
  */
+@Log4j2
 @Controller
 public class ApplicationController {
     /**
@@ -30,6 +35,9 @@ public class ApplicationController {
      */
     @Resource
     private ApplicationService applicationService;
+
+    @Autowired
+    private HttpSession httpSession;
 
     @GetMapping("/applications")
     public String applications(Model model,
@@ -48,7 +56,8 @@ public class ApplicationController {
             PageInfo<Application> pageInfo = new PageInfo<Application>(applications, 5);
             //使用model/map/modelandview等带回前端
             model.addAttribute("pageInfo", pageInfo);
-            model.addAttribute("url", "application/list");
+//            model.addAttribute("url", "application/list");
+            model.addAttribute("url", "applications");
         } finally {
             PageHelper.clearPage(); //清理 ThreadLocal 存储的分页参数,保证线程安全
         }
@@ -61,5 +70,57 @@ public class ApplicationController {
         applicationService.insertApplication(applicationVO);
         return RetResponse.makeOKRsp();
 //        return "redirect:/applications";
+    }
+
+    @PostMapping(value = "/applicationBycondition")
+    public String findByCondition(Model model, ApplicationDTO applicationDTO) {
+        if (ObjectUtils.isEmpty(applicationDTO)) {
+            log.error("参数{}为空", applicationDTO);
+            throw new RuntimeException("参数为空");
+        }
+        String customer = applicationDTO.getCustomer();
+        String applicant = applicationDTO.getApplicant();
+        String applicationDate = applicationDTO.getApplicationDate();
+        Integer pageNum = applicationDTO.getPageNum();
+        if (ObjectUtils.isEmpty(pageNum)) {
+            pageNum=1;
+        }
+        PageHelper.startPage(pageNum, 5);
+
+        List<Application> applicationList = applicationService.findByCondition(applicationDTO);
+        PageInfo<Application> pageInfo = new PageInfo<Application>(applicationList, 5);
+        //4.使用model/map/modelandview等带回前端
+        model.addAttribute("pageInfo", pageInfo);
+        model.addAttribute("applicationDTO", applicationDTO);
+        return "application/list";
+    }
+
+
+    @RequestMapping(value = "/application/{id}", method = RequestMethod.POST)
+    @ResponseBody
+    public Boolean delApplication(@PathVariable("id") Integer id) {
+        Application application = new Application();
+        application.setId(id);
+        application.setStatus(0);
+        application.setUpdateDate(new Date());
+        application.setUpdator(httpSession.getAttribute("LoginState").toString());
+        try {
+            applicationService.update(application);
+        } catch (Exception e) {
+            log.error("根据主键逻辑删除失败");
+            throw new RuntimeException("根据主键逻辑删除失败");
+        }
+        return true;
+    }
+
+    /**
+     * 查询详情
+     * @param id
+     * @return
+     */
+    @GetMapping("selectOne/{id}")
+    @ResponseBody
+    public Result selectOne(@PathVariable Integer id) {
+        return applicationService.queryById(id);
     }
 }

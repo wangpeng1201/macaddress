@@ -1,5 +1,6 @@
 package com.foxconn.sw.macaddress.dao;
 
+import com.foxconn.sw.macaddress.dto.ApplicationDTO;
 import com.foxconn.sw.macaddress.entity.Application;
 import org.apache.ibatis.annotations.Param;
 
@@ -78,4 +79,10 @@ public interface ApplicationDao {
      */
     int deleteById(Integer id);
 
+    /**
+     * 条件查询
+     * @param applicationDTO
+     * @return
+     */
+    List<Application> findByCondition(ApplicationDTO applicationDTO);
 }

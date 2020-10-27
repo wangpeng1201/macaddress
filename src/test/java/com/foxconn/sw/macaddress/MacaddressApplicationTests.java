@@ -1,12 +1,14 @@
 package com.foxconn.sw.macaddress;
 
 import com.alibaba.fastjson.JSON;
+import com.foxconn.sw.macaddress.common.Result;
 import com.foxconn.sw.macaddress.dao.DeliveryRecordDao;
 import com.foxconn.sw.macaddress.dao.MacaddressDao;
 import com.foxconn.sw.macaddress.dto.DeliveryRecordDTO;
 import com.foxconn.sw.macaddress.entity.Macaddress;
 import com.foxconn.sw.macaddress.service.ApplicationService;
 import com.foxconn.sw.macaddress.service.DeliveryRecordService;
+import com.foxconn.sw.macaddress.service.MacaddressService;
 import com.foxconn.sw.macaddress.vo.ApplicationVO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
@@ -35,6 +37,9 @@ class MacaddressApplicationTests {
 
     @Autowired
     ApplicationService applicationService;
+
+    @Autowired
+    MacaddressService macaddressService;
 
     /**
      * 查询初始库存
@@ -102,6 +107,12 @@ class MacaddressApplicationTests {
         applicationVO.setShiftCostNo("111111111");
         applicationVO.setShiftCost(7.0D);
         deliveryRecordService.assignMac(applicationVO);
+    }
+
+    @Test
+    public void getRemainingStock() {
+        Result remainingStock = macaddressService.getRemainingStock(1);
+        System.out.println("remainingStock = " + JSON.toJSONString(remainingStock));
     }
 
 }
