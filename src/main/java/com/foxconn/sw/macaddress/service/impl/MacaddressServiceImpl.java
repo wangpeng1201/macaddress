@@ -45,7 +45,8 @@ public class MacaddressServiceImpl implements MacaddressService {
     @Resource
     private DeliveryRecordDao deliveryRecordDao;
 
-    public static Map<Integer, Integer> remainingStockMap = new TreeMap<>();
+//    public static Map<Integer, Integer> remainingStockMap = new TreeMap<>();
+    Map<Integer, Integer> remainingStockMap = new TreeMap<>();
 
     /**
      * 通过ID查询单条数据

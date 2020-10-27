@@ -1,5 +1,6 @@
 package com.foxconn.sw.macaddress.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.foxconn.sw.macaddress.common.Result;
 import com.foxconn.sw.macaddress.dto.MacAddressDTO;
 import com.foxconn.sw.macaddress.entity.Macaddress;
@@ -11,12 +12,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * (Macaddress)表控制层
@@ -76,7 +79,7 @@ public class MacaddressController {
             PageInfo<Macaddress> pageInfo = new PageInfo<Macaddress>(macAddressList, 5);
             //4.使用model/map/modelandview等带回前端
             model.addAttribute("pageInfo", pageInfo);
-            model.addAttribute("url", "mac/list");
+            model.addAttribute("url", "list");
         } finally {
             PageHelper.clearPage(); //清理 ThreadLocal 存储的分页参数,保证线程安全
         }
@@ -85,26 +88,32 @@ public class MacaddressController {
         return "home/list";
     }
 
-    @PostMapping(value = "/condition")
-    public String findByCondition(Model model, MacAddressDTO macAddressDTO) {
-        if (ObjectUtils.isEmpty(macAddressDTO)) {
-            log.error("参数{}为空", macAddressDTO);
-            throw new RuntimeException("参数为空");
+    @RequestMapping(value = "/condition")
+    public String findByCondition(Model model,
+                                  @RequestParam(required = false, defaultValue = "1", value = "pageNum") Integer pageNum,
+                                  @RequestParam String startMacAddress,
+                                  @RequestParam String createdate) {
+        //为了程序的严谨性，判断非空
+        if (pageNum == null) {
+            //设置默认当前页
+            pageNum =1;
         }
-        String createDate = macAddressDTO.getCreatedate();
-        String startMacAddress = macAddressDTO.getStartMacAddress();
-        Integer pageNum = macAddressDTO.getPageNum();
-        if (ObjectUtils.isEmpty(pageNum)) {
-            pageNum=1;
+        if (pageNum <= 0) {
+            pageNum = 1;
         }
         PageHelper.startPage(pageNum, 2);
+        MacAddressDTO macAddressDTO = new MacAddressDTO();
+        macAddressDTO.setStartMacAddress(startMacAddress);
+        macAddressDTO.setCreatedate(createdate);
 
         List<Macaddress> macAddressList = macaddressService.findByStartMacAddressAndCreateDate(macAddressDTO);
         PageInfo<Macaddress> pageInfo = new PageInfo<Macaddress>(macAddressList, 5);
         //4.使用model/map/modelandview等带回前端
         model.addAttribute("pageInfo", pageInfo);
         model.addAttribute("macAddressDTO", macAddressDTO);
+        model.addAttribute("PAGE", pageNum);
         model.addAttribute("url", "condition");
+        System.err.println("pageInfo = " + JSON.toJSONString(pageInfo));
         return "home/list";
     }
 

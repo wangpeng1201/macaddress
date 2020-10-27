@@ -73,7 +73,8 @@ public class ApplicationController {
     }
 
     @PostMapping(value = "/applicationBycondition")
-    public String findByCondition(Model model, ApplicationDTO applicationDTO) {
+    public String findByCondition(Model model, ApplicationDTO applicationDTO,
+                                  @RequestParam(required = false, defaultValue = "1", value = "pageNum") Integer pageNum) {
         if (ObjectUtils.isEmpty(applicationDTO)) {
             log.error("参数{}为空", applicationDTO);
             throw new RuntimeException("参数为空");
@@ -81,9 +82,13 @@ public class ApplicationController {
         String customer = applicationDTO.getCustomer();
         String applicant = applicationDTO.getApplicant();
         String applicationDate = applicationDTO.getApplicationDate();
-        Integer pageNum = applicationDTO.getPageNum();
-        if (ObjectUtils.isEmpty(pageNum)) {
-            pageNum=1;
+        //为了程序的严谨性，判断非空
+        if (pageNum == null) {
+            //设置默认当前页
+            pageNum = 1;
+        }
+        if (pageNum <= 0) {
+            pageNum = 1;
         }
         PageHelper.startPage(pageNum, 5);
 
@@ -92,9 +97,9 @@ public class ApplicationController {
         //4.使用model/map/modelandview等带回前端
         model.addAttribute("pageInfo", pageInfo);
         model.addAttribute("applicationDTO", applicationDTO);
+        model.addAttribute("url", "applicationBycondition");
         return "application/list";
     }
-
 
     @RequestMapping(value = "/application/{id}", method = RequestMethod.POST)
     @ResponseBody
@@ -115,6 +120,7 @@ public class ApplicationController {
 
     /**
      * 查询详情
+     *
      * @param id
      * @return
      */

@@ -80,16 +80,16 @@
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
 
             <form class="form-inline" style="margin-bottom: 10px;float: left" th:action="@{/condition}" method="post">
-                <div class="form-group mb-2">
+                <div class="form-group mb-2" style="float: left;">
                     <label for="startMacAddressInput" class="sr-only">起始mac地址</label>
                     <input type="text" class="form-control" id="startMacAddressInput" name="startMacAddress" autocomplete="off"
                            placeholder="起始mac地址" th:value="${macAddressDTO!=null?macAddressDTO.startMacAddress:''}">
                 </div>
-                <div class="form-group mx-sm-3 mb-2">
+                <div class="form-group mx-sm-3 mb-2" style="float: left;">
                     <label for="macCreatDate" class="sr-only">创建时间</label>
                     <input type="text" class="form-control" id="macCreatDate" name="createdate" placeholder="创建时间" autocomplete="off" th:value="${macAddressDTO!=null?macAddressDTO.createdate:''}">
                 </div>
-                <button type="submit" class="btn btn-primary mb-2" id="searchBtn">搜索</button>
+                <button type="submit" class="btn btn-primary mb-2" id="searchBtn" style="float: left;" onclick="searchMacAddress()">搜索</button>
             </form>
 
             <div style="float: left;margin-left: 15px;">
@@ -143,23 +143,23 @@
 
             <footer class="footer navbar-fixed-bottom ">
                 <div class="container">
-                    <!-- 分页信息 -->
+                    <!--分页信息-->
                     <div class="row mx-auto">
-                        <!-- 分页文字信息 -->
+                         分页文字信息
                         <div class="col-md-3">
                             <p th:text="'当前第' + ${pageInfo.pageNum}+'页,共'+${pageInfo.pages}+'页,共'+${pageInfo.total}+'条记录'"/>
                         </div>
-                        <!-- 分页条信息 -->
+                         分页条信息
                         <div class="col-md-9">
 
                             <nav aria-label="Page navigation example">
                                 <ul class="pagination">
-                                    <!--首页-->
+                                    首页
                                     <li class="page-item">
                                         <a class="page-link" href="/list?pageNum=1">首页</a>
 
                                     </li>
-                                    <!--上一页《 -->
+                                    上一页《
                                     <li th:if="${pageInfo.hasPreviousPage}">
                                         <a class="page-link" th:href="@{'/list?pageNum='+${pageInfo.pageNum-1 }}"
                                            aria-label="Previous">
@@ -167,7 +167,7 @@
                                         </a>
                                     </li>
 
-                                    <!--动态添加样式-->
+                                    动态添加样式
                                     <li class="page-item"
                                         th:classappend="${PageNum == pageInfo.pageNum} ? 'active' : '' "
                                         th:each="PageNum : ${pageInfo.navigatepageNums}">
@@ -175,15 +175,15 @@
                                            th:text="${PageNum}"></a>
                                     </li>
 
-                                    <!--页码判断-->
-                                    <!--<li class="page-item active" th:each="PageNum : ${pageInfo.navigatepageNums}" th:if="${PageNum==pageInfo.pageNum}">
+                                    页码判断
+                                    <li class="page-item active" th:each="PageNum : ${pageInfo.navigatepageNums}" th:if="${PageNum==pageInfo.pageNum}">
                                         <a th:href="@{'/list?pageNum='+${PageNum}}" class="page-link" th:text="${PageNum}"></a>
                                     </li>
                                     <li class="page-item"  th:each="PageNum : ${pageInfo.navigatepageNums}" th:if="${PageNum!=pageInfo.pageNum}">
                                         <a th:href="@{'/list?pageNum='+${PageNum}}" class="page-link" th:text="${PageNum}"></a>
-                                    </li>-->
+                                    </li>
 
-                                    <!--下一页 》-->
+                                    下一页 》
                                     <li th:if="${pageInfo.hasNextPage}" class="page-item">
                                         <a th:href="@{'/list?pageNum='+${pageInfo.pageNum+1 }}" aria-label="Next"
                                            class="page-link">
@@ -191,7 +191,7 @@
                                         </a>
                                     </li>
 
-                                    <!--尾页-->
+                                    尾页
                                     <li class="page-item" th:if="${pageInfo.hasNextPage}">
                                         <a th:href="@{'/list?pageNum='+${pageInfo.pages}}" class="page-link">尾页</a>
                                     </li>
@@ -201,6 +201,8 @@
                     </div>
                 </div>
             </footer>
+           <!-- &lt;!&ndash;分页条&ndash;&gt;
+            <div th:replace="~{home/pageBar.html}"/>-->
         </main>
     </div>
 
