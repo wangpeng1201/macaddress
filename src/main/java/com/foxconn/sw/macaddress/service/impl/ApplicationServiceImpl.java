@@ -1,5 +1,6 @@
 package com.foxconn.sw.macaddress.service.impl;
 
+import com.foxconn.sw.macaddress.common.Lay;
 import com.foxconn.sw.macaddress.common.Result;
 import com.foxconn.sw.macaddress.common.RetResponse;
 import com.foxconn.sw.macaddress.dao.ApplicationDao;
@@ -9,15 +10,20 @@ import com.foxconn.sw.macaddress.dto.ApplicationDTO;
 import com.foxconn.sw.macaddress.entity.Application;
 import com.foxconn.sw.macaddress.service.ApplicationService;
 import com.foxconn.sw.macaddress.vo.ApplicationVO;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -159,5 +165,41 @@ public class ApplicationServiceImpl implements ApplicationService {
     @Override
     public List<Application> findByCondition(ApplicationDTO applicationDTO) {
         return applicationDao.findByCondition(applicationDTO);
+    }
+
+    @Override
+    public Lay findByConditionLayUI(ApplicationDTO applicationDTO) throws ParseException {
+        if (ObjectUtils.isEmpty(applicationDTO)) {
+            throw new RuntimeException("参数为空");
+        }
+        if (ObjectUtils.isEmpty(applicationDTO.getPage())) {
+            applicationDTO.setPage(1);
+        }
+        if (ObjectUtils.isEmpty(applicationDTO.getLimit())) {
+            applicationDTO.setLimit(10);
+        }
+
+        //需要进行分页
+        PageHelper.startPage(applicationDTO.getPage(), applicationDTO.getLimit());
+        Application application = new Application();
+        application.setCustomer(applicationDTO.getCustomer());
+        application.setApplicant(applicationDTO.getApplicant());
+        if (!StringUtils.isEmpty(applicationDTO.getApplicationDate())) {
+            application.setApplicationDate(DateUtils.parseDate(applicationDTO.getApplicationDate(),"yyyy-MM-dd"));
+        }
+        List<Application> applications = null;
+        Lay lay = new Lay();
+        try {
+            applications = applicationDao.queryAll(application);
+            PageInfo info = new PageInfo(applications);//创建pageinfo，包含分页的信息
+            lay.setLimit(applicationDTO.getLimit());
+            lay.setPage(applicationDTO.getPage());
+            lay.setCount(info.getTotal());//总条数
+            lay.setData(info.getList());//显示的数据
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("查询申请失败");
+        }
+        return lay;
     }
 }

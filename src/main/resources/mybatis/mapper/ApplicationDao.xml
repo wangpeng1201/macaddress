@@ -63,7 +63,7 @@
         id, start_mac_address, end_mac_address, application_department, customer, amount, applicant, application_date,
         release_date, director, shift_cost_no, shift_cost, creator, create_date, update_date, updator, status
         from bill.application
-        <where>
+        where status &lt;&gt; 0
             <if test="id != null">
                 and id = #{id}
             </if>
@@ -112,11 +112,10 @@
             <if test="updator != null and updator != ''">
                 and updator = #{updator}
             </if>
-            status &lt;&gt; 0
+
             <if test="status != null">
                 and status = #{status}
             </if>
-        </where>
         order by update_date desc
     </select>
 

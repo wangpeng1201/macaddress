@@ -23,97 +23,80 @@
         </nav>
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-
-            <!--条件查询组件-->
-            <form class="form-inline" style="margin-bottom: 10px;float: left" th:action="@{/applicationBycondition}"
-                  method="post">
-                <div class="form-group mb-2">
-                    <label for="customerInput" class="sr-only">客户</label>
-                    <input type="text" class="form-control" id="customerInput" name="customer" autocomplete="off"
-                           placeholder="请输入客户姓名" th:value="${applicationDTO!=null?applicationDTO.customer:''}">
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="margin-left: -15px;">
+                <form class="layui-form-item layui-form-pane" id="option" lay-filter="option">
+                    <div class="layui-inline form-group">
+                        <label class="layui-form-label">客户</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" id="customerInput" name="customer" autocomplete="off"
+                                   placeholder="请输入客户姓名">
+                        </div>
+                    </div>
+                    <div class="layui-inline form-group">
+                        <label class="layui-form-label">申请人</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" id="applicantInput" name="applicant"
+                                   autocomplete="off"
+                                   placeholder="请输入申请人姓名">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">申请时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" id="applicationDateInput" name="applicationDate"
+                                   autocomplete="off"
+                                   placeholder="请选择申请时间">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button type="button" lay-submit lay-filter="search" class="btn btn-primary"
+                                style="margin-bottom: 10px;">
+                            搜索
+                        </button>
+                    </div>
+                </form>
+                <div>
+                    <!-- 按钮触发模态框 -->
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#addApplicationModal"
+                            style="margin-bottom: 10px;margin-top: -130px;margin-left: 1000px;">
+                        新增申请
+                    </button>
                 </div>
-                <div class="form-group mb-2" style="margin-left: 15px;">
-                    <label for="applicantInput" class="sr-only">申请人</label>
-                    <input type="text" class="form-control" id="applicantInput" name="applicant" autocomplete="off"
-                           placeholder="请输入申请人姓名" th:value="${applicationDTO!=null?applicationDTO.applicant:''}">
-                </div>
-                <div class="form-group mx-sm-3 mb-2">
-                    <label for="applicationDateInput" class="sr-only">申请时间</label>
-                    <input type="text" class="form-control" id="applicationDateInput" name="applicationDate"
-                           placeholder="请选择申请时间" autocomplete="off"
-                           th:value="${applicationDTO!=null?applicationDTO.applicationDate:''}">
-                </div>
-                <button type="submit" class="btn btn-primary mb-2" id="searchBtn">搜索</button>
-            </form>
 
-            <!-- 按钮触发模态框 -->
-            <button class="btn btn-primary" data-toggle="modal" data-target="#addApplicationModal"
-                    style="margin-bottom: 10px;margin-left: 15px;">
-                新增
-            </button>
-
-            <div class="table-responsive">
-                <table class="table table-sm table-bordered table-hover">
-                    <thead>
-                    <tr>
-                        <th>主键</th>
-                        <th>客户</th>
-                        <!--<th>mac起始地址</th>
-                        <th>mac结束地址</th>-->
-                        <th>申请人</th>
-                        <th>申请单位</th>
-                        <th>申请数量</th>
-                        <th>申请日期</th>
-                        <!--<th>发放日期</th>-->
-                        <!--<th>费用转嫁承办人工号</th>
-                        <th>费用转嫁单号</th>-->
-                        <!--<th>转嫁费用金额</th>-->
-                        <th>申请状态</th>
-                        <th>操作</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="app:${pageInfo.list}">
-                        <td>[[${app.id}]]</td>
-                        <td>[[${app.customer}]]</td>
-                        <!--<td th:text="${app.startMacAddress}"></td>
-                        <td th:text="${app.endMacAddress}"></td>-->
-                        <td>[[${app.applicant}]]</td>
-                        <td>[[${app.applicationDepartment}]]</td>
-                        <td>[[${app.amount}]]</td>
-                        <td th:text="${#dates.format(app.applicationDate,'yyyy-MM-dd HH:mm:ss')}"></td>
-                        <!--<td th:text="${#dates.format(app.releaseDate,'yyyy-MM-dd HH:mm:ss')}"></td>-->
-                        <!--<td>[[${app.director}]]</td>
-                        <td>[[${app.shiftCostNo}]]</td>-->
-                        <!--<td>[[${app.shiftCost}]]</td>-->
-                        <td th:if="${app.status}==1" th:class="text-info">新建</td>
-                        <td th:if="${app.status}==2" th:class="text-success">分发成功</td>
-                        <td th:if="${app.status}==3" th:class="text-danger">分发失败</td>
-                        <td th:if="${app.status}==0" th:class="text-muted">不显示</td>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-info" data-toggle="modal"
-                                    data-target="#myModalDetail" onclick="showDetail(this)">
-                                详情
-                            </button>
-                            <button class="btn btn-sm btn-primary">编辑</button>
-                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
-                                    data-target="#myModalDel" onclick="showDeleteModal(this)">
-                                删除
-                            </button>
-                            <button type="button" th:if="${app.status} ne 2" class="btn btn-sm btn-warning"
-                                    onclick="assign(this)">分发
-                            </button>
-                            <button type="button" th:if="${app.status} eq 2" disabled class="btn btn-sm btn-success"
-                                    onclick="assign(this)">分发
-                            </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
             </div>
 
+            <table class="layui-hide" id="funcTable" lay-filter="funcTableFilter" lay-size="lg"></table>
+            <script type="text/html" id="barOperate">
+                <button type="button" class="btn btn-sm btn-info" data-toggle="modal" lay-event="detail"
+                        data-target="#myModalDetail">
+                    详情
+                </button>
+                <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" lay-event="edit"
+                        data-target="#myModalEdit">
+                    编辑
+                </button>
+
+                <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" lay-event="delete"
+                        data-target="#myModalDel" onclick="showDeleteModal(this)">
+                    删除
+                </button>
+                <button type="button" class="btn btn-sm btn-warning" onclick="assign(this)" lay-event="assignMacAddress">
+                    分发
+                </button>
+                <!--                <button type="button" th:if="${app.status} eq 2" disabled class="btn btn-sm btn-success"-->
+                <!--                        onclick="assign(this)">分发-->
+                <!--                </button>-->
+
+                <!--<a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit">-->
+                <!--<i class="layui-icon layui-icon-edit" title="edit"></i>-->
+                <!--</a>-->
+                <!--<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">-->
+                <!--<i class="layui-icon layui-icon-delete" title="delete"></i>-->
+                <!--</a>-->
+            </script>
+
             <!--分页条-->
-            <div th:replace="~{home/pageBar.html}"/>
+            <!--<div th:replace="~{home/pageBar.html}"/>-->
         </main>
     </div>
 
@@ -186,7 +169,6 @@
                 </div>
             </div>
         </div>
-
 
         <!--详情模态框-->
         <div class="modal fade bs-example-modal-lg" id="myModalDetail" tabindex="-1" role="dialog"
@@ -296,13 +278,376 @@
             </div><!-- /.modal -->
         </div>
 
+        <!--编辑模态框-->
+        <div class="modal fade bs-example-modal-lg" id="myModalEdit" tabindex="-1" role="dialog"
+             aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable" style="height: 600px;">
+                <div class="modal-content" style="width:800px;height: 750px;">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalEditLabel">编辑申请</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form role="form" id="macApplicationEditForm">
+
+                            <div class="form-group row" style="display: none">
+                                <label for="applicationIdEdit"
+                                       class="col-sm-2 col-form-label font-weight-bold">ID</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="applicationIdEdit"
+                                           name="applicationIdEdit">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="customerEdit"
+                                       class="col-sm-2 col-form-label font-weight-bold">客户</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="customerEdit"
+                                           name="customerEdit">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="applicantEdit"
+                                       class="col-sm-2 col-form-label font-weight-bold">申请人</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="applicantEdit"
+                                           name="applicantEdit">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="applicationDepartmentEdit"
+                                       class="col-sm-2 col-form-label font-weight-bold">申请单位</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="applicationDepartmentEdit"
+                                           name="applicationDepartmentEdit">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="amountEdit"
+                                       class="col-sm-2 col-form-label font-weight-bold">申请数量</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="amountEdit"
+                                           name="amountEdit">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="applicationDateEdit"
+                                       class="col-sm-2 col-form-label font-weight-bold">申请日期</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="applicationDateEdit"
+                                           name="applicationDateEdit">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="releaseDateEdit"
+                                       class="col-sm-2 col-form-label font-weight-bold">发放日期</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="releaseDateEdit"
+                                           name="releaseDateEdit">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="directorEdit"
+                                       class="col-sm-2 col-form-label font-weight-bold">费用转嫁承办人工号</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="directorEdit"
+                                           name="directorEdit">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="shiftCostNoEdit"
+                                       class="col-sm-2 col-form-label font-weight-bold">费用转嫁单号</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="shiftCostNoEdit"
+                                           name="shiftCostNoEdit">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="shiftCostEdit"
+                                       class="col-sm-2 col-form-label font-weight-bold">转嫁费用金额</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="shiftCostEdit"
+                                           name="shiftCostEdit">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="statusEdit"
+                                       class="col-sm-2 col-form-label font-weight-bold">申请状态</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="statusEdit"
+                                           name="statusEdit">
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" onclick="editApplication()">提交</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
+
         <!--删除模态框-->
         <div th:replace="~{home/deleteModal.html}"/>
     </div>
 </div>
 
-<script>
+<script th:inline="javascript">
     feather.replace();
+    layui.use(['form', 'table'], function () {
+        let $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+        //第一个实例
+        //加载表格
+        let funcTable = table.render({
+            elem: '#funcTable',
+            method: 'post',
+            where: formData('#option'),
+            url: 'applicationBycondition',
+            limits: [10, 15, 20, 25, 50, 100],
+            limit: 10,
+            theme: 'custom',
+            page: true,
+            sort: true,
+            response: {
+                statusName: 'code',
+                statusCode: 200
+            },
+            cols: [[ //表头
+                {field: 'id', title: 'ID', width: '5%', sort: true, fixed: 'left', align: 'center'}
+                , {field: 'customer', title: '客户', width: '20%', align: 'center'}
+                , {field: 'applicant', title: '申请人', width: '10%', align: 'center'}
+                , {field: 'applicationDepartment', title: '申请单位', width: '20%', align: 'center'}
+                , {field: 'amount', title: '申请数量', width: '10%', align: 'center', sort: true}
+                , {
+                    field: 'applicationDate',
+                    title: '申请日期',
+                    width: '10%',
+                    sort: true,
+                    align: 'center',
+                    templet: '<div>{{ layui.util.toDateString(d.applicationDate, "yyyy-MM-dd") }}</div>'
+                }
+                , {field: 'status', title: '申请状态', width: '10%', sort: true, align: 'center',templet:function (d) {
+                        if (d.status =='0'){
+                            return '<span class="text-muted">已删除</span>'
+                        }else if (d.status =='1'){
+                            return '<span class="text-info">新建</span>'
+                        }else if (d.status =='2'){
+                            return '<span class="text-success">分发成功</span>'
+                        }else if (d.status =='3'){
+                            return '<span class="text-danger">分发失败</span>'
+                        }
+                    }}
+                , {title: '操作', align: 'center', fixed: 'right', toolbar: '#barOperate'} //操作栏位
+            ]],
+            done: function (res, curr, count) {
+                $('th').css({'font-size': '15', 'font-weight': 'bold', 'text-align': 'center'});
+            }
+        });
+
+        //监听搜索
+        form.on('submit(search)', function (data) {
+            let field = data.field;
+            console.log("field:", field);
+            //执行重载
+            funcTable.reload({where: field, page: {curr: 1}});
+        });
+
+        /*监听当前行*/
+        table.on('row(funcTableFilter)',function (obj){
+            console.log(obj.tr) //得到当前行元素对象
+            console.log(obj.data) //得到当前行数据
+        });
+        //表格中操作栏位事件监听
+        table.on('tool(funcTableFilter)', function (obj) {
+            let data = obj.data //当前行的内容
+                , layEvent = obj.event; //选中的时间
+            console.log(data);
+            console.log("layEvent", layEvent);
+            if (layEvent === 'detail') {
+                console.log(" enter edit...");
+                let applicationIdTd=data.id;
+                $.ajax({
+                    url: "/selectApplication/" + applicationIdTd,
+                    type: "GET",
+                    method: "GET",
+                    success: function (result) {
+                        if (result.code == 200) {
+                            /*客户*/
+                            let customer = result.data.customer;
+                            $('#customerDetail').val(customer);
+                            /*申请人*/
+                            let applicant = result.data.applicant;
+                            $('#applicantDetail').val(applicant);
+                            /*申请单位*/
+                            let applicationDepartment = result.data.applicationDepartment;
+                            $('#applicationDepartmentDetail').val(applicationDepartment);
+                            /*申请数量*/
+                            let amount = result.data.amount;
+                            $('#amountDetail').val(amount);
+                            /*申请日期*/
+                            let applicationDate = result.data.applicationDate;
+
+                            if (applicationDate==null){
+                                $('#applicationDateDetail').val();
+                            }else{
+                                var applicationDateDate = new Date(applicationDate);
+                                var applicationDateFormat = applicationDateDate.getFullYear() + '-' + (applicationDateDate.getMonth() + 1) + '-' + applicationDateDate.getDate();
+                                $('#applicationDateDetail').val(applicationDateFormat);
+                            }
+
+                            /*发放日期*/
+                            let releaseDate = result.data.releaseDate;
+                            if (releaseDate==null){
+                                $('#releaseDateDetail').val();
+                            }else{
+                                var releaseDateDate = new Date(releaseDate);
+                                var releaseDateDetailFormat = releaseDateDate.getFullYear() + '-' + (releaseDateDate.getMonth() + 1) + '-' + releaseDateDate.getDate() + ' ' + releaseDateDate.getHours() + ':' + releaseDateDate.getMinutes() + ':' + releaseDateDate.getSeconds();
+                                $('#releaseDateDetail').val(releaseDateDetailFormat);
+                            }
+
+                            /*费用转嫁承办人工号*/
+                            let director = result.data.director;
+                            $('#directorDetail').val(director);
+                            /*费用转嫁单号*/
+                            let shiftCostNo = result.data.shiftCostNo;
+                            $('#shiftCostNoDetail').val(shiftCostNo);
+                            /*转嫁费用金额*/
+                            let shiftCost = result.data.shiftCost;
+                            $('#shiftCostDetail').val(shiftCost);
+                            let status = result.data.status;
+                            switch (status) {
+                                case 1:
+                                    status = "新建";
+                                    break;
+                                case 2:
+                                    status = "分发成功";
+                                    break;
+                                case 3:
+                                    status = "分发失败";
+                                    break;
+                                case 0:
+                                    status = "已删除";
+                                    break;
+                            }
+                            $('#statusDetail').val(status);
+                        }
+                    },
+                    error: function () {
+                        $('#myModalDetail').modal('hide');  //手动关闭
+                        ShowFailure("查看详情失败");
+                    }
+                });
+
+                // openFunction("Edit People",data.id);
+                // window.location.href = ctxPath + 'peopleres/editPeopleRes/' + data.id
+            }
+
+            if (layEvent === 'edit') {
+                let data = obj.data
+                console.error("data:", data);
+                console.log(" enter edit...");
+                let applicationId = data.id;
+                $('#applicationIdEdit').val(applicationId);
+
+                /*客户*/
+                let customer = data.customer;
+                $('#customerEdit').val(customer);
+                /*申请人*/
+                let applicant = data.applicant;
+                $('#applicantEdit').val(applicant);
+                /*申请单位*/
+                let applicationDepartment = data.applicationDepartment;
+                $('#applicationDepartmentEdit').val(applicationDepartment);
+                /*申请数量*/
+                let amount = data.amount;
+                $('#amountEdit').val(amount);
+                /*申请日期*/
+                let applicationDate = data.applicationDate;
+                if (applicationDate==null){
+                    $('#applicationDateEdit').val();
+                }else{
+                    var applicationDateDate = new Date(applicationDate);
+                    var applicationDateFormat = applicationDateDate.getFullYear() + '-' + (applicationDateDate.getMonth() + 1) + '-' + applicationDateDate.getDate();
+                    $('#applicationDateEdit').val(applicationDateFormat);
+                }
+                /*发放日期*/
+                let releaseDate = data.releaseDate;
+                if (releaseDate==null){
+                    $('#releaseDateEdit').val();
+                }else{
+                    var releaseDateDate = new Date(releaseDate);
+                    var releaseDateEditFormat = releaseDateDate.getFullYear() + '-' + (releaseDateDate.getMonth() + 1) + '-' + releaseDateDate.getDate() + ' ' + releaseDateDate.getHours() + ':' + releaseDateDate.getMinutes() + ':' + releaseDateDate.getSeconds();
+                    $('#releaseDateEdit').val(releaseDateEditFormat);
+                }
+
+                /*费用转嫁承办人工号*/
+                let director = data.director;
+                $('#directorEdit').val(director);
+                /*费用转嫁单号*/
+                let shiftCostNo = data.shiftCostNo;
+                $('#shiftCostNoEdit').val(shiftCostNo);
+                /*转嫁费用金额*/
+                let shiftCost = data.shiftCost;
+                $('#shiftCostEdit').val(shiftCost);
+                let status = data.status;
+                switch (status) {
+                    case 1:
+                        status = "新建";
+                        break;
+                    case 2:
+                        status = "分发成功";
+                        break;
+                    case 3:
+                        status = "分发失败";
+                        break;
+                    case 0:
+                        status = "已删除";
+                        break;
+                }
+                $('#statusEdit').val(status);
+
+                // openFunction("Edit People",data.id);
+                // window.location.href = ctxPath + 'peopleres/editPeopleRes/' + data.id
+            }
+            if (layEvent === 'delete') {
+                console.log("enter delete....");
+                layer.confirm([[#{deviceSetting.sureDelete}]], {title: [[#{deviceSetting.hintTitle}]]}, function (index) {
+                    $.ajax({
+                        type: "post",
+                        url: 'application/' + data.id,
+                        dataType: "json",
+                        success: function (data) {
+                            console.log("data:", data);
+                            if (data.msg === "success") {
+                                layer.msg([[#{common.deleteSuccess}]]);
+                            } else {
+                                layer.msg(data.msg);
+                            }
+                            funcTable.reload();
+                        }
+                    });
+                });
+            }
+
+            if (layEvent === 'assignMacAddress') {
+                console.log(" enter assignMacAddress...");
+
+                // openFunction("Edit People",data.id);
+                // window.location.href = ctxPath + 'peopleres/editPeopleRes/' + data.id
+            }
+        });
+    });
 
     /*提交表单*/
     function addApplication() {
@@ -314,15 +659,6 @@
 
     /*点击日期控件*/
     $(function () {
-        //搜索框日期插件
-        // $('#applicationDateInput').datetimepicker({
-        //     format: "YYYY-MM-DD hh:ii:ss",
-        //     todayBtn: true,
-        //     language: 'zh',
-        //     // locale: moment.locale('zh-cn'),
-        //     autoclose: true
-        // });
-
         $("#applicationDateInput").datetimepicker({
             language: 'zh-CN',
             todayBtn: 1,  //是否显示今天按钮，0为不显示
@@ -410,13 +746,14 @@
             error: function (xhr, textStatus, errorThrown) {
                 var responseText = JSON.parse(xhr.responseText);
                 let msgTip = responseText.message;
-                ShowFailure("下方mac地址失败！"+msgTip);
+                ShowFailure("下方mac地址失败！" + msgTip);
             }
         });
     }
 
     /*点击删除按钮，显示删除确认模态框*/
     let delTr;
+
     function showDeleteModal(obj) {
         var delTableTr = obj.parentNode.parentNode;
         console.log(delTableTr);
@@ -426,86 +763,99 @@
     }
 
     function delConfirm() {
-        let applicationIdTd =$(delTr).find("td:eq(0)").text();
-        console.log("applicationIdTd:"+applicationIdTd);
+        let applicationIdTd = $(delTr).find("td:eq(0)").text();
+        console.log("applicationIdTd:" + applicationIdTd);
         $.ajax({
-            url:"/application/"+applicationIdTd,
-            type:"post",
-            method:"post",
-            success:function(result){
+            url: "/application/" + applicationIdTd,
+            type: "post",
+            method: "post",
+            success: function (result) {
                 $('#myModalDel').modal('hide');  //手动关闭
-                window.location.href='/applications';
+                window.location.href = '/applications';
             },
-            error : function() {
+            error: function () {
                 $('#myModalDel').modal('hide');  //手动关闭
                 ShowFailure("删除失败");
             }
         });
     }
 
-    function showDetail(obj) {
-        var applicationTd = $(obj).parent().parent().find("td");
-        var applicationIdTd = applicationTd.eq(0).text();
+    /*编辑模态框下点击提交*/
+    function editApplication() {
+        let applicationIdEditVal=$('#applicationIdEdit').val();
+
+        /*客户*/
+        let customerVal = $('#customerEdit').val();
+        /*申请人*/
+        let applicantEdit = $('#applicantEdit').val();
+        /*申请单位*/
+        let applicationDepartmentEdit=$('#applicationDepartmentEdit').val();
+        /*申请数量*/
+        let amountEdit=$('#amountEdit').val();
+        /*申请日期*/
+        let applicationDateEdit=$('#applicationDateEdit').val();
+        if (applicationDateEdit==null||applicationDateEdit==''){
+            applicationDateEdit='';
+        }
+        /*发放日期*/
+        let releaseDateEdit = $('#releaseDateEdit').val();
+        if (releaseDateEdit==null||releaseDateEdit==''){
+            releaseDateEdit='';
+        }
+        /*费用转嫁承办人工号*/
+        let directorEdit = $('#directorEdit').val();
+        /*费用转嫁单号*/
+        let shiftCostNoEdit = $('#shiftCostNoEdit').val();
+        /*转嫁费用金额*/
+        let shiftCostEdit = $('#shiftCostEdit').val();
+        let statusEdit = $('#statusEdit').val();
+        let statusVal;
+        switch (statusEdit) {
+            case '新建':
+                statusVal = 1;
+                break;
+            case '分发成功':
+                statusVal = 2;
+                break;
+            case '分发失败':
+                statusVal = 3;
+                break;
+            case '已删除':
+                statusVal = 0;
+                break;
+        }
         $.ajax({
-            url:"/selectOne/"+applicationIdTd,
-            type:"GET",
-            method:"GET",
-            success:function(result){
-                if (result.code==200) {
-                    /*客户*/
-                    let customer = result.data.customer;
-                    $('#customerDetail').val(customer);
-                    /*申请人*/
-                    let applicant = result.data.applicant;
-                    $('#applicantDetail').val(applicant);
-                    /*申请单位*/
-                    let applicationDepartment = result.data.applicationDepartment;
-                    $('#applicationDepartmentDetail').val(applicationDepartment);
-                    /*申请数量*/
-                    let amount = result.data.amount;
-                    $('#amountDetail').val(amount);
-                    /*申请日期*/
-                    let applicationDate = result.data.applicationDate;
-
-                    var applicationDateDate = new Date(applicationDate);
-                    var applicationDateFormat=applicationDateDate.getFullYear() + '-' + (applicationDateDate.getMonth() + 1) + '-' + applicationDateDate.getDate();
-                    $('#applicationDateDetail').val(applicationDateFormat);
-                    /*发放日期*/
-                    let releaseDate = result.data.releaseDate;
-                    var releaseDateDate = new Date(releaseDate);
-                    var releaseDateDetailFormat=releaseDateDate.getFullYear() + '-' + (releaseDateDate.getMonth() + 1) + '-' + releaseDateDate.getDate() + ' ' + releaseDateDate.getHours() + ':' + releaseDateDate.getMinutes() + ':' + releaseDateDate.getSeconds();
-                    $('#releaseDateDetail').val(releaseDateDetailFormat);
-
-                    /*费用转嫁承办人工号*/
-                    let director = result.data.director;
-                    $('#directorDetail').val(director);
-                    /*费用转嫁单号*/
-                    let shiftCostNo = result.data.shiftCostNo;
-                    $('#shiftCostNoDetail').val(shiftCostNo);
-                    /*转嫁费用金额*/
-                    let shiftCost = result.data.shiftCost;
-                    $('#shiftCostDetail').val(shiftCost);
-                    let status = result.data.status;
-                    switch (status) {
-                        case 1:
-                            status = "新建";
-                            break;
-                        case 2:
-                            status = "分发成功";
-                            break;
-                        case 3:
-                            status = "分发失败";
-                            break;
-                        case 0:
-                            status = "已删除";
-                            break;
-                    }
-                    $('#statusDetail').val(status);
-                }
+            //请求的url地址
+            url: "/editApplication",
+            //请求是否异步，默认为异步，这也是ajax重要特性
+            async: true,
+            //参数值
+            data: {
+                "id": applicationIdEditVal,
+                "customer": customerVal,
+                "applicant": applicantEdit,
+                "applicationDepartment": applicationDepartmentEdit,
+                "amount": amountEdit,
+                "applicationDate": applicationDateEdit,
+                "releaseDate":releaseDateEdit,
+                "director":directorEdit,
+                "shiftCostNo":shiftCostNoEdit,
+                "shiftCost":shiftCostEdit,
+                "status":statusVal
             },
-            error : function() {
-                $('#myModalDetail').modal('hide');  //手动关闭
-                ShowFailure("查看详情失败");
+            type: "POST",   //请求方式
+            method: "POST",
+            dataType: 'json',
+            success: function (req) {
+                $('#myModalEdit').modal('hide');  //手动关闭
+                //请求成功时处理
+                ShowSuccess("修改申请成功");
+                window.location.href = "/applications?pageNum=1";
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                var responseText = JSON.parse(xhr.responseText);
+                let msgTip = responseText.message;
+                ShowFailure("修改申请失败！" + msgTip);
             }
         });
     }

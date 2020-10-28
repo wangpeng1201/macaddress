@@ -13,5 +13,8 @@ public class ApplicationDTO implements Serializable {
     private String applicant;
     //申请时间
     private String applicationDate;
-    private Integer pageNum;
+    //当前页
+    private Integer page;
+    //每页条数
+    private Integer limit;
 }

@@ -113,6 +113,8 @@ public class MacaddressController {
         model.addAttribute("macAddressDTO", macAddressDTO);
         model.addAttribute("PAGE", pageNum);
         model.addAttribute("url", "condition");
+        model.addAttribute("startMacAddress", "startMacAddress");
+        model.addAttribute("createdate", "createdate");
         System.err.println("pageInfo = " + JSON.toJSONString(pageInfo));
         return "home/list";
     }

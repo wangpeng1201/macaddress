@@ -13,7 +13,7 @@
 
     <link th:href="@{asserts/css/dashboard.css}" rel="stylesheet">
 
-<!--    <link th:href="@{asserts/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css}" rel="stylesheet">-->
+    <!--    <link th:href="@{asserts/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css}" rel="stylesheet">-->
     <link th:href="@{asserts/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css}" rel="stylesheet">
     <style type="text/css">
         /* Chart.js */
@@ -156,15 +156,12 @@
                                 <ul class="pagination">
                                     <!--首页-->
                                     <li class="page-item">
-                                        <a th:if="${startMacAddress!=null && startMacAddress!=''}" class="page-link" th:href="@{'/condition?pageNum=1&startMacAddress='+${startMacAddress}+'&createdate='+${(macAddressDTO.createdate!=null&&macAddressDTO.createdate!='')?macAddressDTO.createdate:''}}">首页</a>
-                                    </li>
+                                        <a class="page-link" href="/list?pageNum=1">首页</a>
 
-                                    <li class="page-item">
-                                        <a class="page-link" th:href="@{'/condition?pageNum=1&startMacAddress='+${(macAddressDTO.startMacAddress!=null&&macAddressDTO.startMacAddress!='')?macAddressDTO.startMacAddress:''}+'&createdate='+${(macAddressDTO.createdate!=null&&macAddressDTO.createdate!='')?macAddressDTO.createdate:''}}">首页</a>
                                     </li>
                                     <!--上一页《 -->
                                     <li th:if="${pageInfo.hasPreviousPage}">
-                                        <a class="page-link" th:href="@{'/condition?pageNum='+${pageInfo.pageNum-1}+'&startMacAddress='+${(macAddressDTO.startMacAddress!=null&&macAddressDTO.startMacAddress!='')?macAddressDTO.startMacAddress:''}+'&createdate='+${(macAddressDTO.createdate!=null&&macAddressDTO.createdate!='')?macAddressDTO.createdate:''}}"
+                                        <a class="page-link" th:href="@{'/list?pageNum='+${pageInfo.pageNum-1 }}"
                                            aria-label="Previous">
                                             <span aria-hidden="true">&laquo;</span>
                                         </a>
@@ -174,7 +171,7 @@
                                     <li class="page-item"
                                         th:classappend="${PageNum == pageInfo.pageNum} ? 'active' : '' "
                                         th:each="PageNum : ${pageInfo.navigatepageNums}">
-                                        <a th:href="@{'/list?pageNum='+${PageNum}+'&startMacAddress='+${(macAddressDTO.startMacAddress!=null&&macAddressDTO.startMacAddress!='')?macAddressDTO.startMacAddress:''}+'&createdate='+${(macAddressDTO.createdate!=null&&macAddressDTO.createdate!='')?macAddressDTO.createdate:''}}" class="page-link"
+                                        <a th:href="@{'/list?pageNum='+${PageNum}}" class="page-link"
                                            th:text="${PageNum}"></a>
                                     </li>
 
@@ -188,7 +185,7 @@
 
                                     <!--下一页 》-->
                                     <li th:if="${pageInfo.hasNextPage}" class="page-item">
-                                        <a th:href="@{'/list?pageNum='+${pageInfo.pageNum+1 }+'&startMacAddress='+${(macAddressDTO.startMacAddress!=null&&macAddressDTO.startMacAddress!='')?macAddressDTO.startMacAddress:''}+'&createdate='+${(macAddressDTO.createdate!=null&&macAddressDTO.createdate!='')?macAddressDTO.createdate:''}}" aria-label="Next"
+                                        <a th:href="@{'/list?pageNum='+${pageInfo.pageNum+1 }}" aria-label="Next"
                                            class="page-link">
                                             <span aria-hidden="true">&raquo;</span>
                                         </a>
@@ -196,7 +193,7 @@
 
                                     <!--尾页-->
                                     <li class="page-item" th:if="${pageInfo.hasNextPage}">
-                                        <a th:href="@{'/list?pageNum='+${pageInfo.pages}+'&startMacAddress='+${(macAddressDTO.startMacAddress!=null&&macAddressDTO.startMacAddress!='')?macAddressDTO.startMacAddress:''}+'&createdate='+${(macAddressDTO.createdate!=null&&macAddressDTO.createdate!='')?macAddressDTO.createdate:''}}" class="page-link">尾页</a>
+                                        <a th:href="@{'/list?pageNum='+${pageInfo.pages}}" class="page-link">尾页</a>
                                     </li>
                                 </ul>
                             </nav>
@@ -204,8 +201,8 @@
                     </div>
                 </div>
             </footer>
-           <!-- &lt;!&ndash;分页条&ndash;&gt;
-            <div th:replace="~{home/pageBar.html}"/>-->
+            <!-- &lt;!&ndash;分页条&ndash;&gt;
+             <div th:replace="~{home/pageBar.html}"/>-->
         </main>
     </div>
 

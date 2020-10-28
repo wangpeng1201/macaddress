@@ -1,5 +1,8 @@
 package com.foxconn.sw.macaddress.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.foxconn.sw.macaddress.common.Box;
+import com.foxconn.sw.macaddress.common.Lay;
 import com.foxconn.sw.macaddress.common.Result;
 import com.foxconn.sw.macaddress.common.RetResponse;
 import com.foxconn.sw.macaddress.dto.ApplicationDTO;
@@ -10,6 +13,7 @@ import com.foxconn.sw.macaddress.vo.ApplicationVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -73,32 +78,13 @@ public class ApplicationController {
     }
 
     @PostMapping(value = "/applicationBycondition")
-    public String findByCondition(Model model, ApplicationDTO applicationDTO,
-                                  @RequestParam(required = false, defaultValue = "1", value = "pageNum") Integer pageNum) {
-        if (ObjectUtils.isEmpty(applicationDTO)) {
-            log.error("参数{}为空", applicationDTO);
-            throw new RuntimeException("参数为空");
-        }
-        String customer = applicationDTO.getCustomer();
-        String applicant = applicationDTO.getApplicant();
-        String applicationDate = applicationDTO.getApplicationDate();
-        //为了程序的严谨性，判断非空
-        if (pageNum == null) {
-            //设置默认当前页
-            pageNum = 1;
-        }
-        if (pageNum <= 0) {
-            pageNum = 1;
-        }
-        PageHelper.startPage(pageNum, 5);
-
-        List<Application> applicationList = applicationService.findByCondition(applicationDTO);
-        PageInfo<Application> pageInfo = new PageInfo<Application>(applicationList, 5);
-        //4.使用model/map/modelandview等带回前端
-        model.addAttribute("pageInfo", pageInfo);
-        model.addAttribute("applicationDTO", applicationDTO);
-        model.addAttribute("url", "applicationBycondition");
-        return "application/list";
+    @ResponseBody
+    public Box findByCondition(Model model, ApplicationDTO applicationDTO) throws ParseException {
+        System.err.println("applicationDTO = " + JSON.toJSONString(applicationDTO));
+        Lay byConditionLayUI = applicationService.findByConditionLayUI(applicationDTO);
+        Long count = byConditionLayUI.getCount();
+        Object data = byConditionLayUI.getData();
+        return Box.success(data).put("count", count);
     }
 
     @RequestMapping(value = "/application/{id}", method = RequestMethod.POST)
@@ -124,9 +110,31 @@ public class ApplicationController {
      * @param id
      * @return
      */
-    @GetMapping("selectOne/{id}")
+    @GetMapping("selectApplication/{id}")
     @ResponseBody
     public Result selectOne(@PathVariable Integer id) {
         return applicationService.queryById(id);
+    }
+
+    /**
+     * 编辑申请
+     *
+     * @param
+     * @return
+     */
+    @PostMapping("editApplication")
+    @ResponseBody
+    public Result editOne(ApplicationVO applicationVO) {
+        Application application = new Application();
+        BeanUtils.copyProperties(applicationVO, application);
+        application.setUpdateDate(new Date());
+        application.setUpdator(httpSession.getAttribute("LoginState").toString());
+        try {
+            Application update = applicationService.update(application);
+            return RetResponse.success(update);
+        } catch (Exception e) {
+            log.error("修改申请失败");
+            return RetResponse.error("修改申请失败");
+        }
     }
 }

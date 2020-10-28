@@ -1,10 +1,12 @@
 package com.foxconn.sw.macaddress.service;
 
+import com.foxconn.sw.macaddress.common.Lay;
 import com.foxconn.sw.macaddress.common.Result;
 import com.foxconn.sw.macaddress.dto.ApplicationDTO;
 import com.foxconn.sw.macaddress.entity.Application;
 import com.foxconn.sw.macaddress.vo.ApplicationVO;
 
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -74,11 +76,7 @@ public interface ApplicationService {
      */
     List<Application> findByCondition(ApplicationDTO applicationDTO);
 
-    /**
-     * 新增mac地址申请
-     *
-     * @param applicationVO
-     * @return
-     */
 //    Result addApplication(ApplicationVO applicationVO);
+
+    Lay findByConditionLayUI(ApplicationDTO applicationDTO) throws ParseException;
 }
