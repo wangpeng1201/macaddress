@@ -4,9 +4,14 @@ import lombok.Data;
 
 import java.io.Serializable;
 
+/**
+ * 查询条件
+ */
 @Data
 public class ApplicationDTO implements Serializable {
     private static final long serialVersionUID = -3859025676685626902L;
+    //申请id
+    private Integer applicationId;
     //客户
     private String customer;
     //申请人

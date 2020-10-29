@@ -27,63 +27,58 @@
         <!--右边main主体开始-->
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
             <!--查询组件-->
-            <form class="form-inline" style="margin-bottom: 10px;float: left" th:action="@{/deliveryRecordByCondition}" method="post">
-                <div class="form-group mb-2">
-                    <label for="startMacAddressInput" class="sr-only">起始mac地址</label>
-                    <input type="text" class="form-control" id="startMacAddressInput" name="startMacAddress"
-                           autocomplete="off"
-                           placeholder="起始mac地址" th:value="${macAddressDTO!=null?macAddressDTO.startMacAddress:''}">
-                </div>
-                <div class="form-group mx-sm-3 mb-2">
-                    <label for="macCreatDate" class="sr-only">创建时间</label>
-                    <input type="text" class="form-control" id="macCreatDate" name="createdate" placeholder="创建时间"
-                           autocomplete="off" th:value="${macAddressDTO!=null?macAddressDTO.createdate:''}">
-                </div>
-                <button type="submit" class="btn btn-primary mb-2">搜索</button>
-            </form>
-            <button type="button" class="btn btn-primary mb-2" style="margin-left: 15px;">导出Excel</button>
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="margin-left: -15px;">
+                <form class="layui-form-item layui-form-pane" id="option" lay-filter="option">
+                    <div class="layui-inline form-group">
+                        <label class="layui-form-label">mac地址</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" id="startMacAddressInput" name="startMacAddress" autocomplete="off"
+                                   placeholder="请输入起始mac地址">
+                        </div>
+                    </div>
 
-            <div class="table-responsive">
-                <table class="table table-sm table-bordered table-hover" id="tableId">
-                    <thead>
-                    <tr>
-                        <th>主键</th>
-                        <th>mac起始地址</th>
-                        <th>mac结束地址</th>
-                        <th>分发总数</th>
-                        <th>创建时间</th>
-                        <th>创建人</th>
-                        <th>修改时间</th>
-                        <th>操作</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="deliveryRecord:${pageInfo.list}">
-                        <td th:text="${deliveryRecord.id}"></td>
-                        <td th:text="${deliveryRecord.startMacAddress}"></td>
-                        <td th:text="${deliveryRecord.endMacAddress}"></td>
-                        <td th:text="${deliveryRecord.amount}"></td>
-                        <td th:text="${#dates.format(deliveryRecord.getCreatedate(),'yyyy-MM-dd HH:mm:ss')}"></td>
-                        <td th:text="${deliveryRecord.creator}"></td>
-                        <td th:text="${#dates.format(deliveryRecord.getUpdatedate(),'yyyy-MM-dd HH:mm:ss')}"></td>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-info" data-toggle="modal"
-                                    data-target="#myModalDetail" onclick="showDetail(this)">
-                                详情
-                            </button>
-                            <button class="btn btn-sm btn-primary">编辑</button>
-                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
-                                    data-target="#myModalDel" onclick="showDeleteModal(this)">
-                                删除
-                            </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                    <div class="layui-inline form-group">
+                        <label class="layui-form-label">申请编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" id="applicationIdInput" name="applicationId" autocomplete="off"
+                                   placeholder="请输入申请编号">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline form-group">
+                        <label class="layui-form-label">创建时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" id="createdateInput" name="createdate"
+                                   autocomplete="off"
+                                   placeholder="请输入创建时间">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button type="button" lay-submit lay-filter="search" class="btn btn-primary"
+                                style="margin-bottom: 10px;">
+                            搜索<i class="layui-icon layui-icon-search"></i>
+                        </button>
+                    </div>
+
+                    <div class="layui-inline">
+                        <button type="button" class="btn btn-primary mb-2">导出Excel
+                            <i class="layui-icon layui-icon-download-circle"></i>
+                        </button>
+                    </div>
+                </form>
             </div>
 
-            <!--分页条-->
-            <div th:replace="~{home/pageBar.html}"/>
+            <!--表格主体-->
+            <table class="layui-hide" id="deliveryRecordTable" lay-filter="deliveryRecordTableFilter" lay-size="lg"></table>
+            <script type="text/html" id="barOperate">
+                <button type="button" class="btn btn-sm btn-info" data-toggle="modal" lay-event="detail"
+                        data-target="#myModalDetail">
+                    详情
+                </button>
+                <button type="button" class="btn btn-sm btn-danger" lay-event="delete">
+                    删除
+                </button>
+            </script>
         </main>
         <!--右边main主体结束-->
     </div>
@@ -100,7 +95,7 @@
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <form role="form" th:action="@{/addMacAddress}" method="post"
+                        <form role="form" method="post"
                               id="macForm">
                             <div class="form-group row">
                                 <label for="startMacAddress"
@@ -132,7 +127,7 @@
         <div class="modal fade bs-example-modal-lg" id="myModalDetail" tabindex="-1" role="dialog"
              aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                <div class="modal-content" style="width:800px;height: 400px;">
+                <div class="modal-content" style="width:800px;height: 800px;">
                     <div class="modal-header">
                         <h4 class="modal-title" id="myModalDetailLabel">Mac地址段详情</h4>
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -158,10 +153,110 @@
 
                             <div class="form-group row">
                                 <label for="amountDetail"
-                                       class="col-sm-2 col-form-label font-weight-bold">分发总数</label>
+                                       class="col-sm-2 col-form-label font-weight-bold">发放总数</label>
                                 <div class="col-sm-6">
                                     <input type="text" class="form-control" id="amountDetail"
                                            name="amountDetail">
+                                </div>
+                            </div>
+                            <hr/>
+                            <!--所属macid-->
+                            <div class="form-group row">
+                                <label for="macAddressSum"
+                                       class="col-sm-2 col-form-label font-weight-bold">所属mac段库存ID</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="macAddressId"
+                                           name="macAddressSum">
+                                </div>
+                            </div>
+
+                            <!--库存总数-->
+                            <div class="form-group row">
+                                <label for="macAddressSum"
+                                       class="col-sm-2 col-form-label font-weight-bold">mac段库存总数</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="macAddressSum"
+                                           name="macAddressSum">
+                                </div>
+                            </div>
+                            <!--库存剩余数-->
+                            <div class="form-group row">
+                                <label for="macAddressRemainingSum"
+                                       class="col-sm-2 col-form-label font-weight-bold">mac段库存剩余数</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="macAddressRemainingSum"
+                                           name="macAddressRemainingSum">
+                                </div>
+                            </div>
+                            <hr/>
+                            <!--申请详情-->
+                            <div class="form-group row">
+                                <label for="customerDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">客户</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="customerDetail"
+                                           name="customerDetail">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="applicantDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">申请人</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="applicantDetail"
+                                           name="applicantDetail">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="applicationDepartmentDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">申请单位</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="applicationDepartmentDetail"
+                                           name="applicationDepartmentDetail">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="applicationDateDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">申请日期</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="applicationDateDetail"
+                                           name="applicationDateDetail">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="releaseDateDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">发放日期</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="releaseDateDetail"
+                                           name="releaseDateDetail">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="directorDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">费用转嫁承办人工号</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="directorDetail"
+                                           name="directorDetail">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="shiftCostNoDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">费用转嫁单号</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="shiftCostNoDetail"
+                                           name="shiftCostNoDetail">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="shiftCostDetail"
+                                       class="col-sm-2 col-form-label font-weight-bold">转嫁费用金额</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="shiftCostDetail"
+                                           name="shiftCostDetail">
                                 </div>
                             </div>
                         </form>
@@ -173,6 +268,7 @@
             </div><!-- /.modal -->
         </div>
 
+
         <!--删除模态框-->
         <div th:replace="~{home/deleteModal.html}"/>
     </div>
@@ -181,34 +277,189 @@
 
 <script th:inline="javascript">
     feather.replace();
+    $(function () {
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#createdateInput' //指定元素
+            });
+        });
+    });
+    /*渲染表格*/
+    layui.use(['form', 'table','layer'], function () {
+        let $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+        var layer=layui.layer;
+        //第一个实例
+        //加载表格
+        let deliveryRecordTable = table.render({
+            elem: '#deliveryRecordTable',
+            method: 'post',
+            where: formData('#option'),
+            url: 'deliveryRecordByCondition',
+            limits: [10, 15, 20, 25, 50],
+            limit: 10,
+            theme: 'custom',
+            page: true,
+            sort: true,
+            response: {
+                statusName: 'code',
+                statusCode: 200
+            },
+            cols: [[ //表头
+                {field: 'id', title: '编号', width: '5%', sort: true, fixed: 'left', align: 'center'}
+                , {field: 'startMacAddress', title: 'mac起始地址', width: '15%', align: 'center'}
+                , {field: 'endMacAddress', title: 'mac结束地址', width: '15%', align: 'center'}
+                , {field: 'amount', title: '发放总数', width: '10%', align: 'center', sort: true}
+                , {field: 'applicationId', title: '申请编号', width: '10%', align: 'center', sort: true}
+                , {
+                    field: 'createdate',
+                    title: '创建时间',
+                    width: '20%',
+                    sort: true,
+                    align: 'center',
+                    templet: '<div>{{ layui.util.toDateString(d.createdate, "yyyy-MM-dd HH:mm:ss") }}</div>'
+                }
+                , {field: 'creator', title: '创建人', width: '10%', align: 'center', sort: true}
+                , {title: '操作', align: 'center', fixed: 'right', toolbar: '#barOperate'} //操作栏位
+            ]],
+            done: function (res, curr, count) {
+                $('th').css({'font-size': '15', 'font-weight': 'bold', 'text-align': 'center'});
+            }
+        });
+
+        //监听搜索
+        form.on('submit(search)', function (data) {
+            let field = data.field;
+            console.log("field:", field);
+            //执行重载
+            deliveryRecordTable.reload({where: field, page: {curr: 1}});
+        });
+
+        /*监听当前行*/
+        table.on('row(deliveryRecordTableFilter)',function (obj){
+            console.log(obj.tr) //得到当前行元素对象
+            console.log(obj.data) //得到当前行数据
+        });
+
+        //表格中操作栏位事件监听
+        table.on('tool(deliveryRecordTableFilter)', function (obj) {
+            let data = obj.data //当前行的内容
+                , layEvent = obj.event; //选中的时间
+            console.log(data);
+            console.log("layEvent", layEvent);
+            if (layEvent === 'detail') {
+                let deliveryRecordId=data.id;
+                let startMac=data.startMacAddress;
+                let endMac=data.endMacAddress;
+                let amountDetail=data.amount;
+                $('#startMacAddressDetail').val(startMac);
+                $('#endMacAddressDetail').val(endMac);
+                $('#amountDetail').val(amountDetail);
+                $.ajax({
+                    url: "/selectDeliveryRecord/" +deliveryRecordId,
+                    type: "GET",
+                    method: "GET",
+                    success: function (result) {
+                        if (result.code == 200) {
+                            /************************************mac库存信息***********************************/
+                            let macAddressDetailVO = result.data.macAddressDetailVO;
+                            let macId=macAddressDetailVO.id;
+                            $('#macAddressId').val(macId);
+                            //初始总库存
+                            $('#macAddressSum').val(macAddressDetailVO.startingInventory);
+                            //剩余库存
+                            $('#macAddressRemainingSum').val(macAddressDetailVO.remainingInventory);
+                            /************************************申请信息***********************************/
+                            /*客户*/
+                            let customer = result.data.application.customer;
+                            $('#customerDetail').val(customer);
+                            /*申请人*/
+                            let applicant = result.data.application.applicant;
+                            $('#applicantDetail').val(applicant);
+                            /*申请单位*/
+                            let applicationDepartment = result.data.application.applicationDepartment;
+                            $('#applicationDepartmentDetail').val(applicationDepartment);
+                            /*申请日期*/
+                            let applicationDate = result.data.application.applicationDate;
+
+                            if (applicationDate==null){
+                                $('#applicationDateDetail').val();
+                            }else{
+                                var applicationDateDate = new Date(applicationDate);
+                                var applicationDateFormat = applicationDateDate.getFullYear() + '-' + (applicationDateDate.getMonth() + 1) + '-' + applicationDateDate.getDate();
+                                $('#applicationDateDetail').val(applicationDateFormat);
+                            }
+
+                            /*发放日期*/
+                            let releaseDate = result.data.application.releaseDate;
+                            if (releaseDate==null){
+                                $('#releaseDateDetail').val();
+                            }else{
+                                var releaseDateDate = new Date(releaseDate);
+                                var releaseDateDetailFormat = releaseDateDate.getFullYear() + '-' + (releaseDateDate.getMonth() + 1) + '-' + releaseDateDate.getDate() + ' ' + releaseDateDate.getHours() + ':' + releaseDateDate.getMinutes() + ':' + releaseDateDate.getSeconds();
+                                $('#releaseDateDetail').val(releaseDateDetailFormat);
+                            }
+                            /*费用转嫁承办人工号*/
+                            let director = result.data.application.director;
+                            $('#directorDetail').val(director);
+                            /*费用转嫁单号*/
+                            let shiftCostNo = result.data.application.shiftCostNo;
+                            $('#shiftCostNoDetail').val(shiftCostNo);
+                            /*转嫁费用金额*/
+                            let shiftCost = result.data.application.shiftCost;
+                            $('#shiftCostDetail').val(shiftCost);
+                        }
+                    }
+                });
+            }
+            if (layEvent === 'edit') {
+                let data = obj.data
+                console.error("data:", data);
+                console.log(" enter edit...");
+                let macAddressId = data.id;
+                $('#macAddressIdEdit').val(macAddressId);
+                /*起始mac*/
+                let startMacAddressEditVal = data.startMacAddress;
+                $('#startMacAddressEdit').val(startMacAddressEditVal);
+                /*结束mac*/
+                let endMacAddressEditVal = data.endMacAddress;
+                $('#endMacAddressEdit').val(endMacAddressEditVal);
+            }
+
+            if (layEvent==='delete') {
+                let data = obj.data
+                let macAddressId = data.id;
+                let startMacAddress = data.startMacAddress;
+                let endMacAddress = data.endMacAddress;
+                layer.confirm("确定删除["+startMacAddress+"-"+endMacAddress+"]吗？", {title: "提醒"}, function (index) {
+                    $.ajax({
+                        type: "post",
+                        url: 'deliveryRecord/' + data.id,
+                        dataType: "json",
+                        success: function (data) {
+                            console.log("data:", data);
+                            if (data.msg ==='success') {
+                                // layer.msg('删除成功');
+                                layer.msg('删除成功', {icon: 1});
+                            } else {
+                                layer.msg(data.msg);
+                            }
+                            deliveryRecordTable.reload();
+                        }
+                    });
+                });
+            }
+        });
+    });
 
     function addMac() {
         $('#macForm').submit();
         $('#myModal').modal('hide');  //手动关闭
         window.location.href('home/list.html');
     }
-
-    $(function () {
-        $('#macCreatDate').datetimepicker({
-            format: 'YYYY-MM-DD',
-            locale: moment.locale('zh-cn')
-        });
-    });
-
-    function showDetail(obj) {
-        var macTd = $(obj).parent().parent().find("td");
-        var startMac = macTd.eq(1).text();
-        var endMac = macTd.eq(2).text();
-        var amount = macTd.eq(3).text();
-        $('#startMacAddressDetail').val(startMac);
-        $('#endMacAddressDetail').val(endMac);
-        $('#amountDetail').val(amount);
-    }
-
-    /*点击确认删除*/
-    // function delConfirm() {
-    //     delAjax("deliveryRecord","/deliveryRecords");
-    // }
 
     /*点击删除按钮，显示删除确认模态框*/
     let delTr;

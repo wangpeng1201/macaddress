@@ -115,4 +115,10 @@ class MacaddressApplicationTests {
         System.out.println("remainingStock = " + JSON.toJSONString(remainingStock));
     }
 
+    @Test
+    public void testDetail() {
+        Result result = deliveryRecordService.queryById(3);
+        System.out.println("JSON.toJSONString(result) = " + JSON.toJSONString(result));
+    }
+
 }

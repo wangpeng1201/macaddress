@@ -86,7 +86,7 @@
                 and applicant = #{applicant}
             </if>
             <if test="applicationDate != null">
-                and application_date = #{applicationDate}
+                and application_date BETWEEN #{applicationDate} and DATE_ADD(DATE_FORMAT(#{applicationDate},'%Y-%m-%d'),INTERVAL 1 DAY)
             </if>
             <if test="releaseDate != null">
                 and release_date = #{releaseDate}

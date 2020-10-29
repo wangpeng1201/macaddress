@@ -7,7 +7,6 @@ import com.foxconn.sw.macaddress.common.Result;
 import com.foxconn.sw.macaddress.common.RetResponse;
 import com.foxconn.sw.macaddress.dto.ApplicationDTO;
 import com.foxconn.sw.macaddress.entity.Application;
-import com.foxconn.sw.macaddress.entity.Macaddress;
 import com.foxconn.sw.macaddress.service.ApplicationService;
 import com.foxconn.sw.macaddress.vo.ApplicationVO;
 import com.github.pagehelper.PageHelper;
@@ -17,7 +16,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -61,7 +59,6 @@ public class ApplicationController {
             PageInfo<Application> pageInfo = new PageInfo<Application>(applications, 5);
             //使用model/map/modelandview等带回前端
             model.addAttribute("pageInfo", pageInfo);
-//            model.addAttribute("url", "application/list");
             model.addAttribute("url", "applications");
         } finally {
             PageHelper.clearPage(); //清理 ThreadLocal 存储的分页参数,保证线程安全

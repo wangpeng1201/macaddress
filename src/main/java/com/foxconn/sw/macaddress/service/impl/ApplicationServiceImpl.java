@@ -137,6 +137,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
         Application application = new Application();
         BeanUtils.copyProperties(applicationVO, application);
+        application.setApplicationDate(new Date());
         application.setCreateDate(new Date());
         application.setCreator(httpSession.getAttribute("LoginState").toString());
         application.setUpdateDate(new Date());
@@ -182,6 +183,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         //需要进行分页
         PageHelper.startPage(applicationDTO.getPage(), applicationDTO.getLimit());
         Application application = new Application();
+        application.setId(applicationDTO.getApplicationId());
         application.setCustomer(applicationDTO.getCustomer());
         application.setApplicant(applicationDTO.getApplicant());
         if (!StringUtils.isEmpty(applicationDTO.getApplicationDate())) {

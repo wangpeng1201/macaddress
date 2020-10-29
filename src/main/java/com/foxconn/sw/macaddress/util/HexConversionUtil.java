@@ -1,7 +1,6 @@
 package com.foxconn.sw.macaddress.util;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Date;
  
 public final class HexConversionUtil {
 	private final static byte[] hex = "0123456789ABCDEF".getBytes();

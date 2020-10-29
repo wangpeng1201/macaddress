@@ -40,10 +40,17 @@
                                    placeholder="请输入申请人姓名">
                         </div>
                     </div>
+                    <div class="layui-inline form-group">
+                        <label class="layui-form-label">申请编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" id="applicationIdInput" name="applicationId" autocomplete="off"
+                                   placeholder="请输入申请编号">
+                        </div>
+                    </div>
                     <div class="layui-inline">
                         <label class="layui-form-label">申请时间</label>
                         <div class="layui-input-block">
-                            <input type="text" class="layui-input" id="applicationDateInput" name="applicationDate"
+                            <input type="text" class="layui-input test-item" id="applicationDateInput" name="applicationDate"
                                    autocomplete="off"
                                    placeholder="请选择申请时间">
                         </div>
@@ -58,7 +65,7 @@
                 <div>
                     <!-- 按钮触发模态框 -->
                     <button class="btn btn-primary" data-toggle="modal" data-target="#addApplicationModal"
-                            style="margin-bottom: 10px;margin-top: -130px;margin-left: 1000px;">
+                            style="margin-bottom: 10px;margin-top: -130px;margin-left: 1300px;">
                         新增申请
                     </button>
                 </div>
@@ -156,14 +163,14 @@
                         </div>
 
                         <!--申请日期-->
-                        <div class="form-group row">
-                            <label for="applicationDateAssign"
-                                   class="col-sm-2 col-form-label font-weight-bold">申请日期</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control input-sm" id="applicationDateAssign"
-                                       name="applicationDateAssign" placeholder="">
-                            </div>
-                        </div>
+<!--                        <div class="form-group row">-->
+<!--                            <label for="applicationDateAssign"-->
+<!--                                   class="col-sm-2 col-form-label font-weight-bold">申请日期</label>-->
+<!--                            <div class="col-sm-10">-->
+<!--                                <input type="text" class="form-control input-sm test-item" id="applicationDateAssign"-->
+<!--                                       name="applicationDateAssign" placeholder="">-->
+<!--                            </div>-->
+<!--                        </div>-->
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
@@ -392,7 +399,7 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" id="closeBtn">关闭</button>
                         <button type="button" class="btn btn-primary" onclick="editApplication()">提交</button>
                     </div>
                 </div><!-- /.modal-content -->
@@ -428,7 +435,7 @@
                 statusCode: 200
             },
             cols: [[ //表头
-                {field: 'id', title: 'ID', width: '5%', sort: true, fixed: 'left', align: 'center'}
+                {field: 'id', title: '申请编号', width: '7%', sort: true, fixed: 'left', align: 'center'}
                 , {field: 'customer', title: '客户', width: '20%', align: 'center'}
                 , {field: 'applicant', title: '申请人', width: '10%', align: 'center'}
                 , {field: 'applicationDepartment', title: '申请单位', width: '20%', align: 'center'}
@@ -634,7 +641,6 @@
                         success: function (data) {
                             console.log("data:", data);
                             if (data.msg ==='success') {
-                                // layer.msg('删除成功');
                                 layer.msg('删除成功', {icon: 1});
                             } else {
                                 layer.msg(data.msg);
@@ -647,6 +653,44 @@
 
             if (layEvent === 'assignMacAddress') {
                 console.log(" enter assignMacAddress...");
+                let data = obj.data
+                console.error("data:", data);
+                let applicationIdVal = data.id;
+                let customerVal = data.customer;
+                let amountVal = data.amount;
+                let applicationDepartmentVal = data.applicationDepartment;
+                let applicationDateVal = data.applicationDate;
+                let applicantVal = data.applicant;
+                $.ajax({
+                    //请求的url地址
+                    url: "/assignMac",
+                    //请求是否异步，默认为异步，这也是ajax重要特性
+                    async: true,
+                    //参数值
+                    data: {
+                        "id": applicationIdVal,
+                        "customer": customerVal,
+                        "applicant": applicantVal,
+                        "applicationDepartment": applicationDepartmentVal,
+                        "amount": amountVal,
+                        "applicationDate": applicationDateVal
+                    },
+                    type: "POST",   //请求方式
+                    method: "POST",
+                    success: function (req) {
+                        console.log(req);
+                        //请求成功时处理
+                        layer.msg('下发mac地址成功!', {icon: 1});
+                        // ShowSuccess("下发mac地址成功!");
+                        window.location.href = "/deliveryRecords?pageNum=1";
+                    },
+                    error: function (xhr, textStatus, errorThrown) {
+                        var responseText = JSON.parse(xhr.responseText);
+                        let msgTip = responseText.message;
+
+                        ShowFailure("下方mac地址失败！" + msgTip);
+                    }
+                });
 
                 // openFunction("Edit People",data.id);
                 // window.location.href = ctxPath + 'peopleres/editPeopleRes/' + data.id
@@ -657,6 +701,7 @@
     /*提交表单*/
     function addApplication() {
         $('#applicationForm').submit();
+        $('#applicationDateAssign').val();
         $('#myModal').modal('hide');  //手动关闭
         // window.location.href('home/list.html');
         window.location.href('/applications?pageNum=1');
@@ -666,30 +711,43 @@
     $(function () {
         layui.use('laydate', function(){
             var laydate = layui.laydate;
-
-            //执行一个laydate实例
-            laydate.render({
-                elem: '#applicationDateInput' //指定元素
+            //同时绑定多个
+            lay('.test-item').each(function(){
+                laydate.render({
+                    elem: this
+                    ,format:'yyyy-MM-dd'
+                    ,trigger: 'click'
+                });
             });
         });
-        // $("#applicationDateInput").datetimepicker({
-        //     language: 'zh-CN',
-        //     todayBtn: 1,  //是否显示今天按钮，0为不显示
-        //     autoclose: 1, //选完时间后是否自动关闭
-        //     todayHighlight: 1,  //高亮显示当天日期
-        //     forceParse: 0, //强制解析,你输入的可能不正规，但是它胡强制尽量解析成你规定的格式（format）
-        //     format: 'yyyy-mm-dd'// 格式,注意ii才是分，mm或MM都是月
+        // layui.use('laydate', function(){
+        //     var laydate = layui.laydate;
+        //
+        //     //执行一个laydate实例
+        //     laydate.render({
+        //         elem: '#applicationDateInput' //指定元素
+        //         ,trigger: 'click'
+        //     });
+        // });
+        //
+        // layui.use('laydate', function(){
+        //     var laydate = layui.laydate;
+        //
+        //     //执行一个laydate实例
+        //     laydate.render({
+        //         elem: '#applicationDateAssign' //指定元素
+        //     });
         // });
 
         /*以下为新增模态框日期插件*/
-        $('#applicationDateAssign').datetimepicker({
-            format: "yyyy-mm-dd",
-            minView: "month",
-            autoclose: true,
-            todayBtn: true,
-            // locale: moment.locale('zh-cn'),
-            language: "zh-CN"
-        });
+        // $('#applicationDateAssign').datetimepicker({
+        //     format: "yyyy-mm-dd",
+        //     minView: "month",
+        //     autoclose: true,
+        //     todayBtn: true,
+        //     // locale: moment.locale('zh-cn'),
+        //     language: "zh-CN"
+        // });
     });
 
     /*新增mac地址申请*/
@@ -752,6 +810,7 @@
             type: "POST",   //请求方式
             method: "POST",
             success: function (req) {
+
                 //请求成功时处理
                 ShowSuccess("客户下方mac地址成功!");
                 window.location.href = "/deliveryRecords?pageNum=1";
@@ -759,7 +818,8 @@
             error: function (xhr, textStatus, errorThrown) {
                 var responseText = JSON.parse(xhr.responseText);
                 let msgTip = responseText.message;
-                ShowFailure("下方mac地址失败！" + msgTip);
+                layer.msg('下方mac地址失败！'+msgTip, {icon: 5});
+                // ShowFailure("下方mac地址失败！" + msgTip);
             }
         });
     }

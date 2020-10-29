@@ -38,7 +38,7 @@
         id, mac_id, start_mac_address, end_mac_address, application_id, amount, createDate, creator, updateDate,
         updator, status
         from bill.delivery_record
-        <where>
+        where status &lt;&gt; 0
             <if test="id != null">
                 and id = #{id}
             </if>
@@ -58,7 +58,7 @@
                 and amount = #{amount}
             </if>
             <if test="createdate != null">
-                and createDate = #{createdate}
+                and createDate BETWEEN #{createdate} and DATE_ADD(DATE_FORMAT(#{createdate},'%Y-%m-%d'),INTERVAL 1 DAY)
             </if>
             <if test="creator != null and creator != ''">
                 and creator = #{creator}
@@ -69,11 +69,9 @@
             <if test="updator != null and updator != ''">
                 and updator = #{updator}
             </if>
-            status =1
             <if test="status != null">
                 and status = #{status}
             </if>
-        </where>
         order by updateDate desc
     </select>
 

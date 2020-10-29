@@ -11,6 +11,10 @@ import java.io.Serializable;
 public class MacAddressDetailVO implements Serializable {
     private static final long serialVersionUID = 2667865332874562587L;
     /**
+     * macaddress表中主键
+     */
+    private Integer id;
+    /**
      * 起始mac地址
      */
     private String startMacAddress;

@@ -1,26 +1,29 @@
 package com.foxconn.sw.macaddress.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.foxconn.sw.macaddress.common.Constant;
-import com.foxconn.sw.macaddress.common.ListUtil;
-import com.foxconn.sw.macaddress.common.Result;
-import com.foxconn.sw.macaddress.common.RetResponse;
+import com.foxconn.sw.macaddress.common.*;
 import com.foxconn.sw.macaddress.dao.ApplicationDao;
 import com.foxconn.sw.macaddress.dao.DeliveryRecordDao;
 import com.foxconn.sw.macaddress.dao.MacaddressDao;
+import com.foxconn.sw.macaddress.dto.DeliveryRecordConditionDTO;
 import com.foxconn.sw.macaddress.dto.DeliveryRecordDTO;
 import com.foxconn.sw.macaddress.dto.MacAddressDTO;
 import com.foxconn.sw.macaddress.entity.Application;
 import com.foxconn.sw.macaddress.entity.DeliveryRecord;
 import com.foxconn.sw.macaddress.entity.Macaddress;
+import com.foxconn.sw.macaddress.service.ApplicationService;
 import com.foxconn.sw.macaddress.service.DeliveryRecordService;
 import com.foxconn.sw.macaddress.service.MacaddressService;
-import com.foxconn.sw.macaddress.util.ByteUtil;
 import com.foxconn.sw.macaddress.vo.ApplicationVO;
+import com.foxconn.sw.macaddress.vo.DeliveryRecordDetailVO;
 import com.foxconn.sw.macaddress.vo.MacAddressDetailVO;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +33,7 @@ import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,8 +68,33 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
      * @return 实例对象
      */
     @Override
-    public DeliveryRecord queryById(Integer id) {
-        return this.deliveryRecordDao.queryById(id);
+    public Result queryById(Integer id) {
+        try {
+            DeliveryRecord deliveryRecord = this.deliveryRecordDao.queryById(id);
+            //需要的结果
+            DeliveryRecordDetailVO deliveryRecordDetailVO = new DeliveryRecordDetailVO();
+            //获取到mac段信息(初始库存，剩余库存)
+            Integer macId = deliveryRecord.getMacId();
+            Result remainingStock = macaddressService.getRemainingStock(macId);
+            MacAddressDetailVO macAddressDetailVO = (MacAddressDetailVO) remainingStock.getData();
+
+            deliveryRecordDetailVO.setMacAddressDetailVO(macAddressDetailVO);
+            //发放起始mac
+            deliveryRecordDetailVO.setStartMacAddress(deliveryRecord.getStartMacAddress());
+            //发放结束mac
+            deliveryRecordDetailVO.setEndMacAddress(deliveryRecord.getEndMacAddress());
+            //结束-起始+1
+            deliveryRecordDetailVO.setAmount(deliveryRecord.getAmount());
+
+            Integer applicationId = deliveryRecord.getApplicationId();
+            Application application = applicationDao.queryById(applicationId);
+            //获取到申请信息
+            deliveryRecordDetailVO.setApplication(application);
+            return RetResponse.success(deliveryRecordDetailVO);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return RetResponse.error("根据主键查询失败");
+        }
     }
 
     /**
@@ -101,7 +130,12 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
     @Override
     public DeliveryRecord update(DeliveryRecord deliveryRecord) {
         this.deliveryRecordDao.update(deliveryRecord);
-        return this.queryById(deliveryRecord.getId());
+        Result result = this.queryById(deliveryRecord.getId());
+        if (result.getCode().intValue() == HttpStatus.OK.value()) {
+            return (DeliveryRecord) result.getData();
+        } else {
+            throw new RuntimeException("修改申请失败!");
+        }
     }
 
     /**
@@ -231,8 +265,8 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
             String startHex = StringUtils.leftPad(Long.toHexString(Long.parseLong(endMacAddress, 16) - remainingInventoryNum + 1).toUpperCase(), 12, '0');
             String endHex = "";
             if (remainingInventoryNum > amount) {
-                Long avalue=Long.parseLong(startHex,16) + amount - 1;
-                endHex=StringUtils.leftPad(Long.toHexString(avalue).toUpperCase(), 12, '0');
+                Long avalue = Long.parseLong(startHex, 16) + amount - 1;
+                endHex = StringUtils.leftPad(Long.toHexString(avalue).toUpperCase(), 12, '0');
 //                endHex = Long.toHexString(Long.parseLong(startHex) + amount - 1);
             } else {
                 endHex = endMacAddress;
@@ -277,6 +311,7 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
         BeanUtils.copyProperties(applicationVO, application);
         try {
             application.setStatus(Constant.ASSIGNSUCCESS);
+            application.setReleaseDate(new Date());
             applicationDao.update(application);
         } catch (Exception e) {
             application.setStatus(Constant.ASSIGNFAILURE);
@@ -296,6 +331,46 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
     @Override
     public List<DeliveryRecord> findByCondition(MacAddressDTO macAddressDTO) {
         return deliveryRecordDao.findByCondition(macAddressDTO);
+    }
+
+    @Override
+    public Lay findByConditionLayUI(DeliveryRecordConditionDTO deliveryRecordConditionDTO) {
+        if (ObjectUtils.isEmpty(deliveryRecordConditionDTO)) {
+            throw new RuntimeException("参数为空");
+        }
+        if (ObjectUtils.isEmpty(deliveryRecordConditionDTO.getPage())) {
+            deliveryRecordConditionDTO.setPage(1);
+        }
+        if (ObjectUtils.isEmpty(deliveryRecordConditionDTO.getLimit())) {
+            deliveryRecordConditionDTO.setLimit(10);
+        }
+
+        //需要进行分页
+        PageHelper.startPage(deliveryRecordConditionDTO.getPage(), deliveryRecordConditionDTO.getLimit());
+        DeliveryRecord deliveryRecord = new DeliveryRecord();
+        deliveryRecord.setStartMacAddress(deliveryRecordConditionDTO.getStartMacAddress());
+        deliveryRecord.setApplicationId(deliveryRecordConditionDTO.getApplicationId());
+        if (!org.springframework.util.StringUtils.isEmpty(deliveryRecordConditionDTO.getCreatedate())) {
+            try {
+                deliveryRecord.setCreatedate(DateUtils.parseDate(deliveryRecordConditionDTO.getCreatedate(), "yyyy-MM-dd"));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        List<DeliveryRecord> deliveryRecords;
+        Lay lay = new Lay();
+        try {
+            deliveryRecords = deliveryRecordDao.queryAll(deliveryRecord);
+            PageInfo info = new PageInfo(deliveryRecords);//创建pageinfo，包含分页的信息
+            lay.setLimit(deliveryRecordConditionDTO.getLimit());
+            lay.setPage(deliveryRecordConditionDTO.getPage());
+            lay.setCount(info.getTotal());//总条数
+            lay.setData(info.getList());//显示的数据
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("查询下发记录失败");
+        }
+        return lay;
     }
 
     private Map<Integer, Integer> getUsedMacAddressMap() {

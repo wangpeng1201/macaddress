@@ -1,6 +1,8 @@
 package com.foxconn.sw.macaddress.service;
 
+import com.foxconn.sw.macaddress.common.Lay;
 import com.foxconn.sw.macaddress.common.Result;
+import com.foxconn.sw.macaddress.dto.DeliveryRecordConditionDTO;
 import com.foxconn.sw.macaddress.dto.MacAddressDTO;
 import com.foxconn.sw.macaddress.entity.DeliveryRecord;
 import com.foxconn.sw.macaddress.vo.ApplicationVO;
@@ -21,7 +23,7 @@ public interface DeliveryRecordService {
      * @param id 主键
      * @return 实例对象
      */
-    DeliveryRecord queryById(Integer id);
+    Result queryById(Integer id);
 
     /**
      * 查询多条数据
@@ -66,4 +68,11 @@ public interface DeliveryRecordService {
      * @return
      */
     List<DeliveryRecord> findByCondition(MacAddressDTO macAddressDTO);
+
+    /**
+     * 条件查询封装layui结果
+     * @param deliveryRecordConditionDTO
+     * @return
+     */
+    Lay findByConditionLayUI(DeliveryRecordConditionDTO deliveryRecordConditionDTO);
 }

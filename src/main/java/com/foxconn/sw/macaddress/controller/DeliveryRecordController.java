@@ -1,7 +1,11 @@
 package com.foxconn.sw.macaddress.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.foxconn.sw.macaddress.common.Box;
+import com.foxconn.sw.macaddress.common.Lay;
 import com.foxconn.sw.macaddress.common.Result;
+import com.foxconn.sw.macaddress.common.RetResponse;
+import com.foxconn.sw.macaddress.dto.DeliveryRecordConditionDTO;
 import com.foxconn.sw.macaddress.dto.MacAddressDTO;
 import com.foxconn.sw.macaddress.entity.DeliveryRecord;
 import com.foxconn.sw.macaddress.service.DeliveryRecordService;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -45,8 +50,9 @@ public class DeliveryRecordController {
      * @param id 主键
      * @return 单条数据
      */
-    //@GetMapping("selectOne")
-    public DeliveryRecord selectOne(Integer id) {
+    @GetMapping("selectDeliveryRecord/{id}")
+    @ResponseBody
+    public Result selectOne(@PathVariable Integer id) {
         return this.deliveryRecordService.queryById(id);
     }
 
@@ -75,7 +81,7 @@ public class DeliveryRecordController {
                 //4.使用model/map/modelandview等带回前端
                 model.addAttribute("pageInfo", pageInfo);
                 model.addAttribute("url", "deliveryRecords");
-            }else {
+            } else {
                 return "error/5xx";
             }
         } finally {
@@ -86,34 +92,15 @@ public class DeliveryRecordController {
         return "deliveryRecord/list";
     }
 
-    /**
-     * 条件查询
-     * @param model
-     * @param macAddressDTO
-     * @return
-     */
     @PostMapping(value = "/deliveryRecordByCondition")
-    public String findByCondition(Model model, MacAddressDTO macAddressDTO) {
-        if (ObjectUtils.isEmpty(macAddressDTO)) {
-            log.error("参数{}为空", macAddressDTO);
-            throw new RuntimeException("参数为空");
-        }
-        String createDate = macAddressDTO.getCreatedate();
-        String startMacAddress = macAddressDTO.getStartMacAddress();
-        Integer pageNum = macAddressDTO.getPage();
-        if (ObjectUtils.isEmpty(pageNum)) {
-            pageNum=1;
-        }
-        PageHelper.startPage(pageNum, 5);
-
-        List<DeliveryRecord> macAddressList = deliveryRecordService.findByCondition(macAddressDTO);
-        PageInfo<DeliveryRecord> pageInfo = new PageInfo<DeliveryRecord>(macAddressList, 5);
-        //4.使用model/map/modelandview等带回前端
-        model.addAttribute("pageInfo", pageInfo);
-        model.addAttribute("macAddressDTO", macAddressDTO);
-        return "deliveryRecord/list";
+    @ResponseBody
+    public Box findByCondition(DeliveryRecordConditionDTO deliveryRecordConditionDTO) throws ParseException {
+        System.err.println("deliveryRecordConditionDTO = " + JSON.toJSONString(deliveryRecordConditionDTO));
+        Lay byConditionLayUI = deliveryRecordService.findByConditionLayUI(deliveryRecordConditionDTO);
+        Long count = byConditionLayUI.getCount();
+        Object data = byConditionLayUI.getData();
+        return Box.success(data).put("count", count);
     }
-
 
     @PostMapping("/assignMac")
     @ResponseBody
@@ -124,20 +111,19 @@ public class DeliveryRecordController {
 
     @RequestMapping(value = "/deliveryRecord/{id}", method = RequestMethod.POST)
     @ResponseBody
-    public Boolean delMacAddress(@PathVariable("id") Integer id) {
+    public Result delMacAddress(@PathVariable("id") Integer id) {
         DeliveryRecord deliveryRecord = new DeliveryRecord();
         deliveryRecord.setId(id);
         //逻辑删除
         deliveryRecord.setStatus(0);
         deliveryRecord.setUpdatedate(new Date());
         deliveryRecord.setUpdator(httpSession.getAttribute("LoginState").toString());
-
         try {
-            deliveryRecordService.update(deliveryRecord);
+            DeliveryRecord update = deliveryRecordService.update(deliveryRecord);
+            return RetResponse.success(update);
         } catch (Exception e) {
             log.error("根据主键逻辑删除失败");
-            throw new RuntimeException("根据主键逻辑删除失败");
+            return RetResponse.error("删除失败");
         }
-        return true;
     }
 }

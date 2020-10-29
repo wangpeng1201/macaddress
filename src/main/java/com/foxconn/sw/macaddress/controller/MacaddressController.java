@@ -1,17 +1,12 @@
 package com.foxconn.sw.macaddress.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.foxconn.sw.macaddress.common.Box;
 import com.foxconn.sw.macaddress.common.Lay;
 import com.foxconn.sw.macaddress.common.Result;
 import com.foxconn.sw.macaddress.common.RetResponse;
-import com.foxconn.sw.macaddress.dto.ApplicationDTO;
 import com.foxconn.sw.macaddress.dto.MacAddressDTO;
-import com.foxconn.sw.macaddress.entity.Application;
 import com.foxconn.sw.macaddress.entity.Macaddress;
 import com.foxconn.sw.macaddress.service.MacaddressService;
-import com.foxconn.sw.macaddress.vo.ApplicationVO;
-import com.foxconn.sw.macaddress.vo.MacAddressDetailVO;
 import com.foxconn.sw.macaddress.vo.MacAddressEditVO;
 import com.foxconn.sw.macaddress.vo.MacAddressVO;
 import com.github.pagehelper.PageHelper;
@@ -21,17 +16,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * (Macaddress)表控制层

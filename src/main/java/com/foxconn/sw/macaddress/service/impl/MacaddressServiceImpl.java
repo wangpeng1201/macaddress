@@ -8,7 +8,6 @@ import com.foxconn.sw.macaddress.dao.DeliveryRecordDao;
 import com.foxconn.sw.macaddress.dao.MacaddressDao;
 import com.foxconn.sw.macaddress.dto.DeliveryRecordDTO;
 import com.foxconn.sw.macaddress.dto.MacAddressDTO;
-import com.foxconn.sw.macaddress.entity.Application;
 import com.foxconn.sw.macaddress.entity.Macaddress;
 import com.foxconn.sw.macaddress.service.MacaddressService;
 import com.foxconn.sw.macaddress.vo.MacAddressDetailVO;
@@ -16,7 +15,6 @@ import com.foxconn.sw.macaddress.vo.MacAddressVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,7 +51,7 @@ public class MacaddressServiceImpl implements MacaddressService {
     @Resource
     private DeliveryRecordDao deliveryRecordDao;
 
-//    public static Map<Integer, Integer> remainingStockMap = new TreeMap<>();
+    //    public static Map<Integer, Integer> remainingStockMap = new TreeMap<>();
     Map<Integer, Integer> remainingStockMap = new TreeMap<>();
 
     /**
@@ -220,6 +218,7 @@ public class MacaddressServiceImpl implements MacaddressService {
         MacAddressDetailVO macAddressDetailVO = new MacAddressDetailVO();
         try {
             Macaddress macaddress = macaddressDao.queryById(macId);
+            macAddressDetailVO.setId(macId);
             macAddressDetailVO.setStartMacAddress(macaddress.getStartMacAddress());
             macAddressDetailVO.setEndMacAddress(macaddress.getEndMacAddress());
             macAddressDetailVO.setStartingInventory(macaddress.getStartingInventory());
@@ -234,6 +233,7 @@ public class MacaddressServiceImpl implements MacaddressService {
 
     /**
      * 按条件查询
+     *
      * @param macAddressDTO
      * @return
      */
@@ -255,7 +255,7 @@ public class MacaddressServiceImpl implements MacaddressService {
         macaddress.setStartMacAddress(macAddressDTO.getStartMacAddress());
         if (!StringUtils.isEmpty(macAddressDTO.getCreatedate())) {
             try {
-                macaddress.setCreatedate(DateUtils.parseDate(macAddressDTO.getCreatedate(),"yyyy-MM-dd"));
+                macaddress.setCreatedate(DateUtils.parseDate(macAddressDTO.getCreatedate(), "yyyy-MM-dd"));
             } catch (ParseException e) {
                 e.printStackTrace();
             }

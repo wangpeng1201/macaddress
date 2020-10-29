@@ -63,7 +63,6 @@
             /*vertical-align:middle;*/
             vertical-align: middle !important;
         }
-
     </style>
 </head>
 <body>
@@ -85,7 +84,7 @@
             <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="margin-left: -15px;">
                 <form class="layui-form-item layui-form-pane" id="option" lay-filter="option">
                     <div class="layui-inline form-group">
-                        <label class="layui-form-label">起始mac地址</label>
+                        <label class="layui-form-label">mac地址</label>
                         <div class="layui-input-block">
                             <input type="text" class="layui-input" id="startMacAddressInput" name="startMacAddress" autocomplete="off"
                                    placeholder="请输入起始mac地址">
@@ -112,7 +111,7 @@
                 <div>
                     <!-- 按钮触发模态框 -->
                     <button class="btn btn-primary" data-toggle="modal" data-target="#myModal"
-                            style="margin-bottom: 15px;margin-top: -130px;margin-left: 690px;">
+                            style="margin-bottom: 15px;margin-top: -130px;margin-left: 700px;">
                         新增mac地址段
                     </button>
                 </div>
@@ -341,7 +340,7 @@
                 statusCode: 200
             },
             cols: [[ //表头
-                {field: 'id', title: 'ID', width: '5%', sort: true, fixed: 'left', align: 'center'}
+                {field: 'id', title: '地址段编号', width: '8%', sort: true, fixed: 'left', align: 'center'}
                 , {field: 'signs', title: 'mac标识', width: '10%', align: 'center'}
                 , {field: 'startMacAddress', title: 'mac起始地址', width: '15%', align: 'center'}
                 , {field: 'endMacAddress', title: 'mac结束地址', width: '15%', align: 'center'}
