@@ -76,8 +76,11 @@
                     编辑
                 </button>
 
-                <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" lay-event="delete"
-                        data-target="#myModalDel" onclick="showDeleteModal(this)">
+<!--                <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" lay-event="delete"-->
+<!--                        data-target="#myModalDel" onclick="showDeleteModal(this)">-->
+<!--                    删除-->
+<!--                </button>-->
+                <button type="button" class="btn btn-sm btn-danger" lay-event="delete">
                     删除
                 </button>
                 <button type="button" class="btn btn-sm btn-warning" onclick="assign(this)" lay-event="assignMacAddress">
@@ -403,10 +406,11 @@
 
 <script th:inline="javascript">
     feather.replace();
-    layui.use(['form', 'table'], function () {
+    layui.use(['form', 'table','layer'], function () {
         let $ = layui.jquery,
             form = layui.form,
             table = layui.table;
+        var layer=layui.layer;
         //第一个实例
         //加载表格
         let funcTable = table.render({
@@ -587,7 +591,7 @@
                     $('#releaseDateEdit').val();
                 }else{
                     var releaseDateDate = new Date(releaseDate);
-                    var releaseDateEditFormat = releaseDateDate.getFullYear() + '-' + (releaseDateDate.getMonth() + 1) + '-' + releaseDateDate.getDate() + ' ' + releaseDateDate.getHours() + ':' + releaseDateDate.getMinutes() + ':' + releaseDateDate.getSeconds();
+                    var releaseDateEditFormat = releaseDateDate.getFullYear() + '-' + (releaseDateDate.getMonth() + 1) + '-' + releaseDateDate.getDate();
                     $('#releaseDateEdit').val(releaseDateEditFormat);
                 }
 
@@ -622,15 +626,16 @@
             }
             if (layEvent === 'delete') {
                 console.log("enter delete....");
-                layer.confirm([[#{deviceSetting.sureDelete}]], {title: [[#{deviceSetting.hintTitle}]]}, function (index) {
+                layer.confirm("您确认要删除该条信息吗？", {title: "提醒"}, function (index) {
                     $.ajax({
                         type: "post",
                         url: 'application/' + data.id,
                         dataType: "json",
                         success: function (data) {
                             console.log("data:", data);
-                            if (data.msg === "success") {
-                                layer.msg([[#{common.deleteSuccess}]]);
+                            if (data.msg ==='success') {
+                                // layer.msg('删除成功');
+                                layer.msg('删除成功', {icon: 1});
                             } else {
                                 layer.msg(data.msg);
                             }
@@ -659,14 +664,22 @@
 
     /*点击日期控件*/
     $(function () {
-        $("#applicationDateInput").datetimepicker({
-            language: 'zh-CN',
-            todayBtn: 1,  //是否显示今天按钮，0为不显示
-            autoclose: 1, //选完时间后是否自动关闭
-            todayHighlight: 1,  //高亮显示当天日期
-            forceParse: 0, //强制解析,你输入的可能不正规，但是它胡强制尽量解析成你规定的格式（format）
-            format: 'yyyy-mm-dd'// 格式,注意ii才是分，mm或MM都是月
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#applicationDateInput' //指定元素
+            });
         });
+        // $("#applicationDateInput").datetimepicker({
+        //     language: 'zh-CN',
+        //     todayBtn: 1,  //是否显示今天按钮，0为不显示
+        //     autoclose: 1, //选完时间后是否自动关闭
+        //     todayHighlight: 1,  //高亮显示当天日期
+        //     forceParse: 0, //强制解析,你输入的可能不正规，但是它胡强制尽量解析成你规定的格式（format）
+        //     format: 'yyyy-mm-dd'// 格式,注意ii才是分，mm或MM都是月
+        // });
 
         /*以下为新增模态框日期插件*/
         $('#applicationDateAssign').datetimepicker({
@@ -755,29 +768,29 @@
     let delTr;
 
     function showDeleteModal(obj) {
-        var delTableTr = obj.parentNode.parentNode;
-        console.log(delTableTr);
-        // tr.parentNode.removeChild(tr);
-        delTr = delTableTr;
-        return delTr;
+        // var delTableTr = obj.parentNode.parentNode;
+        // console.log(delTableTr);
+        // // tr.parentNode.removeChild(tr);
+        // delTr = delTableTr;
+        // return delTr;
     }
 
     function delConfirm() {
-        let applicationIdTd = $(delTr).find("td:eq(0)").text();
-        console.log("applicationIdTd:" + applicationIdTd);
-        $.ajax({
-            url: "/application/" + applicationIdTd,
-            type: "post",
-            method: "post",
-            success: function (result) {
-                $('#myModalDel').modal('hide');  //手动关闭
-                window.location.href = '/applications';
-            },
-            error: function () {
-                $('#myModalDel').modal('hide');  //手动关闭
-                ShowFailure("删除失败");
-            }
-        });
+        // let applicationIdTd = $(delTr).find("td:eq(0)").text();
+        // console.log("applicationIdTd:" + applicationIdTd);
+        // $.ajax({
+        //     url: "/application/" + applicationIdTd,
+        //     type: "post",
+        //     method: "post",
+        //     success: function (result) {
+        //         $('#myModalDel').modal('hide');  //手动关闭
+        //         window.location.href = '/applications';
+        //     },
+        //     error: function () {
+        //         $('#myModalDel').modal('hide');  //手动关闭
+        //         ShowFailure("删除失败");
+        //     }
+        // });
     }
 
     /*编辑模态框下点击提交*/

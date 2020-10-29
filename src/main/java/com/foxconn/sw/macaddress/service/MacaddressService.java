@@ -1,5 +1,6 @@
 package com.foxconn.sw.macaddress.service;
 
+import com.foxconn.sw.macaddress.common.Lay;
 import com.foxconn.sw.macaddress.common.Result;
 import com.foxconn.sw.macaddress.dto.MacAddressDTO;
 import com.foxconn.sw.macaddress.entity.Macaddress;
@@ -83,4 +84,11 @@ public interface MacaddressService {
      * @return
      */
     Result getRemainingStock(Integer macId);
+
+    /**
+     * 条件查询封装成layui对象
+     * @param macAddressDTO
+     * @return
+     */
+    Lay findByConditionLayUI(MacAddressDTO macAddressDTO);
 }

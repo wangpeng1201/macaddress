@@ -1,14 +1,24 @@
 package com.foxconn.sw.macaddress.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.foxconn.sw.macaddress.common.Box;
+import com.foxconn.sw.macaddress.common.Lay;
 import com.foxconn.sw.macaddress.common.Result;
+import com.foxconn.sw.macaddress.common.RetResponse;
+import com.foxconn.sw.macaddress.dto.ApplicationDTO;
 import com.foxconn.sw.macaddress.dto.MacAddressDTO;
+import com.foxconn.sw.macaddress.entity.Application;
 import com.foxconn.sw.macaddress.entity.Macaddress;
 import com.foxconn.sw.macaddress.service.MacaddressService;
+import com.foxconn.sw.macaddress.vo.ApplicationVO;
+import com.foxconn.sw.macaddress.vo.MacAddressDetailVO;
+import com.foxconn.sw.macaddress.vo.MacAddressEditVO;
 import com.foxconn.sw.macaddress.vo.MacAddressVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
@@ -17,6 +27,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +47,9 @@ public class MacaddressController {
      */
     @Resource
     private MacaddressService macaddressService;
+
+    @Autowired
+    private HttpSession httpSession;
     /**
      * 通过主键查询单条数据
      *
@@ -49,7 +64,7 @@ public class MacaddressController {
     @PostMapping("/addMacAddress")
     public String addMacAddressPage(MacAddressVO macAddressVo) {
         macaddressService.insertMacAddress(macAddressVo);
-        return "redirect:/mac/list";
+        return "redirect:/list";
     }
 
     /**
@@ -89,34 +104,13 @@ public class MacaddressController {
     }
 
     @RequestMapping(value = "/condition")
-    public String findByCondition(Model model,
-                                  @RequestParam(required = false, defaultValue = "1", value = "pageNum") Integer pageNum,
-                                  @RequestParam String startMacAddress,
-                                  @RequestParam String createdate) {
-        //为了程序的严谨性，判断非空
-        if (pageNum == null) {
-            //设置默认当前页
-            pageNum =1;
-        }
-        if (pageNum <= 0) {
-            pageNum = 1;
-        }
-        PageHelper.startPage(pageNum, 2);
-        MacAddressDTO macAddressDTO = new MacAddressDTO();
-        macAddressDTO.setStartMacAddress(startMacAddress);
-        macAddressDTO.setCreatedate(createdate);
-
-        List<Macaddress> macAddressList = macaddressService.findByStartMacAddressAndCreateDate(macAddressDTO);
-        PageInfo<Macaddress> pageInfo = new PageInfo<Macaddress>(macAddressList, 5);
-        //4.使用model/map/modelandview等带回前端
-        model.addAttribute("pageInfo", pageInfo);
-        model.addAttribute("macAddressDTO", macAddressDTO);
-        model.addAttribute("PAGE", pageNum);
-        model.addAttribute("url", "condition");
-        model.addAttribute("startMacAddress", "startMacAddress");
-        model.addAttribute("createdate", "createdate");
-        System.err.println("pageInfo = " + JSON.toJSONString(pageInfo));
-        return "home/list";
+    @ResponseBody
+    public Box findByCondition(MacAddressDTO macAddressDTO) {
+        System.out.println("macAddressDTO = " + macAddressDTO);
+        Lay byConditionLayUI=macaddressService.findByConditionLayUI(macAddressDTO);
+        Long count = byConditionLayUI.getCount();
+        Object data = byConditionLayUI.getData();
+        return Box.success(data).put("count", count);
     }
 
     /**
@@ -126,19 +120,20 @@ public class MacaddressController {
      */
     @RequestMapping(value = "/mac/{id}", method = RequestMethod.POST)
     @ResponseBody
-    public Boolean delMacAddress(@PathVariable("id") Integer id) {
+    public Result delMacAddress(@PathVariable("id") Integer id) {
         Macaddress macaddress = new Macaddress();
         macaddress.setId(id);
         //逻辑删除
         macaddress.setStatus(0);
         macaddress.setUpdatedate(new Date());
         try {
-            macaddressService.update(macaddress);
+            Macaddress update = macaddressService.update(macaddress);
+            return RetResponse.success(update);
         } catch (Exception e) {
             log.error("根据主键逻辑删除失败");
-            throw new RuntimeException("根据主键逻辑删除失败");
+            return RetResponse.error("删除失败");
         }
-        return true;
+
     }
 
     /**
@@ -150,5 +145,27 @@ public class MacaddressController {
     @ResponseBody
     public Result getRemainingStock(@PathVariable Integer macId) {
         return macaddressService.getRemainingStock(macId);
+    }
+
+
+    @PostMapping("editMacAddress")
+    @ResponseBody
+    public Result editOne(MacAddressEditVO macAddressEditVO) {
+        Macaddress macaddress = new Macaddress();
+        BeanUtils.copyProperties(macAddressEditVO, macaddress);
+        long endLong = Long.parseLong(macAddressEditVO.getEndMacAddress(), 16);
+        long startLong = Long.parseLong(macAddressEditVO.getStartMacAddress(), 16);
+        macaddress.setStartingInventory((int) (endLong - startLong + 1));
+        String signs = macAddressEditVO.getStartMacAddress().substring(0, 6);
+        macaddress.setSigns(signs);
+        macaddress.setUpdatedate(new Date());
+        macaddress.setUpdator(httpSession.getAttribute("LoginState").toString());
+        try {
+            Macaddress update = macaddressService.update(macaddress);
+            return RetResponse.success(update);
+        } catch (Exception e) {
+            log.error("修改失败");
+            return RetResponse.error("修改失败");
+        }
     }
 }

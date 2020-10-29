@@ -100,7 +100,7 @@ public class DeliveryRecordController {
         }
         String createDate = macAddressDTO.getCreatedate();
         String startMacAddress = macAddressDTO.getStartMacAddress();
-        Integer pageNum = macAddressDTO.getPageNum();
+        Integer pageNum = macAddressDTO.getPage();
         if (ObjectUtils.isEmpty(pageNum)) {
             pageNum=1;
         }

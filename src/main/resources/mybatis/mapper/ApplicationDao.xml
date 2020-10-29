@@ -43,7 +43,7 @@
         select
           id, start_mac_address, end_mac_address, application_department, customer, amount, applicant, application_date, release_date, director, shift_cost_no, shift_cost, creator, create_date, update_date, updator, status
         from bill.application
-        where 1=1
+        where 1==1
         <if test="customer != null and customer != ''">
             and customer = #{customer}
         </if>

@@ -89,7 +89,7 @@ public class ApplicationController {
 
     @RequestMapping(value = "/application/{id}", method = RequestMethod.POST)
     @ResponseBody
-    public Boolean delApplication(@PathVariable("id") Integer id) {
+    public Result delApplication(@PathVariable("id") Integer id) {
         Application application = new Application();
         application.setId(id);
         application.setStatus(0);
@@ -99,9 +99,10 @@ public class ApplicationController {
             applicationService.update(application);
         } catch (Exception e) {
             log.error("根据主键逻辑删除失败");
-            throw new RuntimeException("根据主键逻辑删除失败");
+            return RetResponse.error("根据主键逻辑删除失败");
+//            throw new RuntimeException("根据主键逻辑删除失败");
         }
-        return true;
+        return RetResponse.makeOKRsp();
     }
 
     /**

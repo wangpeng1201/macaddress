@@ -1,26 +1,34 @@
 package com.foxconn.sw.macaddress.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.foxconn.sw.macaddress.common.Lay;
 import com.foxconn.sw.macaddress.common.Result;
 import com.foxconn.sw.macaddress.common.RetResponse;
 import com.foxconn.sw.macaddress.dao.DeliveryRecordDao;
 import com.foxconn.sw.macaddress.dao.MacaddressDao;
 import com.foxconn.sw.macaddress.dto.DeliveryRecordDTO;
 import com.foxconn.sw.macaddress.dto.MacAddressDTO;
+import com.foxconn.sw.macaddress.entity.Application;
 import com.foxconn.sw.macaddress.entity.Macaddress;
 import com.foxconn.sw.macaddress.service.MacaddressService;
 import com.foxconn.sw.macaddress.vo.MacAddressDetailVO;
 import com.foxconn.sw.macaddress.vo.MacAddressVO;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +42,7 @@ import java.util.stream.Collectors;
  * @since 2020-10-13 11:23:46
  */
 @Service("macaddressService")
-@Slf4j
+@Log4j2
 public class MacaddressServiceImpl implements MacaddressService {
     @Resource
     private MacaddressDao macaddressDao;
@@ -222,6 +230,50 @@ public class MacaddressServiceImpl implements MacaddressService {
             throw new RuntimeException("根据主键查询mac地址信息失败");
         }
         return RetResponse.success(macAddressDetailVO);
+    }
+
+    /**
+     * 按条件查询
+     * @param macAddressDTO
+     * @return
+     */
+    @Override
+    public Lay findByConditionLayUI(MacAddressDTO macAddressDTO) {
+        if (ObjectUtils.isEmpty(macAddressDTO)) {
+            throw new RuntimeException("参数为空");
+        }
+        if (ObjectUtils.isEmpty(macAddressDTO.getPage())) {
+            macAddressDTO.setPage(1);
+        }
+        if (ObjectUtils.isEmpty(macAddressDTO.getLimit())) {
+            macAddressDTO.setLimit(10);
+        }
+
+        //需要进行分页
+        PageHelper.startPage(macAddressDTO.getPage(), macAddressDTO.getLimit());
+        Macaddress macaddress = new Macaddress();
+        macaddress.setStartMacAddress(macAddressDTO.getStartMacAddress());
+        if (!StringUtils.isEmpty(macAddressDTO.getCreatedate())) {
+            try {
+                macaddress.setCreatedate(DateUtils.parseDate(macAddressDTO.getCreatedate(),"yyyy-MM-dd"));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        List<Macaddress> macaddresses;
+        Lay lay = new Lay();
+        try {
+            macaddresses = macaddressDao.queryAll(macaddress);
+            PageInfo info = new PageInfo(macaddresses);//创建pageinfo，包含分页的信息
+            lay.setLimit(macAddressDTO.getLimit());
+            lay.setPage(macAddressDTO.getPage());
+            lay.setCount(info.getTotal());//总条数
+            lay.setData(info.getList());//显示的数据
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("查询申请失败");
+        }
+        return lay;
     }
 
     private Map<Integer, Integer> getAllStartingMacAddress() {

@@ -15,6 +15,9 @@
 
 <!--    <link th:href="@{asserts/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css}" rel="stylesheet">-->
     <link th:href="@{asserts/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{asserts/layui-v2.5.6/layui/css/layui.css}" media="all">
+    <!--自定义主题-->
+    <link rel="stylesheet" th:href="@{asserts/layui-v2.5.6/layui/css/layui-theme-custom.css}" media="all">
     <style type="text/css">
         /* Chart.js */
         @-webkit-keyframes chartjs-render-animation {
@@ -78,134 +81,56 @@
         </nav>
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-
-            <form class="form-inline" style="margin-bottom: 10px;float: left" th:action="@{/condition}" method="post">
-                <div class="form-group mb-2" style="float: left;">
-                    <label for="startMacAddressInput" class="sr-only">起始mac地址</label>
-                    <input type="text" class="form-control" id="startMacAddressInput" name="startMacAddress" autocomplete="off"
-                           placeholder="起始mac地址" th:value="${macAddressDTO!=null?macAddressDTO.startMacAddress:''}">
-                </div>
-                <div class="form-group mx-sm-3 mb-2" style="float: left;">
-                    <label for="macCreatDate" class="sr-only">创建时间</label>
-                    <input type="text" class="form-control" id="macCreatDate" name="createdate" placeholder="创建时间" autocomplete="off" th:value="${macAddressDTO!=null?macAddressDTO.createdate:''}">
-                </div>
-                <button type="submit" class="btn btn-primary mb-2" id="searchBtn" style="float: left;" onclick="searchMacAddress()">搜索</button>
-            </form>
-
-            <div style="float: left;margin-left: 15px;">
-                <!-- 按钮触发模态框 -->
-                <button class="btn btn-primary mb-2" data-toggle="modal" data-target="#myModal">
-                    新增mac地址段
-                </button>
-            </div>
-
-            <div class="table-responsive">
-                <table class="table table-sm table-bordered table-hover" id="tableId">
-                    <thead>
-                    <tr>
-                        <th>主键</th>
-                        <th>mac标识</th>
-                        <th>mac起始地址</th>
-                        <th>mac结束地址</th>
-                        <th>初始库存量</th>
-                        <th>创建时间</th>
-                        <th>创建人</th>
-                        <th>修改时间</th>
-                        <th>操作</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr th:each="mac:${pageInfo.list}">
-                        <td>[[${mac.id}]]</td>
-                        <td th:text="${mac.signs}"></td>
-                        <td th:text="${mac.startMacAddress}"></td>
-                        <td>[[${mac.endMacAddress}]]</td>
-                        <td>[[${mac.startingInventory}]]</td>
-                        <td th:text="${#dates.format(mac.getCreatedate(),'yyyy-MM-dd HH:mm:ss')}"></td>
-                        <td>[[${mac.creator}]]</td>
-                        <td th:text="${#dates.format(mac.getUpdatedate(),'yyyy-MM-dd HH:mm:ss')}"></td>
-                        <td>
-                            <!-- Button trigger modal -->
-                            <button type="button" class="btn btn-sm btn-info" data-toggle="modal"
-                                    data-target="#myModalDetail" onclick="showDetail(this)">
-                                详情
-                            </button>
-                            <!--<button class="btn btn-sm btn-primary">编辑</button>-->
-                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal"
-                                    data-target="#myModalDel" onclick="showDeleteModal(this)">
-                                删除
-                            </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <footer class="footer navbar-fixed-bottom ">
-                <div class="container">
-                    <!-- 分页信息 -->
-                    <div class="row mx-auto">
-                        <!-- 分页文字信息 -->
-                        <div class="col-md-3">
-                            <p th:text="'当前第' + ${pageInfo.pageNum}+'页,共'+${pageInfo.pages}+'页,共'+${pageInfo.total}+'条记录'"/>
-                        </div>
-                        <!-- 分页条信息 -->
-                        <div class="col-md-9">
-
-                            <nav aria-label="Page navigation example">
-                                <ul class="pagination">
-                                    <!--首页-->
-                                    <li class="page-item">
-                                        <a th:if="${startMacAddress!=null && startMacAddress!=''}" class="page-link" th:href="@{'/condition?pageNum=1&startMacAddress='+${startMacAddress}+'&createdate='+${(macAddressDTO.createdate!=null&&macAddressDTO.createdate!='')?macAddressDTO.createdate:''}}">首页</a>
-                                    </li>
-
-                                    <li class="page-item">
-                                        <a class="page-link" th:href="@{'/condition?pageNum=1&startMacAddress='+${(macAddressDTO.startMacAddress!=null&&macAddressDTO.startMacAddress!='')?macAddressDTO.startMacAddress:''}+'&createdate='+${(macAddressDTO.createdate!=null&&macAddressDTO.createdate!='')?macAddressDTO.createdate:''}}">首页</a>
-                                    </li>
-                                    <!--上一页《 -->
-                                    <li th:if="${pageInfo.hasPreviousPage}">
-                                        <a class="page-link" th:href="@{'/condition?pageNum='+${pageInfo.pageNum-1}+'&startMacAddress='+${(macAddressDTO.startMacAddress!=null&&macAddressDTO.startMacAddress!='')?macAddressDTO.startMacAddress:''}+'&createdate='+${(macAddressDTO.createdate!=null&&macAddressDTO.createdate!='')?macAddressDTO.createdate:''}}"
-                                           aria-label="Previous">
-                                            <span aria-hidden="true">&laquo;</span>
-                                        </a>
-                                    </li>
-
-                                    <!--动态添加样式-->
-                                    <li class="page-item"
-                                        th:classappend="${PageNum == pageInfo.pageNum} ? 'active' : '' "
-                                        th:each="PageNum : ${pageInfo.navigatepageNums}">
-                                        <a th:href="@{'/list?pageNum='+${PageNum}+'&startMacAddress='+${(macAddressDTO.startMacAddress!=null&&macAddressDTO.startMacAddress!='')?macAddressDTO.startMacAddress:''}+'&createdate='+${(macAddressDTO.createdate!=null&&macAddressDTO.createdate!='')?macAddressDTO.createdate:''}}" class="page-link"
-                                           th:text="${PageNum}"></a>
-                                    </li>
-
-                                    <!--页码判断-->
-                                    <!--<li class="page-item active" th:each="PageNum : ${pageInfo.navigatepageNums}" th:if="${PageNum==pageInfo.pageNum}">
-                                        <a th:href="@{'/list?pageNum='+${PageNum}}" class="page-link" th:text="${PageNum}"></a>
-                                    </li>
-                                    <li class="page-item"  th:each="PageNum : ${pageInfo.navigatepageNums}" th:if="${PageNum!=pageInfo.pageNum}">
-                                        <a th:href="@{'/list?pageNum='+${PageNum}}" class="page-link" th:text="${PageNum}"></a>
-                                    </li>-->
-
-                                    <!--下一页 》-->
-                                    <li th:if="${pageInfo.hasNextPage}" class="page-item">
-                                        <a th:href="@{'/list?pageNum='+${pageInfo.pageNum+1 }+'&startMacAddress='+${(macAddressDTO.startMacAddress!=null&&macAddressDTO.startMacAddress!='')?macAddressDTO.startMacAddress:''}+'&createdate='+${(macAddressDTO.createdate!=null&&macAddressDTO.createdate!='')?macAddressDTO.createdate:''}}" aria-label="Next"
-                                           class="page-link">
-                                            <span aria-hidden="true">&raquo;</span>
-                                        </a>
-                                    </li>
-
-                                    <!--尾页-->
-                                    <li class="page-item" th:if="${pageInfo.hasNextPage}">
-                                        <a th:href="@{'/list?pageNum='+${pageInfo.pages}+'&startMacAddress='+${(macAddressDTO.startMacAddress!=null&&macAddressDTO.startMacAddress!='')?macAddressDTO.startMacAddress:''}+'&createdate='+${(macAddressDTO.createdate!=null&&macAddressDTO.createdate!='')?macAddressDTO.createdate:''}}" class="page-link">尾页</a>
-                                    </li>
-                                </ul>
-                            </nav>
+            <!--条件查询-->
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="margin-left: -15px;">
+                <form class="layui-form-item layui-form-pane" id="option" lay-filter="option">
+                    <div class="layui-inline form-group">
+                        <label class="layui-form-label">起始mac地址</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" id="startMacAddressInput" name="startMacAddress" autocomplete="off"
+                                   placeholder="请输入起始mac地址">
                         </div>
                     </div>
+
+                    <div class="layui-inline form-group">
+                        <label class="layui-form-label">创建时间</label>
+                        <div class="layui-input-block">
+                            <input type="text" class="layui-input" id="createdateInput" name="createdate"
+                                   autocomplete="off"
+                                   placeholder="请输入创建时间">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <button type="button" lay-submit lay-filter="search" class="btn btn-primary"
+                                style="margin-bottom: 10px;">
+                            搜索<i class="layui-icon layui-icon-search"></i>
+                        </button>
+                    </div>
+                </form>
+                <!--新增按钮-->
+                <div>
+                    <!-- 按钮触发模态框 -->
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#myModal"
+                            style="margin-bottom: 15px;margin-top: -130px;margin-left: 690px;">
+                        新增mac地址段
+                    </button>
                 </div>
-            </footer>
-           <!-- &lt;!&ndash;分页条&ndash;&gt;
-            <div th:replace="~{home/pageBar.html}"/>-->
+            </div>
+            <table class="layui-hide" id="macAddressTable" lay-filter="macAddressTableFilter" lay-size="lg"></table>
+            <script type="text/html" id="barOperate">
+                <button type="button" class="btn btn-sm btn-info" data-toggle="modal" lay-event="detail"
+                        data-target="#myModalDetail">
+                    详情
+                </button>
+                <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" lay-event="edit"
+                        data-target="#myModalEdit">
+                    编辑
+                </button>
+                <button type="button" class="btn btn-sm btn-danger" lay-event="delete">
+                    删除
+                </button>
+            </script>
         </main>
     </div>
 
@@ -243,6 +168,51 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
                         <button type="button" class="btn btn-primary" onclick="addMac()">提交</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div><!-- /.modal -->
+        </div>
+
+        <!--编辑模态框-->
+        <div class="modal fade bs-example-modal-lg" id="myModalEdit" tabindex="-1" role="dialog"
+             aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title" id="myModalEditLabel">编辑mac地址</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form role="form" method="post" id="macAddressEditForm">
+                            <!--设置一个隐藏的id input-->
+                            <div class="form-group row" style="display: none">
+                                <label for="macAddressIdEdit"
+                                       class="col-sm-2 col-form-label font-weight-bold">macId</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="macAddressIdEdit" name="macAddressIdEdit">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="startMacAddressEdit"
+                                       class="col-sm-2 col-form-label font-weight-bold">Mac起始地址</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="startMacAddressEdit" name="startMacAddress"
+                                           placeholder="请输入16进制Mac起始地址">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="endMacAddressEdit"
+                                       class="col-sm-2 col-form-label font-weight-bold">Mac结束地址</label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control" id="endMacAddressEdit" name="endMacAddress"
+                                           placeholder="请输入16进制Mac结束地址">
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                        <button type="button" class="btn btn-primary" onclick="submitEditMac()">提交</button>
                     </div>
                 </div><!-- /.modal-content -->
             </div><!-- /.modal -->
@@ -302,7 +272,6 @@
             </div><!-- /.modal -->
         </div>
 
-
         <!--删除提示模态框-->
         <div class="modal" tabindex="-1" role="dialog" id="myModalDel">
             <div class="modal-dialog">
@@ -320,7 +289,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
-                        <button type="button" class="btn btn-primary" onclick="delMacAddress()">确认</button>
+                        <button type="button" class="btn btn-primary">确认</button>
                     </div>
                 </div>
             </div>
@@ -343,25 +312,162 @@
 <!--<script type="text/javascript" th:src="@{asserts/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js}"></script>-->
 <script type="text/javascript" th:src="@{asserts/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js}"></script>
 <script type="text/javascript" th:src="@{asserts/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js}"></script>
+<script th:src="@{asserts/layui-v2.5.6/layui/layui.js}"></script>
+<!--下方formData方法，序列化表单-->
+<script th:src="@{asserts/js/main.js}" charset="utf-8" type="text/javascript" language="javascript"></script>
+
 <script th:inline="javascript">
     var ctxPath=[[${#httpServletRequest.getContextPath()}]]
     feather.replace();
+    layui.use(['form', 'table','layer'], function () {
+        let $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+        var layer=layui.layer;
+        //第一个实例
+        //加载表格
+        let macAddressTable = table.render({
+            elem: '#macAddressTable',
+            method: 'post',
+            where: formData('#option'),
+            url: 'condition',
+            limits: [10, 15, 20, 25, 50],
+            limit: 10,
+            theme: 'custom',
+            page: true,
+            sort: true,
+            response: {
+                statusName: 'code',
+                statusCode: 200
+            },
+            cols: [[ //表头
+                {field: 'id', title: 'ID', width: '5%', sort: true, fixed: 'left', align: 'center'}
+                , {field: 'signs', title: 'mac标识', width: '10%', align: 'center'}
+                , {field: 'startMacAddress', title: 'mac起始地址', width: '15%', align: 'center'}
+                , {field: 'endMacAddress', title: 'mac结束地址', width: '15%', align: 'center'}
+                , {field: 'startingInventory', title: '初始库存量', width: '10%', align: 'center', sort: true}
+                , {
+                    field: 'createdate',
+                    title: '创建时间',
+                    width: '20%',
+                    sort: true,
+                    align: 'center',
+                    templet: '<div>{{ layui.util.toDateString(d.createdate, "yyyy-MM-dd HH:mm:ss") }}</div>'
+                }
+                , {field: 'creator', title: '创建人', width: '10%', align: 'center', sort: true}
+                , {title: '操作', align: 'center', fixed: 'right', toolbar: '#barOperate'} //操作栏位
+            ]],
+            done: function (res, curr, count) {
+                $('th').css({'font-size': '15', 'font-weight': 'bold', 'text-align': 'center'});
+            }
+        });
+
+        //监听搜索
+        form.on('submit(search)', function (data) {
+            let field = data.field;
+            console.log("field:", field);
+            //执行重载
+            macAddressTable.reload({where: field, page: {curr: 1}});
+        });
+
+        /*监听当前行*/
+        table.on('row(macAddressTableFilter)',function (obj){
+            console.log(obj.tr) //得到当前行元素对象
+            console.log(obj.data) //得到当前行数据
+        });
+
+        //表格中操作栏位事件监听
+        table.on('tool(macAddressTableFilter)', function (obj) {
+            let data = obj.data //当前行的内容
+                , layEvent = obj.event; //选中的时间
+            console.log(data);
+            console.log("layEvent", layEvent);
+            if (layEvent === 'detail') {
+                let macIdTd=data.id;
+                let startMac=data.startMacAddress;
+                let endMac=data.endMacAddress;
+                let startingInventorySum=data.startingInventory;
+                $('#startMacAddressDetail').val(startMac);
+                $('#endMacAddressDetail').val(endMac);
+                $('#startingInventoryDetail').val(startingInventorySum);
+                $.ajax({
+                    url:"/getRemainingStock/"+macIdTd,
+                    type:"GET",
+                    method:"GET",
+                    success:function(result){
+                        $('#remainingInventory').val(result.data.remainingInventory);
+                    },
+                    error : function() {
+                        $('#myModalDel').modal('hide');  //手动关闭
+                        ShowFailure("请求失败");
+                    }
+                });
+            }
+            if (layEvent === 'edit') {
+                let data = obj.data
+                console.error("data:", data);
+                console.log(" enter edit...");
+                let macAddressId = data.id;
+                $('#macAddressIdEdit').val(macAddressId);
+                /*起始mac*/
+                let startMacAddressEditVal = data.startMacAddress;
+                $('#startMacAddressEdit').val(startMacAddressEditVal);
+                /*结束mac*/
+                let endMacAddressEditVal = data.endMacAddress;
+                $('#endMacAddressEdit').val(endMacAddressEditVal);
+            }
+
+            if (layEvent==='delete') {
+                let data = obj.data
+                let macAddressId = data.id;
+                let startMacAddress = data.startMacAddress;
+                let endMacAddress = data.endMacAddress;
+                layer.confirm("确定删除["+startMacAddress+"-"+endMacAddress+"]吗？", {title: "提醒"}, function (index) {
+                    $.ajax({
+                        type: "post",
+                        url: 'mac/' + data.id,
+                        dataType: "json",
+                        success: function (data) {
+                            console.log("data:", data);
+                            if (data.msg ==='success') {
+                                // layer.msg('删除成功');
+                                layer.msg('删除成功', {icon: 1});
+                            } else {
+                                layer.msg(data.msg);
+                            }
+                            macAddressTable.reload();
+                        }
+                    });
+                });
+            }
+        });
+    });
+
 
     function addMac() {
         $('#macForm').submit();
         $('#myModal').modal('hide');  //手动关闭
-        window.location.href('home/list.html');
+        // window.location.href('/condition');
     }
 
     $(function () {
-        $('#macCreatDate').datetimepicker({
-            format: "yyyy-mm-dd",
-            minView: "month",
-            autoclose: true,
-            todayBtn: true,
-            // locale: moment.locale('zh-cn'),
-            language: "zh-CN"
+        layui.use('laydate', function(){
+            var laydate = layui.laydate;
+
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#createdateInput' //指定元素
+            });
         });
+
+        // $('#macCreatDate').datetimepicker({
+        //     format: "yyyy-mm-dd",
+        //     minView: "month",
+        //     autoclose: true,
+        //     todayBtn: true,
+        //     // locale: moment.locale('zh-cn'),
+        //     language: "zh-CN"
+        // });
     });
 
     function showDetail(obj) {
@@ -387,27 +493,38 @@
         });
     }
 
-    let delTr;
-    function showDeleteModal(obj) {
-        var delTableTr = obj.parentNode.parentNode;
-        // console.log(delTableTr);
-        // tr.parentNode.removeChild(tr);
-        delTr=delTableTr;
-    }
-
-    function delMacAddress() {
-        let macIdTd =$(delTr).find("td:eq(0)").text();
+    /*编辑修改库存*/
+    function submitEditMac() {
+        let macAddressId = $('#macAddressIdEdit').val();
+        console.log("macAddressIdL:" + macAddressId);
+        /*起始mac地址*/
+        let startMacAddressEditVal = $('#startMacAddressEdit').val();
+        /*结束mac地址*/
+        let endMacAddressEditVal = $('#endMacAddressEdit').val();
         $.ajax({
-            url:"/mac/"+macIdTd,
-            type:"post",
-            method:"post",
-            success:function(result){
-                $('#myModalDel').modal('hide');  //手动关闭
-                window.location.href='/list';
+            //请求的url地址
+            url: "/editMacAddress",
+            //请求是否异步，默认为异步，这也是ajax重要特性
+            async: true,
+            //参数值
+            data: {
+                "id": macAddressId,
+                "startMacAddress": startMacAddressEditVal,
+                "endMacAddress": endMacAddressEditVal
             },
-            error : function() {
-                $('#myModalDel').modal('hide');  //手动关闭
-                ShowFailure("请求失败");
+            type: "POST",   //请求方式
+            method: "POST",
+            dataType: 'json',
+            success: function (req) {
+                $('#myModalEdit').modal('hide');  //手动关闭
+                //请求成功时处理
+                ShowSuccess("修改成功");
+                window.location.href = "/list?pageNum=1";
+            },
+            error: function (xhr, textStatus, errorThrown) {
+                var responseText = JSON.parse(xhr.responseText);
+                let msgTip = responseText.message;
+                ShowFailure("修改失败！" + msgTip);
             }
         });
     }
