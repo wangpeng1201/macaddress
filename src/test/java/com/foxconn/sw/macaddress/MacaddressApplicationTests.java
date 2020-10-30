@@ -16,10 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -57,7 +54,16 @@ class MacaddressApplicationTests {
     @Test
     void testSumByGroupId() {
         List<Macaddress> macaddresses = macaddressDao.queryAll(null);
-        Map<Integer, Integer> startMap = macaddresses.stream().collect(Collectors.toMap(Macaddress::getId, Macaddress::getStartingInventory));
+        List<Macaddress> collect = macaddresses.stream().sorted(Comparator.comparing(Macaddress::getId)).collect(Collectors.toList());
+        System.out.println("JSON.toJSONString(collect) = " + JSON.toJSONString(collect));
+        Map<Integer, Integer> startMap=new LinkedHashMap();
+
+        for (Macaddress macaddress : collect) {
+            startMap.put(macaddress.getId(), macaddress.getStartingInventory());
+        }
+        System.out.println(" startMap= " + JSON.toJSONString(startMap));
+        //Map<Integer, Integer> startMap = collect.stream().collect(Collectors.toMap(Macaddress::getId, Macaddress::getStartingInventory));
+
         //初始库存
         System.out.println(" startMap= " + JSON.toJSONString(startMap));
 

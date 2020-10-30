@@ -85,4 +85,6 @@ public interface ApplicationDao {
      * @return
      */
     List<Application> findByCondition(ApplicationDTO applicationDTO);
+
+    void deleteBatch(List<String> ids);
 }

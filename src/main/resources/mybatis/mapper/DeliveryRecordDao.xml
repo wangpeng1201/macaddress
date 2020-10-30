@@ -58,7 +58,7 @@
                 and amount = #{amount}
             </if>
             <if test="createdate != null">
-                and createDate BETWEEN #{createdate} and DATE_ADD(DATE_FORMAT(#{createdate},'%Y-%m-%d'),INTERVAL 1 DAY)
+                and application_date BETWEEN DATE_FORMAT(#{createdate} ,'%Y-%m-%d 00:00:00')  AND DATE_FORMAT(#{createdate},'%Y-%m-%d 23:59:59')
             </if>
             <if test="creator != null and creator != ''">
                 and creator = #{creator}

@@ -2,6 +2,7 @@ package com.foxconn.sw.macaddress.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.foxconn.sw.macaddress.common.Lay;
+import com.foxconn.sw.macaddress.common.ListUtil;
 import com.foxconn.sw.macaddress.common.Result;
 import com.foxconn.sw.macaddress.common.RetResponse;
 import com.foxconn.sw.macaddress.dao.DeliveryRecordDao;
@@ -20,6 +21,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -27,10 +29,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -275,6 +274,21 @@ public class MacaddressServiceImpl implements MacaddressService {
         }
         return lay;
     }
+
+    @Override
+    @Transactional
+    public Boolean deleteBatch(String ids) {
+        List<String> list = ListUtil.getList(ids);
+        try {
+            macaddressDao.deleteBatch(list);
+        } catch (Exception e) {
+            //显式回滚事务
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+        return true;
+    }
+
 
     private Map<Integer, Integer> getAllStartingMacAddress() {
         //查询库存量

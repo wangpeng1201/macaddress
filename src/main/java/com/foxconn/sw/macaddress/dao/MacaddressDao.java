@@ -80,6 +80,12 @@ public interface MacaddressDao {
     int deleteById(Integer id);
 
     /**
+     * 批量逻辑删除
+     * @param list
+     */
+    void deleteBatch(List<String> list);
+
+    /**
      * 根据创建时间和起始Mac地址查询
      */
     List<Macaddress> queryByCreateDateAndStartMacAddress(MacAddressDTO macAddressDTO);

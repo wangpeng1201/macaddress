@@ -91,4 +91,6 @@ public interface MacaddressService {
      * @return
      */
     Lay findByConditionLayUI(MacAddressDTO macAddressDTO);
+
+    Boolean deleteBatch(String ids);
 }

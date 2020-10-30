@@ -17,7 +17,7 @@
 <div class="container-fluid">
     <div class="row">
         <!--左边导航栏开始-->
-        <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+        <nav class="col-md-1 d-none d-md-block bg-light sidebar">
             <div class="sidebar-sticky">
                 <div th:replace="home/public :: #publicNav(nav='deliveryRecords')"></div>
             </div>
@@ -25,7 +25,7 @@
         <!--左边导航栏结束-->
 
         <!--右边main主体开始-->
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-11 pt-3 px-4">
             <!--查询组件-->
             <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="margin-left: -15px;">
                 <form class="layui-form-item layui-form-pane" id="option" lay-filter="option">
@@ -61,8 +61,8 @@
                     </div>
 
                     <div class="layui-inline">
-                        <button type="button" class="btn btn-primary mb-2">导出Excel
-                            <i class="layui-icon layui-icon-download-circle"></i>
+                        <button type="button" class="btn btn-primary mb-2" id="export"><i class="iconfont icon-export"></i>导出Excel
+<!--                            <i class="layui-icon layui-icon-download-circle"></i>-->
                         </button>
                     </div>
                 </form>
@@ -297,6 +297,8 @@
         let deliveryRecordTable = table.render({
             elem: '#deliveryRecordTable',
             method: 'post',
+            toolbar: '#toolbarDemo', //开启头部工具栏，并为其绑定左侧模板
+            title: '发放记录导出',//导出数据excel的表名称
             where: formData('#option'),
             url: 'deliveryRecordByCondition',
             limits: [10, 15, 20, 25, 50],
@@ -327,8 +329,15 @@
             ]],
             done: function (res, curr, count) {
                 $('th').css({'font-size': '15', 'font-weight': 'bold', 'text-align': 'center'});
+                console.log(res.data);
+                dataList=res.data;
             }
         });
+
+        //全部导出
+        $("#export").click(function () {
+            table.exportFile(deliveryRecordTable.config.id, dataList, 'xls');
+        })
 
         //监听搜索
         form.on('submit(search)', function (data) {

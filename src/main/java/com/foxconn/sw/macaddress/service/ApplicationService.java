@@ -79,4 +79,6 @@ public interface ApplicationService {
 //    Result addApplication(ApplicationVO applicationVO);
 
     Lay findByConditionLayUI(ApplicationDTO applicationDTO) throws ParseException;
+
+    Boolean deleteBatch(String ids);
 }

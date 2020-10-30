@@ -73,7 +73,6 @@ public class DeliveryRecordController {
         //2.紧跟的查询就是一个分页查询-必须紧跟.后面的其他查询不会被分页，除非再次调用PageHelper.startPage
         try {
             Result result = deliveryRecordService.queryAll();
-            System.out.println("result = " + JSON.toJSONString(result));
             if (Integer.toString(HttpStatus.OK.value()).equals(result.getCode().toString())) {
                 List<DeliveryRecord> deliveryRecords = (List<DeliveryRecord>) result.getData();
                 //3.使用PageInfo包装查询后的结果,5是连续显示的条数,结果list类型是Page<E>
@@ -95,7 +94,6 @@ public class DeliveryRecordController {
     @PostMapping(value = "/deliveryRecordByCondition")
     @ResponseBody
     public Box findByCondition(DeliveryRecordConditionDTO deliveryRecordConditionDTO) throws ParseException {
-        System.err.println("deliveryRecordConditionDTO = " + JSON.toJSONString(deliveryRecordConditionDTO));
         Lay byConditionLayUI = deliveryRecordService.findByConditionLayUI(deliveryRecordConditionDTO);
         Long count = byConditionLayUI.getCount();
         Object data = byConditionLayUI.getData();

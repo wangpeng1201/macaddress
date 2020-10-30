@@ -1,5 +1,6 @@
 package com.foxconn.sw.macaddress.common;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,5 +42,21 @@ public class ListUtil {
         //list.indexOf(n) = 1
         System.out.println("list.indexOf(n) = " + list.indexOf(n));
         return list.indexOf(n);
+    }
+
+    /**
+     * id放入list
+     *
+     * @param id
+     *            id(多个已逗号分隔)
+     * @return List集合
+     */
+    public static List<String> getList(String id) {
+        List<String> list = new ArrayList<String>();
+        String[] str = id.split(",");
+        for (int i = 0; i < str.length; i++) {
+            list.add(str[i]);
+        }
+        return list;
     }
 }

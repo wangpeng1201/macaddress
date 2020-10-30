@@ -159,4 +159,13 @@
         delete from bill.macaddress where id = #{id}
     </delete>
 
+    <!-- 批量逻辑删除 -->
+    <delete id="deleteBatch" parameterType="java.util.List">
+        update bill.macaddress set status = 0
+        where id in
+        <foreach item="ids" collection="list" open="(" close=")" separator=",">
+            #{ids}
+        </foreach>
+    </delete>
+
 </mapper>

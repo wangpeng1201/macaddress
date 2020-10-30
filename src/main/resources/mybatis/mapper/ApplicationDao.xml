@@ -86,7 +86,7 @@
                 and applicant = #{applicant}
             </if>
             <if test="applicationDate != null">
-                and application_date BETWEEN #{applicationDate} and DATE_ADD(DATE_FORMAT(#{applicationDate},'%Y-%m-%d'),INTERVAL 1 DAY)
+                and application_date BETWEEN DATE_FORMAT(#{applicationDate} ,'%Y-%m-%d 00:00:00')  AND DATE_FORMAT(#{applicationDate},'%Y-%m-%d 23:59:59')
             </if>
             <if test="releaseDate != null">
                 and release_date = #{releaseDate}
@@ -217,6 +217,14 @@
     <!--通过主键删除-->
     <delete id="deleteById">
         delete from bill.application where id = #{id}
+    </delete>
+    <!-- 批量逻辑删除 -->
+    <delete id="deleteBatch" parameterType="java.util.List">
+        update bill.application set status = 0
+        where id in
+        <foreach item="ids" collection="list" open="(" close=")" separator=",">
+            #{ids}
+        </foreach>
     </delete>
 
 </mapper>

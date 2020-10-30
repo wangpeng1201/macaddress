@@ -77,7 +77,6 @@ public class ApplicationController {
     @PostMapping(value = "/applicationBycondition")
     @ResponseBody
     public Box findByCondition(Model model, ApplicationDTO applicationDTO) throws ParseException {
-        System.err.println("applicationDTO = " + JSON.toJSONString(applicationDTO));
         Lay byConditionLayUI = applicationService.findByConditionLayUI(applicationDTO);
         Long count = byConditionLayUI.getCount();
         Object data = byConditionLayUI.getData();
@@ -100,6 +99,17 @@ public class ApplicationController {
 //            throw new RuntimeException("根据主键逻辑删除失败");
         }
         return RetResponse.makeOKRsp();
+    }
+
+    @PostMapping("/delApplication/{ids}")
+    @ResponseBody
+    public Result delIds(@PathVariable String ids) {
+        Boolean flag = applicationService.deleteBatch(ids);
+        if (flag) {
+            return RetResponse.success("批量删除成功");
+        } else {
+            return RetResponse.error("批量删除失败");
+        }
     }
 
     /**

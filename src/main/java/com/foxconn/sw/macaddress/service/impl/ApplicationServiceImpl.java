@@ -1,6 +1,7 @@
 package com.foxconn.sw.macaddress.service.impl;
 
 import com.foxconn.sw.macaddress.common.Lay;
+import com.foxconn.sw.macaddress.common.ListUtil;
 import com.foxconn.sw.macaddress.common.Result;
 import com.foxconn.sw.macaddress.common.RetResponse;
 import com.foxconn.sw.macaddress.dao.ApplicationDao;
@@ -18,6 +19,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -203,5 +206,19 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new RuntimeException("查询申请失败");
         }
         return lay;
+    }
+
+    @Override
+    @Transactional
+    public Boolean deleteBatch(String ids) {
+        List<String> list = ListUtil.getList(ids);
+        try {
+            applicationDao.deleteBatch(list);
+        } catch (Exception e) {
+            //显式回滚事务
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return false;
+        }
+        return true;
     }
 }

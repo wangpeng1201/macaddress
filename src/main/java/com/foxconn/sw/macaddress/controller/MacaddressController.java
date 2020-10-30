@@ -1,5 +1,6 @@
 package com.foxconn.sw.macaddress.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.foxconn.sw.macaddress.common.Box;
 import com.foxconn.sw.macaddress.common.Lay;
 import com.foxconn.sw.macaddress.common.Result;
@@ -14,6 +15,7 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -97,7 +99,6 @@ public class MacaddressController {
     @RequestMapping(value = "/condition")
     @ResponseBody
     public Box findByCondition(MacAddressDTO macAddressDTO) {
-        System.out.println("macAddressDTO = " + macAddressDTO);
         Lay byConditionLayUI=macaddressService.findByConditionLayUI(macAddressDTO);
         Long count = byConditionLayUI.getCount();
         Object data = byConditionLayUI.getData();
@@ -125,6 +126,17 @@ public class MacaddressController {
             return RetResponse.error("删除失败");
         }
 
+    }
+
+    @PostMapping("/delMacAddress/{ids}")
+    @ResponseBody
+    public Result delIds(@PathVariable String ids) {
+        Boolean flag = macaddressService.deleteBatch(ids);
+        if (flag) {
+            return RetResponse.success("批量删除成功");
+        } else {
+            return RetResponse.error("批量删除失败");
+        }
     }
 
     /**
