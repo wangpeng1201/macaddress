@@ -117,8 +117,12 @@ public class DeliveryRecordController {
         deliveryRecord.setUpdatedate(new Date());
         deliveryRecord.setUpdator(httpSession.getAttribute("LoginState").toString());
         try {
-            DeliveryRecord update = deliveryRecordService.update(deliveryRecord);
-            return RetResponse.success(update);
+            Boolean update = deliveryRecordService.update(deliveryRecord);
+            if (update) {
+                return RetResponse.success("删除成功");
+            } else {
+                return RetResponse.success("删除失败");
+            }
         } catch (Exception e) {
             log.error("根据主键逻辑删除失败");
             return RetResponse.error("删除失败");

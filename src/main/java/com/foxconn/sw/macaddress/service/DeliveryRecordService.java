@@ -48,7 +48,7 @@ public interface DeliveryRecordService {
      * @param deliveryRecord 实例对象
      * @return 实例对象
      */
-    DeliveryRecord update(DeliveryRecord deliveryRecord);
+    Boolean update(DeliveryRecord deliveryRecord);
 
     /**
      * 通过主键删除数据

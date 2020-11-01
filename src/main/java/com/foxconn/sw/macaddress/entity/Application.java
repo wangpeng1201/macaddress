@@ -45,7 +45,7 @@ public class Application implements Serializable {
     /**
      * 申请日期
      */
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date applicationDate;
     /**
