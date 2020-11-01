@@ -243,58 +243,37 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
             //跨段多出来的
             kuaDuanTail = amount - surplusStockWithoutTail;
             for (int i = 0; i <= importantIndex; i++) {
+                DeliveryRecord deliveryRecord = new DeliveryRecord();
+                Integer macId = macIdList.get(i);
+                deliveryRecord.setMacId(macId);
+                Result remainingStock = macaddressService.getRemainingStock(macId);
+                if (String.valueOf(HttpStatus.OK.value()).equals(remainingStock.getCode().toString())) {
+                    MacAddressDetailVO macAddressDetailVO = (MacAddressDetailVO) remainingStock.getData();
+                    startMacAddress = macAddressDetailVO.getStartMacAddress();
+                    //每段的结束mac地址
+                    endMacAddress = macAddressDetailVO.getEndMacAddress();
+                    //每段的剩余库存
+                    remainingInventoryNum = macAddressDetailVO.getRemainingInventory();
+                }
+                deliveryRecord.setApplicationId(applicationVO.getId());
+                deliveryRecord.setCreatedate(new Date());
+                deliveryRecord.setCreator(httpSession.getAttribute("LoginState").toString());
+                deliveryRecord.setUpdatedate(new Date());
+                deliveryRecord.setStatus(1);
                 if (i < importantIndex) {
-                    DeliveryRecord deliveryRecord = new DeliveryRecord();
-                    Integer macId = macIdList.get(i);
-                    deliveryRecord.setMacId(macId);
-                    Result remainingStock = macaddressService.getRemainingStock(macId);
-                    if (String.valueOf(HttpStatus.OK.value()).equals(remainingStock.getCode().toString())) {
-                        MacAddressDetailVO macAddressDetailVO = (MacAddressDetailVO) remainingStock.getData();
-                        startMacAddress = macAddressDetailVO.getStartMacAddress();
-                        //每段的结束mac地址
-                        endMacAddress = macAddressDetailVO.getEndMacAddress();
-                        //每段的剩余库存
-                        remainingInventoryNum = macAddressDetailVO.getRemainingInventory();
-                    }
-//                    deliveryRecord.setStartMacAddress(startMacAddress);
                     long startLong = Long.parseLong(endMacAddress, 16) - remainingInventoryNum + 1;
                     String startHexString = StringUtils.leftPad(Long.toHexString(startLong).toUpperCase(), 12, '0');
                     deliveryRecord.setStartMacAddress(startHexString);
-
-//                    long endLong = Long.parseLong(startHexString, 16) + amount - 1;
-//                    String endHexString = StringUtils.leftPad(Long.toHexString(endLong).toUpperCase(), 12, '0');
                     deliveryRecord.setEndMacAddress(endMacAddress);
-                    deliveryRecord.setApplicationId(applicationVO.getId());
                     deliveryRecord.setAmount(remainingInventoryNum);
-                    deliveryRecord.setCreatedate(new Date());
-                    deliveryRecord.setCreator(httpSession.getAttribute("LoginState").toString());
-                    deliveryRecord.setUpdatedate(new Date());
-                    deliveryRecord.setStatus(1);
                     result.add(deliveryRecord);
                 } else {
                     //i=importantIndex
-                    DeliveryRecord deliveryRecord = new DeliveryRecord();
-                    Integer macId = macIdList.get(i);
-                    deliveryRecord.setMacId(macId);
-                    Result remainingStock = macaddressService.getRemainingStock(macId);
-                    if (String.valueOf(HttpStatus.OK.value()).equals(remainingStock.getCode().toString())) {
-                        MacAddressDetailVO macAddressDetailVO = (MacAddressDetailVO) remainingStock.getData();
-                        startMacAddress = macAddressDetailVO.getStartMacAddress();
-                        //每段的结束mac地址
-                        endMacAddress = macAddressDetailVO.getEndMacAddress();
-                        //每段的剩余库存
-                        remainingInventoryNum = macAddressDetailVO.getRemainingInventory();
-                    }
                     deliveryRecord.setStartMacAddress(startMacAddress);
                     long endLong = Long.parseLong(startMacAddress, 16) + kuaDuanTail - 1;
                     String endHexString = StringUtils.leftPad(Long.toHexString(endLong).toUpperCase(), 12, '0');
                     deliveryRecord.setEndMacAddress(endHexString);
-                    deliveryRecord.setApplicationId(applicationVO.getId());
                     deliveryRecord.setAmount(kuaDuanTail);
-                    deliveryRecord.setCreatedate(new Date());
-                    deliveryRecord.setCreator(httpSession.getAttribute("LoginState").toString());
-                    deliveryRecord.setUpdatedate(new Date());
-                    deliveryRecord.setStatus(1);
                     result.add(deliveryRecord);
                 }
             }
@@ -320,8 +299,8 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
             String endHexString = StringUtils.leftPad(Long.toHexString(endLong).toUpperCase(), 12, '0');
             deliveryRecord.setEndMacAddress(endHexString);
 
-            deliveryRecord.setApplicationId(applicationVO.getId());
             deliveryRecord.setAmount(amount);
+            deliveryRecord.setApplicationId(applicationVO.getId());
             deliveryRecord.setCreatedate(new Date());
             deliveryRecord.setCreator(httpSession.getAttribute("LoginState").toString());
             deliveryRecord.setUpdatedate(new Date());

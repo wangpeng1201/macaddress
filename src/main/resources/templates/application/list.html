@@ -695,7 +695,7 @@
                     error: function (xhr, textStatus, errorThrown) {
                         var responseText = JSON.parse(xhr.responseText);
                         let msgTip = responseText.message;
-                        layer.msg('下发mac地址失败!', {icon: 2});
+                        layer.msg('下发mac地址失败!'+msgTip, {icon: 2});
                         // ShowFailure("下方mac地址失败！" + msgTip);
                     }
                 });
