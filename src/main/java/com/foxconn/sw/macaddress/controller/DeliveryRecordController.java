@@ -69,7 +69,7 @@ public class DeliveryRecordController {
         }
 
         //1.引入分页插件,pageNum是第几页，pageSize是每页显示多少条,默认查询总数count
-        PageHelper.startPage(pageNum, 5);
+        PageHelper.startPage(pageNum, 10);
         //2.紧跟的查询就是一个分页查询-必须紧跟.后面的其他查询不会被分页，除非再次调用PageHelper.startPage
         try {
             Result result = deliveryRecordService.queryAll();

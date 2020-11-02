@@ -52,7 +52,7 @@ public class ApplicationController {
             pageNum = 1;
         }
 
-        PageHelper.startPage(pageNum, 15);
+        PageHelper.startPage(pageNum, 10);
         try {
             List<Application> applications = applicationService.queryAll();
             //使用PageInfo包装查询后的结果,5是连续显示的条数,结果list类型是Page<E>

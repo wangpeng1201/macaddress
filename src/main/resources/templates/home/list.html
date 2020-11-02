@@ -81,7 +81,7 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-11 pt-3 px-4">
             <!--条件查询-->
-            <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="margin-left: -15px;">
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="margin-left: -15px;display: inline-block;">
                 <form class="layui-form-item layui-form-pane" id="option" lay-filter="option">
                     <div class="layui-inline form-group">
                         <label class="layui-form-label">mac地址</label>
@@ -108,22 +108,27 @@
                     </div>
                 </form>
                 <!--新增按钮-->
-                <div>
-                    <!-- 按钮触发模态框 -->
-                    <button class="btn btn-primary" data-toggle="modal" data-target="#myModal"
-                            style="margin-bottom: 15px;margin-top: -130px;margin-left: 700px;">
-                        新增mac地址段
-                    </button>
-                </div>
-
-                <div>
-                    <!-- 按钮触发模态框 -->
-                    <button class="btn btn-primary" id="deleteBatchBtn" data-type="delete"
-                            style="margin-bottom: 15px;margin-top: -213px;margin-left: 850px;">
-                        批量删除
-                    </button>
-                </div>
+<!--                <div>-->
+<!--                    <button class="btn btn-primary" data-toggle="modal" data-target="#myModal"-->
+<!--                            style="margin-bottom: 15px;margin-top: -130px;margin-left: 700px;">-->
+<!--                        新增mac地址段-->
+<!--                    </button>-->
+<!--                </div>-->
             </div>
+
+            <div style="display: inline-block;margin-top: -15px;" class="layui-inline">
+                <!--按钮触发模态框-->
+                <button class="btn btn-primary" data-toggle="modal" data-target="#myModal"
+                        style="float: left;margin-right: 10px;">
+                    新增mac地址段
+                </button>
+                <!-- 按钮触发模态框 -->
+                <button class="btn btn-primary" id="deleteBatchBtn" data-type="delete" style="float: left">
+                    批量删除
+                </button>
+            </div>
+
+
             <table class="layui-hide" id="macAddressTable" lay-filter="macAddressTableFilter" lay-size="lg"></table>
             <script type="text/html" id="barOperate">
                 <button type="button" class="btn btn-sm btn-info" data-toggle="modal" lay-event="detail"
@@ -531,15 +536,6 @@
                 elem: '#createdateInput' //指定元素
             });
         });
-
-        // $('#macCreatDate').datetimepicker({
-        //     format: "yyyy-mm-dd",
-        //     minView: "month",
-        //     autoclose: true,
-        //     todayBtn: true,
-        //     // locale: moment.locale('zh-cn'),
-        //     language: "zh-CN"
-        // });
     });
 
     function showDetail(obj) {

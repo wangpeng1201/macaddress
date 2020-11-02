@@ -23,7 +23,7 @@
         </nav>
 
         <main role="main" class="col-md-10 ml-sm-auto col-lg-11 pt-3 px-4">
-            <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="margin-left: -15px;">
+            <div class="layui-form layui-card-header layuiadmin-card-header-auto" style="margin-left: -15px;display: inline-block;">
                 <form class="layui-form-item layui-form-pane" id="option" lay-filter="option">
                     <div class="layui-inline form-group">
                         <label class="layui-form-label">客户</label>
@@ -61,22 +61,26 @@
                             搜索
                         </button>
                     </div>
+
+                    <!--<div class="layui-inline">
+                        &lt;!&ndash; 按钮触发模态框 &ndash;&gt;
+                        <button class="btn btn-primary" style="margin-bottom: 10px;" id="addApplicationBtn" onclick="addApplication()">
+                            新增申请
+                        </button>
+                    </div>-->
                 </form>
-                <div>
-                    <!-- 按钮触发模态框 -->
+            </div>
+
+            <div style="display: inline-block;margin-top: -15px;" class="layui-inline">
+                    <!--按钮触发模态框-->
                     <button class="btn btn-primary" data-toggle="modal" data-target="#addApplicationModal"
-                            style="margin-bottom: 10px;margin-top: -130px;margin-left: 78.5%;">
+                    style="float: left;margin-right: 10px;">
                         新增申请
                     </button>
-                </div>
-                <div>
                     <!-- 按钮触发模态框 -->
-                    <button class="btn btn-primary" id="deleteBatchBtn" data-type="delete"
-                            style="margin-bottom: 10px;margin-top: -215px;margin-left: 85%;">
+                    <button class="btn btn-primary" id="deleteBatchBtn" data-type="delete" style="float: left">
                         批量删除
                     </button>
-                </div>
-
             </div>
 
             <table class="layui-hide" id="funcTable" lay-filter="funcTableFilter" lay-size="lg"></table>
@@ -354,7 +358,7 @@
                                        class="col-sm-2 col-form-label font-weight-bold">申请日期</label>
                                 <div class="col-sm-6">
                                     <input type="text" class="form-control" id="applicationDateEdit"
-                                           name="applicationDateEdit">
+                                           name="applicationDateEdit" readonly>
                                 </div>
                             </div>
 
@@ -363,7 +367,7 @@
                                        class="col-sm-2 col-form-label font-weight-bold">发放日期</label>
                                 <div class="col-sm-6">
                                     <input type="text" class="form-control" id="releaseDateEdit"
-                                           name="releaseDateEdit">
+                                           name="releaseDateEdit" readonly>
                                 </div>
                             </div>
 
@@ -399,7 +403,7 @@
                                        class="col-sm-2 col-form-label font-weight-bold">申请状态</label>
                                 <div class="col-sm-6">
                                     <input type="text" class="form-control" id="statusEdit"
-                                           name="statusEdit">
+                                           name="statusEdit" readonly>
                                 </div>
                             </div>
 
@@ -494,7 +498,6 @@
             console.log(data);
             console.log("layEvent", layEvent);
             if (layEvent === 'detail') {
-                console.log(" enter edit...");
                 let applicationIdTd=data.id;
                 $.ajax({
                     url: "/selectApplication/" + applicationIdTd,
@@ -521,8 +524,8 @@
                                 $('#applicationDateDetail').val();
                             }else{
                                 var applicationDateDate = new Date(applicationDate);
-                                var applicationDateFormat = applicationDateDate.getFullYear() + '-' + (applicationDateDate.getMonth() + 1) + '-' + applicationDateDate.getDate();
-                                $('#applicationDateDetail').val(applicationDateFormat);
+                                // var applicationDateFormat = applicationDateDate.getFullYear() + '-' + (applicationDateDate.getMonth() + 1) + '-' + applicationDateDate.getDate()+ ' ' + applicationDateDate.getHours() + ':' + applicationDateDate.getMinutes() + ':' + applicationDateDate.getSeconds();
+                                $('#applicationDateDetail').val(applicationDate);
                             }
 
                             /*发放日期*/
@@ -574,7 +577,7 @@
 
             if (layEvent === 'edit') {
                 let data = obj.data
-                console.error("data:", data);
+                console.log("data:", data);
                 console.log(" enter edit...");
                 let applicationId = data.id;
                 $('#applicationIdEdit').val(applicationId);
@@ -596,18 +599,18 @@
                 if (applicationDate==null){
                     $('#applicationDateEdit').val();
                 }else{
-                    var applicationDateDate = new Date(applicationDate);
-                    var applicationDateFormat = applicationDateDate.getFullYear() + '-' + (applicationDateDate.getMonth() + 1) + '-' + applicationDateDate.getDate();
-                    $('#applicationDateEdit').val(applicationDateFormat);
+                    // var applicationDateDate = new Date(applicationDate);
+                    // var applicationDateFormat = applicationDateDate.getFullYear() + '-' + (applicationDateDate.getMonth() + 1) + '-' + applicationDateDate.getDate();
+                    $('#applicationDateEdit').val(applicationDate);
                 }
                 /*发放日期*/
                 let releaseDate = data.releaseDate;
                 if (releaseDate==null){
                     $('#releaseDateEdit').val();
                 }else{
-                    var releaseDateDate = new Date(releaseDate);
-                    var releaseDateEditFormat = releaseDateDate.getFullYear() + '-' + (releaseDateDate.getMonth() + 1) + '-' + releaseDateDate.getDate();
-                    $('#releaseDateEdit').val(releaseDateEditFormat);
+                    // var releaseDateDate = new Date(releaseDate);
+                    // var releaseDateEditFormat = releaseDateDate.getFullYear() + '-' + (releaseDateDate.getMonth() + 1) + '-' + releaseDateDate.getDate();
+                    $('#releaseDateEdit').val(releaseDate);
                 }
 
                 /*费用转嫁承办人工号*/
@@ -805,11 +808,25 @@
 
     /*新增mac地址申请*/
     function submitApplication() {
+
         $('#addApplicationModal').modal('hide');  //手动关闭
         let customerAssignInput = $('#customerAssign').val();
+        if (customerAssignInput==''||customerAssignInput==null) {
+            layer.alert('客户不能为空',{icon:5})
+            return false;
+        }
         let applicantAssignInput = $('#applicantAssign').val();
+        if (applicantAssignInput==''||applicantAssignInput==null) {
+            layer.alert('申请人不能为空',{icon:5})
+            return false;
+        }
         let applicationDepartmentAssignInput = $('#applicationDepartmentAssign').val();
         let amountAssignInput = $('#amountAssign').val();
+        let numReg=/^[1-9]\d*$/;
+        if (!numReg.test(amountAssignInput)) {
+            layer.alert('申请数量应该为正整数',{icon:5});
+            return false;
+        }
         let applicationDateAssignInput = $('#applicationDateAssign').val();
         $.ajax({
             //请求的url地址
@@ -956,6 +973,10 @@
             case '已删除':
                 statusVal = 0;
                 break;
+        }
+        if (statusVal == 2) {
+            layer.msg('已发放的申请记录不允许修改申请数量',{icon:5});
+            return false;
         }
         $.ajax({
             //请求的url地址

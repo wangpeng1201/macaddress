@@ -1,4 +1,5 @@
 package com.foxconn.sw.macaddress.service.impl;
+import java.util.Date;
 
 import com.alibaba.fastjson.JSON;
 import com.foxconn.sw.macaddress.common.*;
@@ -152,7 +153,6 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
     public Result assignMac(ApplicationVO applicationVO) {
         ////////////////////////////////////////////////////参数校验非空开始//////////////////////////////////////////////////////
         if (ObjectUtils.isEmpty(applicationVO)) {
-            System.out.println("macAddressVO = " + applicationVO);
             log.error("参数{}为空", applicationVO);
             return RetResponse.error("参数为空");
         }
@@ -329,12 +329,16 @@ public class DeliveryRecordServiceImpl implements DeliveryRecordService {
         System.out.println("调整后的剩余库存为 = " + JSON.toJSONString(surplusStockMap));
         //修改申请状态
         Application application = new Application();
-        BeanUtils.copyProperties(applicationVO, application);
+        Application applicationDetail = this.applicationDao.queryById(applicationVO.getId());
+        BeanUtils.copyProperties(applicationDetail, application);
+
         try {
+            application.setId(applicationDetail.getId());
             application.setStatus(Constant.ASSIGNSUCCESS);
             application.setReleaseDate(new Date());
             applicationDao.update(application);
         } catch (Exception e) {
+            application.setId(applicationVO.getId());
             application.setStatus(Constant.ASSIGNFAILURE);
             e.printStackTrace();
             log.error("修改申请状态失败");
