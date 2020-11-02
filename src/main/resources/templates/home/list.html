@@ -153,13 +153,13 @@
                     </div>
                     <div class="modal-body">
                         <form role="form" th:action="@{/addMacAddress}" method="post"
-                              id="macForm">
+                              id="macForm" onsubmit="return checkMacFormat()">
                             <div class="form-group row">
                                 <label for="startMacAddress"
                                        class="col-sm-2 col-form-label font-weight-bold">Mac起始地址</label>
                                 <div class="col-sm-6">
                                     <input type="text" class="form-control" id="startMacAddress" name="startMacAddress"
-                                           placeholder="请输入16进制Mac起始地址">
+                                           placeholder="请输入16进制Mac起始地址" required="" autofocus=""  autocomplete="off">
                                 </div>
                             </div>
                             <div class="form-group row">
@@ -167,7 +167,7 @@
                                        class="col-sm-2 col-form-label font-weight-bold">Mac结束地址</label>
                                 <div class="col-sm-6">
                                     <input type="text" class="form-control" id="endMacAddress" name="endMacAddress"
-                                           placeholder="请输入16进制Mac结束地址">
+                                           placeholder="请输入16进制Mac结束地址" required="" autofocus="" autocomplete="off">
                                 </div>
                             </div>
                         </form>
@@ -494,8 +494,32 @@
 
     function addMac() {
         $('#macForm').submit();
-        $('#myModal').modal('hide');  //手动关闭
+        // $('#myModal').modal('hide');  //手动关闭
         // window.location.href('/condition');
+    }
+
+    function checkMacFormat(){
+        var startMacAddressVal = document.getElementById('startMacAddress').value.trim();
+        var endMacAddressVal = document.getElementById('endMacAddress').value.trim();
+        if (startMacAddressVal==''||startMacAddressVal==null) {
+            layer.alert('必填项不能为空', {icon: 5});
+            return false;
+        }
+        if (endMacAddressVal==''||endMacAddressVal==null) {
+            layer.alert('必填项不能为空', {icon: 5});
+            return false;
+        }
+        // $('#myModal').modal('show');
+        var reg=/^[a-fA-F0-9]{12}$/;
+        if(!(reg.test(startMacAddressVal))){
+            layer.alert('请输入正确的12位mac起始地址', {icon: 5});
+            return false;
+        }
+        if(!(reg.test(endMacAddressVal))){
+            layer.alert('请输入正确的12位mac结束地址', {icon: 5});
+            return false;
+        }
+        return true;
     }
 
     $(function () {
