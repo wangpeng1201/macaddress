@@ -1,14 +1,10 @@
 package com.foxconn.sw.macaddress.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.foxconn.sw.macaddress.common.Box;
-import com.foxconn.sw.macaddress.common.Lay;
-import com.foxconn.sw.macaddress.common.Result;
-import com.foxconn.sw.macaddress.common.RetResponse;
+import com.foxconn.sw.macaddress.common.*;
 import com.foxconn.sw.macaddress.dto.DeliveryRecordConditionDTO;
-import com.foxconn.sw.macaddress.dto.MacAddressDTO;
 import com.foxconn.sw.macaddress.entity.DeliveryRecord;
 import com.foxconn.sw.macaddress.service.DeliveryRecordService;
+import com.foxconn.sw.macaddress.service.MacaddressService;
 import com.foxconn.sw.macaddress.vo.ApplicationVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -17,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -40,6 +35,9 @@ public class DeliveryRecordController {
      */
     @Resource
     private DeliveryRecordService deliveryRecordService;
+
+    @Resource
+    private MacaddressService macaddressService;
 
     @Autowired
     private HttpSession httpSession;
@@ -107,25 +105,32 @@ public class DeliveryRecordController {
         return result;
     }
 
-    @RequestMapping(value = "/deliveryRecord/{id}", method = RequestMethod.POST)
+    @RequestMapping(value = "/deliveryRecord/{id}", method = RequestMethod.PUT)
     @ResponseBody
-    public Result delMacAddress(@PathVariable("id") Integer id) {
+    public Result delMacAddress(@PathVariable("id") Integer id,Integer command) {
         DeliveryRecord deliveryRecord = new DeliveryRecord();
         deliveryRecord.setId(id);
-        //逻辑删除
-        deliveryRecord.setStatus(0);
         deliveryRecord.setUpdatedate(new Date());
         deliveryRecord.setUpdator(httpSession.getAttribute("LoginState").toString());
+        //逻辑删除
+        if (Constant.DELETECOMMAND.equals(command)) {
+            deliveryRecord.setStatus(Constant.DONOTSHOW);
+        }
+        //撤销发放记录
+        if (Constant.RECALLCOMMAND.equals(command)) {
+            deliveryRecord.setStatus(Constant.RECALLSTATUS);
+        }
+
         try {
             Boolean update = deliveryRecordService.update(deliveryRecord);
             if (update) {
-                return RetResponse.success("删除成功");
+                return RetResponse.success("操作成功");
             } else {
-                return RetResponse.success("删除失败");
+                return RetResponse.success("操作失败");
             }
         } catch (Exception e) {
-            log.error("根据主键逻辑删除失败");
-            return RetResponse.error("删除失败");
+            log.error("根据主键修改操作失败");
+            return RetResponse.error("操作失败");
         }
     }
 }

@@ -378,7 +378,7 @@
         //监听搜索
         form.on('submit(search)', function (data) {
             let field = data.field;
-            console.log("field:", field);
+            // console.log("field:", field);
             //执行重载
             macAddressTable.reload({where: field, page: {curr: 1}});
         });
@@ -393,8 +393,6 @@
         table.on('tool(macAddressTableFilter)', function (obj) {
             let data = obj.data //当前行的内容
                 , layEvent = obj.event; //选中的时间
-            console.log(data);
-            console.log("layEvent", layEvent);
             if (layEvent === 'detail') {
                 let macIdTd=data.id;
                 let startMac=data.startMacAddress;
@@ -419,8 +417,7 @@
             /*编辑*/
             if (layEvent === 'edit') {
                 let data = obj.data
-                console.error("data:", data);
-                console.log(" enter edit...");
+                // console.error("data:", data);
                 let macAddressId = data.id;
                 $('#macAddressIdEdit').val(macAddressId);
                 /*起始mac*/
@@ -443,7 +440,7 @@
                         url: 'mac/' + data.id,
                         dataType: "json",
                         success: function (data) {
-                            console.log("data:", data);
+                            // console.log("data:", data);
                             if (data.msg ==='success') {
                                 // layer.msg('删除成功');
                                 layer.msg('删除成功', {icon: 1});
@@ -564,7 +561,7 @@
     /*编辑修改库存*/
     function submitEditMac() {
         let macAddressId = $('#macAddressIdEdit').val();
-        console.log("macAddressIdL:" + macAddressId);
+        // console.log("macAddressIdL:" + macAddressId);
         /*起始mac地址*/
         let startMacAddressEditVal = $('#startMacAddressEdit').val();
         /*结束mac地址*/

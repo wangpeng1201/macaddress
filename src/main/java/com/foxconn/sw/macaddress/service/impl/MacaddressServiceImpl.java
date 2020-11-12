@@ -29,7 +29,10 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 /**
@@ -288,7 +291,6 @@ public class MacaddressServiceImpl implements MacaddressService {
         }
         return true;
     }
-
 
     private Map<Integer, Integer> getAllStartingMacAddress() {
         //查询库存量

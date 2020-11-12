@@ -75,8 +75,11 @@
                         data-target="#myModalDetail">
                     详情
                 </button>
-                <button type="button" class="btn btn-sm btn-danger" lay-event="delete">
+                <!--<button type="button" class="btn btn-sm btn-danger" lay-event="delete">
                     删除
+                </button>-->
+                <button type="button" class="btn btn-sm btn-danger" lay-event="recall">
+                    撤销发放
                 </button>
             </script>
         </main>
@@ -443,10 +446,13 @@
                 let macAddressId = data.id;
                 let startMacAddress = data.startMacAddress;
                 let endMacAddress = data.endMacAddress;
-                layer.confirm("确定删除["+startMacAddress+"-"+endMacAddress+"]吗？", {title: "提醒"}, function (index) {
+                layer.confirm("确定删除【"+startMacAddress+"-"+endMacAddress+"】吗？", {title: "提醒"}, function (index) {
                     $.ajax({
-                        type: "post",
+                        type: "PUT",
                         url: 'deliveryRecord/' + data.id,
+                        data:{
+                            "command":1
+                        },
                         dataType: "json",
                         success: function (data) {
                             console.log("data:", data);
@@ -461,6 +467,34 @@
                     });
                 });
             }
+
+            if (layEvent==='recall') {
+                let data = obj.data
+                let macAddressId = data.id;
+                let startMacAddress = data.startMacAddress;
+                let endMacAddress = data.endMacAddress;
+                layer.confirm("确定撤回【"+startMacAddress+"-"+endMacAddress+"】吗？", {title: "提醒",area: ['auto', 'auto']}, function (index) {
+                    $.ajax({
+                        type: "PUT",
+                        url: 'deliveryRecord/' + data.id,
+                        data:{
+                          "command":1
+                        },
+                        dataType: "json",
+                        success: function (data) {
+                            console.log("data:", data);
+                            if (data.msg ==='success') {
+                                // layer.msg('删除成功');
+                                layer.msg('撤销发放成功', {icon: 1});
+                            } else {
+                                layer.msg(data.msg);
+                            }
+                            deliveryRecordTable.reload();
+                        }
+                    });
+                });
+            }
+
         });
     });
 

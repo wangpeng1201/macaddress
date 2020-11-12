@@ -52,7 +52,7 @@ public class DeliveryRecord implements Serializable {
      */
     private String updator;
     /**
-     * 是否显示(0:不显示，1:显示)
+     * 是否显示(0:不显示，1:显示,2:撤回发放)
      */
     private Integer status;
 

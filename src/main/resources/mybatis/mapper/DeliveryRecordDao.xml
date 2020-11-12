@@ -58,7 +58,7 @@
                 and amount = #{amount}
             </if>
             <if test="createdate != null">
-                and application_date BETWEEN DATE_FORMAT(#{createdate} ,'%Y-%m-%d 00:00:00')  AND DATE_FORMAT(#{createdate},'%Y-%m-%d 23:59:59')
+                and createDate BETWEEN DATE_FORMAT(#{createdate} ,'%Y-%m-%d 00:00:00')  AND DATE_FORMAT(#{createdate},'%Y-%m-%d 23:59:59')
             </if>
             <if test="creator != null and creator != ''">
                 and creator = #{creator}
@@ -79,7 +79,7 @@
     <select id="findByGroupById" resultType="com.foxconn.sw.macaddress.dto.DeliveryRecordDTO">
         select
         mac_id as macId, sum(amount) as amountSum
-        from bill.delivery_record group by mac_id
+        from bill.delivery_record where status=1 group by mac_id
     </select>
 
     <!--条件查询-->
