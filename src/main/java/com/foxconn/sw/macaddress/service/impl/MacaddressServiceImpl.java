@@ -12,6 +12,7 @@ import com.foxconn.sw.macaddress.dto.MacAddressDTO;
 import com.foxconn.sw.macaddress.entity.Macaddress;
 import com.foxconn.sw.macaddress.service.MacaddressService;
 import com.foxconn.sw.macaddress.vo.MacAddressDetailVO;
+import com.foxconn.sw.macaddress.vo.MacAddressTableVO;
 import com.foxconn.sw.macaddress.vo.MacAddressVO;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -29,10 +30,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -264,9 +262,20 @@ public class MacaddressServiceImpl implements MacaddressService {
         }
         List<Macaddress> macaddresses;
         Lay lay = new Lay();
+        List<MacAddressTableVO> tableVOS=new ArrayList<>();
         try {
             macaddresses = macaddressDao.queryAll(macaddress);
-            PageInfo info = new PageInfo(macaddresses);//创建pageinfo，包含分页的信息
+            //页面显示该段mac实时库存信息
+            macaddresses.forEach(m->{
+                MacAddressTableVO macAddressTableVO = new MacAddressTableVO();
+                BeanUtils.copyProperties(m,macAddressTableVO);
+                Result remainingStock = getRemainingStock(m.getId());
+                MacAddressDetailVO data = (MacAddressDetailVO) remainingStock.getData();
+                macAddressTableVO.setRemainingInventory(data.getRemainingInventory());
+                tableVOS.add(macAddressTableVO);
+            });
+
+            PageInfo info = new PageInfo(tableVOS);//创建pageinfo，包含分页的信息
             lay.setLimit(macAddressDTO.getLimit());
             lay.setPage(macAddressDTO.getPage());
             lay.setCount(info.getTotal());//总条数

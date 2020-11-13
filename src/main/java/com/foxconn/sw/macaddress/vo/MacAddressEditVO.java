@@ -4,6 +4,9 @@ import lombok.Data;
 
 import java.io.Serializable;
 
+/**
+ * 编辑模态框VO
+ */
 @Data
 public class MacAddressEditVO implements Serializable {
     private static final long serialVersionUID = -2542680796214341482L;

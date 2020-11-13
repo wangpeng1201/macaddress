@@ -356,13 +356,14 @@
                 {type: 'checkbox', fixed: 'left'},
                 {field: 'id', title: '地址段编号', width: '8%', sort: true, fixed: 'left', align: 'center'}
                 , {field: 'signs', title: 'mac标识', width: '10%', align: 'center'}
-                , {field: 'startMacAddress', title: 'mac起始地址', width: '15%', align: 'center'}
-                , {field: 'endMacAddress', title: 'mac结束地址', width: '15%', align: 'center'}
+                , {field: 'startMacAddress', title: 'mac起始地址', width: '10%', align: 'center'}
+                , {field: 'endMacAddress', title: 'mac结束地址', width: '10%', align: 'center'}
                 , {field: 'startingInventory', title: '初始库存量', width: '10%', align: 'center', sort: true}
+                , {field: 'remainingInventory', title: '当前库存量', width: '10%', align: 'center', sort: true,style:'color:red'}
                 , {
                     field: 'createdate',
                     title: '创建时间',
-                    width: '15%',
+                    width: '10%',
                     sort: true,
                     align: 'center',
                     templet: '<div>{{ layui.util.toDateString(d.createdate, "yyyy-MM-dd HH:mm:ss") }}</div>'
