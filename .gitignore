@@ -34,3 +34,8 @@ build/
 /mvnw
 /mvnw.cmd
 /.mvn/
+/hs_err_pid32944.log
+/hs_err_pid14444.log
+/hs_err_pid33876.log
+/replay_pid33876.log
+/src/main/java/com/foxconn/sw/macaddress/util/TestString.java
