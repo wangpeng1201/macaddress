@@ -107,7 +107,7 @@ public class DeliveryRecordController {
 
     @RequestMapping(value = "/deliveryRecord/{id}", method = RequestMethod.PUT)
     @ResponseBody
-    public Result delMacAddress(@PathVariable("id") Integer id,Integer command) {
+    public Result delMacAddress(@PathVariable("id") Integer id, Integer command) {
         DeliveryRecord deliveryRecord = new DeliveryRecord();
         deliveryRecord.setId(id);
         deliveryRecord.setUpdatedate(new Date());

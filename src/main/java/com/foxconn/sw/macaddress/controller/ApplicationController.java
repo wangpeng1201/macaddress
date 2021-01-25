@@ -1,6 +1,5 @@
 package com.foxconn.sw.macaddress.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.foxconn.sw.macaddress.common.Box;
 import com.foxconn.sw.macaddress.common.Lay;
 import com.foxconn.sw.macaddress.common.Result;

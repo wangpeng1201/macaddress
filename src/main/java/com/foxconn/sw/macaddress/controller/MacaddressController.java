@@ -1,6 +1,5 @@
 package com.foxconn.sw.macaddress.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.foxconn.sw.macaddress.common.Box;
 import com.foxconn.sw.macaddress.common.Lay;
 import com.foxconn.sw.macaddress.common.Result;
@@ -15,7 +14,6 @@ import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +41,7 @@ public class MacaddressController {
 
     @Autowired
     private HttpSession httpSession;
+
     /**
      * 通过主键查询单条数据
      *
@@ -99,7 +98,7 @@ public class MacaddressController {
     @RequestMapping(value = "/condition")
     @ResponseBody
     public Box findByCondition(MacAddressDTO macAddressDTO) {
-        Lay byConditionLayUI=macaddressService.findByConditionLayUI(macAddressDTO);
+        Lay byConditionLayUI = macaddressService.findByConditionLayUI(macAddressDTO);
         Long count = byConditionLayUI.getCount();
         Object data = byConditionLayUI.getData();
         return Box.success(data).put("count", count);
@@ -107,6 +106,7 @@ public class MacaddressController {
 
     /**
      * 根据主键逻辑删除
+     *
      * @param id
      * @return
      */
@@ -141,6 +141,7 @@ public class MacaddressController {
 
     /**
      * 根据主键查询对应的剩余库存
+     *
      * @param macId
      * @return
      */
@@ -149,7 +150,6 @@ public class MacaddressController {
     public Result getRemainingStock(@PathVariable Integer macId) {
         return macaddressService.getRemainingStock(macId);
     }
-
 
     @PostMapping("editMacAddress")
     @ResponseBody
