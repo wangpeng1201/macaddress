@@ -190,7 +190,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         application.setCustomer(applicationDTO.getCustomer());
         application.setApplicant(applicationDTO.getApplicant());
         if (!StringUtils.isEmpty(applicationDTO.getApplicationDate())) {
-            application.setApplicationDate(DateUtils.parseDate(applicationDTO.getApplicationDate(),"yyyy-MM-dd"));
+            application.setApplicationDate(DateUtils.parseDate(applicationDTO.getApplicationDate(), "yyyy-MM-dd"));
         }
         List<Application> applications = null;
         Lay lay = new Lay();

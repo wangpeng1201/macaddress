@@ -12,7 +12,7 @@ public class MyBatisConfig {
 
     @Bean
     public ConfigurationCustomizer configurationCustomizer() {
-        ConfigurationCustomizer configurationCustomizer = new ConfigurationCustomizer(){
+        ConfigurationCustomizer configurationCustomizer = new ConfigurationCustomizer() {
             @Override
             public void customize(org.apache.ibatis.session.Configuration configuration) {
                 //开启驼峰命名方式

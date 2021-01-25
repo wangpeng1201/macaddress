@@ -47,8 +47,7 @@ public class ListUtil {
     /**
      * id放入list
      *
-     * @param id
-     *            id(多个已逗号分隔)
+     * @param id id(多个已逗号分隔)
      * @return List集合
      */
     public static List<String> getList(String id) {

@@ -4,14 +4,14 @@ import java.math.BigInteger;
 import java.util.regex.Pattern;
 
 public class ByteUtil {
- 
+
     /**
      * 十六进制转为十进制
      */
     public static String getHexToTen(String hex) {
         return String.valueOf(Long.parseLong(hex, 16));
     }
- 
+
     /**
      * 将十六进制字符串转为字符串类型Ascll码
      */
@@ -26,7 +26,7 @@ public class ByteUtil {
         }
         return getFileAddSpace(sb.toString());
     }
- 
+
     /**
      * 每两位之间插入空格
      */
@@ -35,7 +35,7 @@ public class ByteUtil {
         replace = replace.replaceAll(regex, "$1 ");
         return replace;
     }
- 
+
     /**
      * 字符串转换为Ascii
      *
@@ -54,7 +54,7 @@ public class ByteUtil {
         }
         return sbu.toString();
     }
- 
+
     /**
      *      * 十六进制转字符串
      *      *
@@ -74,7 +74,7 @@ public class ByteUtil {
         }
         return result;
     }
- 
+
     /**
      *      * 十六进制字符串装十进制
      *      *
@@ -99,7 +99,7 @@ public class ByteUtil {
         }
         return result;
     }
- 
+
     /**
      * 字符串转化成为16进制字符串
      */
@@ -112,7 +112,7 @@ public class ByteUtil {
         }
         return str;
     }
- 
+
     public static String str2HexStr(String str) {
         char[] chars = "0123456789ABCDEF".toCharArray();
         StringBuilder sb = new StringBuilder("");
@@ -126,8 +126,7 @@ public class ByteUtil {
         }
         return sb.toString().trim();
     }
- 
- 
+
     /**
      * 16进制转换成为string类型字符串
      *
@@ -154,7 +153,7 @@ public class ByteUtil {
         }
         return s;
     }
- 
+
     /**
      * 向串口发送数据转为字节数组
      *
@@ -173,7 +172,7 @@ public class ByteUtil {
         }
         return bytes;
     }
- 
+
     /**
      * 字节数组转16进制
      *
@@ -191,7 +190,7 @@ public class ByteUtil {
         }
         return sb.toString();
     }
- 
+
     /**
      * 接收到的字节数组转换16进制字符串
      *
@@ -210,7 +209,7 @@ public class ByteUtil {
         }
         return ret;
     }
- 
+
     /**
      * byte数组转成16进制字符串
      */
@@ -229,7 +228,7 @@ public class ByteUtil {
         }
         return stringBuilder.toString();
     }
- 
+
     /**
      * 接收到的字节数组转换16进制字符串
      */
@@ -244,12 +243,12 @@ public class ByteUtil {
         }
         return ret;
     }
- 
+
     public static int hexStrToTenInteger(String hex) {
         int bigInteger = Integer.valueOf(new BigInteger(hex, 16).toString());
         return bigInteger;
     }
- 
+
     /**
      * 字符串转byte数组
      */
@@ -260,7 +259,7 @@ public class ByteUtil {
         byte[] byteArray = str.getBytes();
         return byteArray;
     }
- 
+
     /**
      * 计算CRC16校验码
      * 逐个求和
@@ -291,7 +290,7 @@ public class ByteUtil {
         }
         return Integer.toHexString(CRC).toUpperCase();
     }
- 
+
     /**
      * 指令校验和,并取出后两位字节
      */
@@ -307,7 +306,7 @@ public class ByteUtil {
         }
         return byteToStr(msg, length) + byteToStr(mByte, mByte.length).substring(byteToStr(mByte, mByte.length).length() - 4, byteToStr(mByte, mByte.length).length());
     }
- 
+
     /**
      * 高低位转换
      */
@@ -327,7 +326,7 @@ public class ByteUtil {
         String s2 = data.substring(2, 4);
         return s2 + s1;
     }
- 
+
     //判断浮点数（double和float）
     public static boolean isDouble(String str) {
         if (null == str || "".equals(str)) {
@@ -336,7 +335,7 @@ public class ByteUtil {
         Pattern pattern = Pattern.compile("^[-\\+]?[.\\d]*$");
         return pattern.matcher(str).matches();
     }
- 
+
     /**
      * 计算校验值
      */
@@ -359,7 +358,7 @@ public class ByteUtil {
         String data = hexInt(total);
         return data.substring(data.length() - 2, data.length());
     }
- 
+
     public static String hexInt(int total) {
         int a = total / 256;
         int b = total % 256;
@@ -368,7 +367,7 @@ public class ByteUtil {
         }
         return format(a) + format(b);
     }
- 
+
     public static String format(int hex) {
         String hexa = Integer.toHexString(hex);
         int len = hexa.length();

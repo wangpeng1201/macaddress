@@ -64,6 +64,7 @@ public interface DeliveryRecordService {
 
     /**
      * 条件查询
+     *
      * @param macAddressDTO
      * @return
      */
@@ -71,6 +72,7 @@ public interface DeliveryRecordService {
 
     /**
      * 条件查询封装layui结果
+     *
      * @param deliveryRecordConditionDTO
      * @return
      */

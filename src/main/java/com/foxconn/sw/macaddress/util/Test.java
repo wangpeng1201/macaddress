@@ -13,11 +13,11 @@ public class Test {
         String tmp = StringUtils.leftPad(Long.toHexString(6107342373L).toUpperCase(), 12, '0');
         System.out.println(dec_num1);
         System.out.println("tmp = " + tmp);
-        Integer amount=3;
-        long l = Long.parseLong(hex_num1,16);
+        Integer amount = 3;
+        long l = Long.parseLong(hex_num1, 16);
         System.out.println("l = " + l);
 
-        Long avalue= l + amount - 1;
+        Long avalue = l + amount - 1;
 //        System.out.println("avalue = " + avalue);
 //
 //        String hex_num2 = "300ED5EC9EC5";

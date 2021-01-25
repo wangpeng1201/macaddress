@@ -15,11 +15,10 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 
 /**
- *  访问页面：xxx/druid/login.html
+ * 访问页面：xxx/druid/login.html
  */
 @Configuration
 public class DruidConfig {
-
 
     @Bean
     // 将所有前缀为spring.datasource下的配置项都加载DataSource中
@@ -28,13 +27,12 @@ public class DruidConfig {
         return new DruidDataSource();
     }
 
-
     //后台监控
     @Bean
     public ServletRegistrationBean<Servlet> druidServlet() {
         // 进行 druid 监控的配置处理
         ServletRegistrationBean<Servlet> srb = new ServletRegistrationBean<>(new StatViewServlet(), "/druid/*");
-        HashMap<String,String> map = new HashMap<>();
+        HashMap<String, String> map = new HashMap<>();
 //        map.put("loginUsername","root");
 //        map.put("loginPassword","11");
 //        map.put("allow", "");

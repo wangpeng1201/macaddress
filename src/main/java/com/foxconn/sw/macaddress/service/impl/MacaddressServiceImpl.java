@@ -262,13 +262,13 @@ public class MacaddressServiceImpl implements MacaddressService {
         }
         List<Macaddress> macaddresses;
         Lay lay = new Lay();
-        List<MacAddressTableVO> tableVOS=new ArrayList<>();
+        List<MacAddressTableVO> tableVOS = new ArrayList<>();
         try {
             macaddresses = macaddressDao.queryAll(macaddress);
             //页面显示该段mac实时库存信息
-            macaddresses.forEach(m->{
+            macaddresses.forEach(m -> {
                 MacAddressTableVO macAddressTableVO = new MacAddressTableVO();
-                BeanUtils.copyProperties(m,macAddressTableVO);
+                BeanUtils.copyProperties(m, macAddressTableVO);
                 Result remainingStock = getRemainingStock(m.getId());
                 MacAddressDetailVO data = (MacAddressDetailVO) remainingStock.getData();
                 macAddressTableVO.setRemainingInventory(data.getRemainingInventory());

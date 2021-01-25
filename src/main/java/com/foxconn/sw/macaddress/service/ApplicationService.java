@@ -71,6 +71,7 @@ public interface ApplicationService {
 
     /**
      * 条件查询
+     *
      * @param applicationDTO
      * @return
      */

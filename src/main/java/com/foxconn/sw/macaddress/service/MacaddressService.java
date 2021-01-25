@@ -66,6 +66,7 @@ public interface MacaddressService {
 
     /**
      * 新增mac地址
+     *
      * @param macAddressVO
      * @return
      */
@@ -73,6 +74,7 @@ public interface MacaddressService {
 
     /**
      * 条件查询
+     *
      * @param macAddressDTO
      * @return
      */
@@ -80,6 +82,7 @@ public interface MacaddressService {
 
     /**
      * 根据当前mac id查询对应的剩余库存
+     *
      * @param macId
      * @return
      */
@@ -87,6 +90,7 @@ public interface MacaddressService {
 
     /**
      * 条件查询封装成layui对象
+     *
      * @param macAddressDTO
      * @return
      */

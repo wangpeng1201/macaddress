@@ -1,5 +1,4 @@
 package com.foxconn.sw.macaddress.service.impl;
-import java.util.Date;
 
 import com.alibaba.fastjson.JSON;
 import com.foxconn.sw.macaddress.common.*;
