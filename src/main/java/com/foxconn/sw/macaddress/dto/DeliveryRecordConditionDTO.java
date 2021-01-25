@@ -3,6 +3,7 @@ package com.foxconn.sw.macaddress.dto;
 import lombok.Data;
 
 import java.io.Serializable;
+
 @Data
 public class DeliveryRecordConditionDTO implements Serializable {
 

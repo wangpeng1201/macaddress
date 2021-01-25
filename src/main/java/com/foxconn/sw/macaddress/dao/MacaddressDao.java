@@ -81,6 +81,7 @@ public interface MacaddressDao {
 
     /**
      * 批量逻辑删除
+     *
      * @param list
      */
     void deleteBatch(List<String> list);

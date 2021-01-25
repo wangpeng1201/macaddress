@@ -81,6 +81,7 @@ public interface ApplicationDao {
 
     /**
      * 条件查询
+     *
      * @param applicationDTO
      * @return
      */
